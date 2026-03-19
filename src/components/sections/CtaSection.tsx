@@ -68,8 +68,7 @@ export default function CTASection() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full flex flex-col py-[100px] bg-white overflow-hidden"
-      style={{ minHeight: 741 }}
+      className="relative w-full flex flex-col py-[80px] md:py-[100px] bg-white overflow-hidden"
     >
       <div className="w-full px-8 lg:px-12 xl:px-16 flex flex-col gap-4 h-full">
 
