@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ──────────────────────────────────────────────── */
+@theme {
+  /* Colors */
+  --color-bd-white:       #FFFFFF;
+  --color-bd-black:       #000000;
+  --color-bd-dark:        #242424;
+  --color-bd-service:     #272727;
+  --color-bd-card:        #FBF5EF;
+  --color-bd-light:       #F8F5F5;
+  --color-bd-muted:       #D3D3D3;
+  --color-bd-subtle:      #4F4F4F;
+  --color-bd-pill:        #3D3D3D;
+  --color-bd-placeholder: #1C94F6;
+
+  /* Typography */
+  --font-sans: "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+
+  /* Breakpoints */
+  --breakpoint-3xl: 1700px;
+
+  /* Spacing / Layout */
+  --spacing-section: 100px;
+  --width-container: 1280px;
+
+  /* Border Radius */
+  --radius-card:    6px;
+  --radius-media:   8px;
+  --radius-media-lg:10px;
+  --radius-panel:   29px;
+  --radius-pill:    360px;
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after {
+    @apply m-0 p-0 box-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bd-white);
+    color: var(--color-bd-black);
+  }
+}
+
+/* ─── Custom Fonts ───────────────────────────────────────────────── */
+/* 
+  If you bring in a custom display font later (from Figma), add it here.
+  Example structure — replace with actual font files when ready:
+
+  @font-face {
+    font-family: "YourFont";
+    src: url("/fonts/YourFont.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+  }
+*/
+
+/* ─── Lenis Smooth Scroll ────────────────────────────────────────── */
+html.lenis {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* ─── Clip Reveal Utility ────────────────────────────────────────── */
+.clip-reveal {
+  overflow: hidden;
+  display: block;
+}
+
+/* ─── Arrow Button ───────────────────────────────────────────────── */
+.arrow-btn {
+  @apply inline-flex items-center gap-[10px];
+  @apply text-[18px] leading-[21px] tracking-[-0.01em];
+}
+/* ── Keyword ticker ──────────────────────────────────────────────── */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ─── Selection ──────────────────────────────────────────────────── */
+::selection {
+  @apply bg-bd-black text-bd-white;
+}
+
+/* ─── View Transitions (for page routing) ────────────────────────── */
+::view-transition-group(root) {
+  z-index: auto !important;
+}
+::view-transition-image-pair(root) {
+  isolation: isolate;
+  will-change: transform, opacity, scale;
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 50;
+  animation: none !important;
+}
+::view-transition-old(root) {
+  z-index: 1;
+  animation: none !important;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.blink-animation {
+  animation: blink 1s infinite;
+}
