@@ -234,7 +234,7 @@ function LogoGrid() {
 function TitleWord({ word, extraClass }: { word: string; extraClass?: string }) {
   return (
     <div
-      className={`flex overflow-hidden ${extraClass ?? ''}`}
+      className={`flex justify-center w-full overflow-hidden ${extraClass ?? ''}`}
       style={{
         fontSize:      'clamp(44px, 11vw, 160px)',
         fontWeight:    700,
@@ -262,18 +262,31 @@ function TitleLetterScroll() {
   useGSAP(() => {
     if (!containerRef.current) return
 
-    gsap.to('.ts-letter', {
+    const letters = gsap.utils.toArray<HTMLElement>('.ts-letter')
+    if (letters.length === 0) return
+
+    const letterLoop = gsap.timeline({ repeat: -1, yoyo: true, paused: true })
+
+    letterLoop.to(letters, {
       yPercent: 100,
+      duration: 1.35,
       ease: 'power1.inOut',
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: '40% 95%',
-        end: '100% 80%',
-        scrub: 1,
-      },
       stagger: {
         each: 0.05,
         from: 'random',
+      },
+    })
+
+    ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: 'top 85%',
+      end: 'bottom 20%',
+      onToggle: (self) => {
+        if (self.isActive) {
+          letterLoop.play()
+          return
+        }
+        letterLoop.pause()
       },
     })
   }, { scope: containerRef })
@@ -281,7 +294,7 @@ function TitleLetterScroll() {
   return (
     <div
       ref={containerRef}
-      className="flex flex-col items-start w-full"
+      className="flex flex-col items-center w-full"
       style={{ gap: 0 }}
     >
       {/* Line 1: TECH STACK */}

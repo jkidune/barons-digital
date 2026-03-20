@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     siteName:    'Barons Digital',
     type:        'website',
   },
+  icons: {
+    icon: '/logos/barons-blue-icon.svg',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -112,12 +112,11 @@ function ServiceRow({ service }: { service: typeof services[0] }) {
   return (
     <div
       ref={rowRef}
-      className="relative flex flex-col md:flex-row md:justify-between items-start w-full cursor-default overflow-hidden"
+      className="relative flex flex-col md:flex-row items-start w-full cursor-default overflow-hidden gap-4 md:gap-20"
       style={{
         background:   '#272727',
         borderRadius: 10,
         padding:      16,
-        gap:          10,
         minHeight:    200,
       }}
       onMouseEnter={handleMouseEnter}
@@ -195,14 +194,15 @@ function ServiceRow({ service }: { service: typeof services[0] }) {
 
       {/* ── Right: description + pills ───────────────────────────── */}
       <div
-        className="flex flex-col items-start w-full"
-        style={{ gap: 24, maxWidth: '100%' }}
+        className="flex flex-col items-start w-full pl-12 md:pl-8 lg:pl-12 md:flex-1"
+        style={{ gap: 20, maxWidth: '100%' }}
       >
         {/* Description */}
         <p
+          className="w-full md:max-w-[760px]"
           style={{
             fontWeight:    400,
-            fontSize:      20,
+            fontSize:      19,
             lineHeight:    '24px',
             letterSpacing: '-0.01em',
             color:         '#D3D3D3',
@@ -213,8 +213,8 @@ function ServiceRow({ service }: { service: typeof services[0] }) {
 
         {/* Pills */}
         <div
-          className="flex flex-row flex-wrap items-center"
-          style={{ gap: 10 }}
+          className="flex flex-row flex-wrap items-center w-full md:max-w-[560px]"
+          style={{ gap: 8 }}
         >
           {service.pills.map((pill) => (
             <span
@@ -223,12 +223,12 @@ function ServiceRow({ service }: { service: typeof services[0] }) {
                 display:       'inline-flex',
                 alignItems:    'center',
                 justifyContent:'center',
-                padding:       '8px 10px',
+                padding:       '6px 8px',
                 background:    '#3D3D3D',
                 borderRadius:  4,
                 fontWeight:    400,
-                fontSize:      15,
-                lineHeight:    '18px',
+                fontSize:      12,
+                lineHeight:    '15px',
                 letterSpacing: '-0.01em',
                 textTransform: 'uppercase',
                 color:         '#D3D3D3',

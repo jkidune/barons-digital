@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { gsap } from 'gsap'
 import useDisableScroll from '@/hooks/useDisableScroll'
 
 export default function Preloader() {
   const [count,   setCount]   = useState(0)
   const [visible, setVisible] = useState(true)
-  const [done,    setDone]    = useState(false)
 
   const wrapRef     = useRef<HTMLDivElement>(null)
   const topRef      = useRef<HTMLDivElement>(null)
@@ -107,12 +107,20 @@ export default function Preloader() {
         className="absolute inset-0 flex items-center justify-center px-8 pointer-events-none"
         style={{ zIndex: 2 }}
       >
+        <Image
+          src="/logos/barons-white-logo.svg"
+          alt="Barons Digital"
+          width={480}
+          height={126}
+          className="w-full h-auto max-w-[480px]"
+          priority
+        />
         <svg
           width="100%"
           viewBox="0 0 842 221"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ maxWidth: 480 }}
+          style={{ maxWidth: 480, display: 'none' }}
           aria-label="Barons Digital"
         >
           <g clipPath="url(#clip0_preloader)">
