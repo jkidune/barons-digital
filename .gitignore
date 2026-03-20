@@ -1,42 +1,61 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ── Dependencies ───────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# ── Next.js build output ───────────────────────────────────────────
+.next/
+out/
+build/
 
-# testing
-/coverage
+# ── Environment variables — ALL variants ───────────────────────────
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
+.env.staging.local
+!.env.example
 
-# next.js
-/.next/
-/out/
+# ── Supabase local dev ─────────────────────────────────────────────
+.supabase/
+supabase/.branches/
 
-# production
-/build
-
-# misc
+# ── OS junk ────────────────────────────────────────────────────────
 .DS_Store
+.DS_Store?
 ._*
-*.pem
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
 
-# debug
+# ── IDE ────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ── Logs ───────────────────────────────────────────────────────────
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# ── Test + coverage ────────────────────────────────────────────────
+coverage/
+.nyc_output/
 
-# vercel
+# ── Secrets / certs ────────────────────────────────────────────────
+*.pem
+*.key
+*.cert
 .vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts

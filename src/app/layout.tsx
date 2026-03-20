@@ -1,8 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import SmoothScrollProvider from '@/components/layout/SmoothScrollProvider'
-import Navbar               from '@/components/layout/Navbar'
-import Preloader            from '@/components/ui/Preloader'
 import { InitialLoadProvider } from '@/context/InitialLoadContext'
 
 export const metadata: Metadata = {
@@ -12,12 +9,9 @@ export const metadata: Metadata = {
   openGraph: {
     title:       'Barons Digital',
     description: 'Strategy, Branding and Website Design for Serious Tanzanian Businesses',
-    url:         'https://barons-digital.com',
+    url:         'https://baronsdigital.co.tz',
     siteName:    'Barons Digital',
     type:        'website',
-  },
-  icons: {
-    icon: '/logos/barons-blue-icon.svg',
   },
 }
 
@@ -26,20 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <InitialLoadProvider>
-
-          {/*
-            Preloader sits outside SmoothScrollProvider so Lenis
-            scroll-lock doesn't interfere with the preloader's own
-            useDisableScroll hook. It is fixed + z-[9999] so it
-            always renders on top regardless.
-          */}
-          <Preloader />
-
-          <SmoothScrollProvider>
-            <Navbar />
-            <main>{children}</main>
-          </SmoothScrollProvider>
-
+          {children}
         </InitialLoadProvider>
       </body>
     </html>
