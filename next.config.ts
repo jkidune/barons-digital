@@ -1,7 +1,19 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  async redirects() {
+    const isLaunched = process.env.SITE_LAUNCHED === 'true'
 
-export default nextConfig;
+    if (isLaunched) return []
+
+    return [
+      {
+        source:      '/',
+        destination: '/coming-soon',
+        permanent:   false, // 307 — easy to revert
+      },
+    ]
+  },
+}
+
+export default nextConfig
