@@ -59,3 +59,5 @@ coverage/
 *.key
 *.cert
 .vercel
+
+/public/character/*.mov
