@@ -1,690 +1,342 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { gsap } from 'gsap'
 import { joinWaitlist, type WaitlistState } from '@/app/actions/waitlist'
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────────────────────
+const initial: WaitlistState = { status: 'idle', message: '' }
 
-type CharacterMood = 'idle' | 'curious' | 'watching' | 'celebrating' | 'sleepy' | 'thinking'
-type Theme = 'light' | 'dark'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CHARACTER VIDEO SOURCES
-// WebM keeps the coming soon page lightweight enough to deploy reliably.
-// Browsers without support fall back to the built-in silhouette placeholder.
-// Place files in /public/character/
-// ─────────────────────────────────────────────────────────────────────────────
-
-const VIDEOS: Record<CharacterMood, string> = {
-  idle:        '/character/idle.webm',
-  curious:     '/character/focused.webm',     // reuses focused
-  watching:    '/character/focused.webm',
-  celebrating: '/character/celebrating.webm',
-  sleepy:      '/character/idle.webm',        // reuses idle
-  thinking:    '/character/idle.webm',        // reuses idle
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// THEME TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
-
-const THEMES = {
-  light: {
-    bg:          '#F5F2ED',
-    surface:     '#FFFFFF',
-    border:      '#E8E3DB',
-    borderFocus: '#B7A073',
-    text:        '#111111',
-    subtext:     '#888880',
-    footerText:  '#C8C4BB',
-    tagBg:       'rgba(183,160,115,0.10)',
-    tagBorder:   'rgba(183,160,115,0.25)',
-    grain:       0.04,
-  },
-  dark: {
-    bg:          '#111111',
-    surface:     '#1A1A1A',
-    border:      '#242424',
-    borderFocus: '#B7A073',
-    text:        '#FFFFFF',
-    subtext:     '#696969',
-    footerText:  '#2A2A2A',
-    tagBg:       'rgba(183,160,115,0.10)',
-    tagBorder:   'rgba(183,160,115,0.25)',
-    grain:       0.03,
-  },
-} as const
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CHARACTER PEEK POSITIONS
-// ─────────────────────────────────────────────────────────────────────────────
-
-// How much of the character is hidden off-screen (% of character height).
-// 0 = fully visible, 100 = fully hidden.
-// Top character slides DOWN into view (positive Y).
-// Bottom character slides UP into view (negative Y).
-const PEEK: Record<CharacterMood, number> = {
-  idle:        55,   // just face visible
-  curious:     35,   // face + shoulders in
-  watching:    25,   // upper body showing
-  thinking:    45,   // half hidden
-  celebrating: 5,    // almost fully in — arms/party visible
-  sleepy:      70,   // barely peeking — nearly gone
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SUBMIT BUTTON
-// ─────────────────────────────────────────────────────────────────────────────
-
-function SubmitButton({ theme }: { theme: Theme }) {
+function SubmitButton() {
   const { pending } = useFormStatus()
-  const t = THEMES[theme]
+
   return (
     <button
       type="submit"
       disabled={pending}
-      className="group flex items-center gap-3 disabled:opacity-50 transition-opacity duration-200"
+      className="inline-flex min-h-[58px] items-center justify-center bg-[#111111] px-6 text-[12px] font-black uppercase tracking-[0.18em] text-[#f7efe4] transition-transform duration-300 hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50"
     >
-      <span
-        style={{
-          fontFamily:    "'Helvetica Neue', Arial, sans-serif",
-          fontWeight:    700,
-          fontSize:      15,
-          letterSpacing: '-0.02em',
-          textTransform: 'uppercase',
-          color:         pending ? t.subtext : t.text,
-          transition:    'color 200ms',
-          whiteSpace:    'nowrap',
-        }}
-      >
-        {pending ? 'Joining…' : 'Join the waitlist'}
-      </span>
-      <span
-        className={`transition-transform duration-300 ${pending ? '' : 'group-hover:translate-x-1'}`}
-        style={{ color: pending ? t.subtext : t.text, flexShrink: 0 }}
-      >
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path
-            d="M3 9H15M15 9L9 3M15 9L9 15"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
+      {pending ? 'Joining' : 'Join waitlist'}
     </button>
   )
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CHARACTER VIDEO COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
-
-function CharacterVideo({
-  mood,
-  side,
-  theme,
-}: {
-  mood: CharacterMood
-  side: 'left' | 'right'
-  theme: Theme
-}) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [ready, setReady] = useState(false)
-
-  // Reload video when mood changes (new sources get picked up)
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-    el.load()
-    el.play().catch(() => { /* autoplay blocked — fine */ })
-  }, [mood])
-
-  return (
-    <div
-      style={{
-        width:     260,
-        height:    300,
-        position:  'relative',
-        // Mirror right character so both face inward toward the form
-        transform: side === 'right' ? 'scaleX(-1)' : 'scaleX(1)',
-      }}
-    >
-      {/* ── Placeholder silhouette (shown until video loads) ─────── */}
-      <div
-        style={{
-          position:       'absolute',
-          inset:          0,
-          display:        'flex',
-          flexDirection:  'column',
-          alignItems:     'center',
-          justifyContent: 'flex-end',
-          paddingBottom:  24,
-          opacity:        ready ? 0 : 1,
-          transition:     'opacity 0.4s',
-          pointerEvents:  'none',
-        }}
-      >
-        {/* Head */}
-        <div style={{
-          width:        90,
-          height:       100,
-          borderRadius: '50% 50% 44% 44%',
-          background:   theme === 'dark'
-            ? 'rgba(183,160,115,0.12)'
-            : 'rgba(183,160,115,0.18)',
-          animation:    'characterBreathe 3s ease-in-out infinite',
-          position:     'relative',
-          marginBottom: -8,
-        }}>
-          <div style={{
-            position:  'absolute',
-            top:       '42%',
-            left:      '50%',
-            transform: 'translate(-50%, -50%)',
-            display:   'flex',
-            gap:       18,
-          }}>
-            {[0, 1].map(i => (
-              <div key={i} style={{
-                width:        8,
-                height:       mood === 'sleepy' ? 3 : 8,
-                borderRadius: '50%',
-                background:   '#B7A073',
-                opacity:      0.7,
-                transition:   'height 0.3s',
-              }} />
-            ))}
-          </div>
-        </div>
-        {/* Shoulders */}
-        <div style={{
-          width:        140,
-          height:       60,
-          borderRadius: '40% 40% 0 0',
-          background:   theme === 'dark'
-            ? 'rgba(183,160,115,0.08)'
-            : 'rgba(183,160,115,0.12)',
-          animation:    'characterBreathe 3s ease-in-out infinite 0.5s',
-        }} />
-        {/* Dev mood label — remove before go-live */}
-        <span style={{
-          position:      'absolute',
-          bottom:        4,
-          left:          '50%',
-          transform:     'translateX(-50%)',
-          fontSize:      9,
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
-          color:         '#B7A073',
-          opacity:       0.5,
-          whiteSpace:    'nowrap',
-        }}>
-          {mood}
-        </span>
-      </div>
-
-      {/* ── Actual video ─────────────────────────────────────────── */}
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        onLoadedData={() => setReady(true)}
-        onError={() => setReady(false)}
-        style={{
-          width:      '100%',
-          height:     '100%',
-          objectFit:  'contain',
-          opacity:    ready ? 1 : 0,
-          transition: 'opacity 0.4s',
-        }}
-      >
-        <source src={VIDEOS[mood]} type="video/webm" />
-      </video>
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// THEME TOGGLE
-// ─────────────────────────────────────────────────────────────────────────────
-
-function ThemeToggle({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
-  const isDark = theme === 'dark'
-  return (
-    <button
-      onClick={onToggle}
-      aria-label="Toggle theme"
-      style={{
-        display:    'flex',
-        alignItems: 'center',
-        gap:        8,
-        padding:    '6px 12px',
-        borderRadius: 20,
-        border:     `1px solid ${isDark ? '#2A2A2A' : '#E0DBD3'}`,
-        background: isDark ? '#1A1A1A' : '#FFFFFF',
-        cursor:     'pointer',
-        transition: 'all 0.3s ease',
-      }}
-    >
-      <div style={{
-        width:        36,
-        height:       20,
-        borderRadius: 10,
-        background:   isDark ? '#B7A073' : '#E8E3DB',
-        position:     'relative',
-        transition:   'background 0.3s',
-        flexShrink:   0,
-      }}>
-        <div style={{
-          position:       'absolute',
-          top:            2,
-          left:           isDark ? 18 : 2,
-          width:          16,
-          height:         16,
-          borderRadius:   '50%',
-          background:     isDark ? '#111' : '#FFF',
-          boxShadow:      '0 1px 3px rgba(0,0,0,0.2)',
-          transition:     'left 0.3s cubic-bezier(0.4,0,0.2,1)',
-          display:        'flex',
-          alignItems:     'center',
-          justifyContent: 'center',
-          fontSize:       9,
-        }}>
-          {isDark ? '🌙' : '☀️'}
-        </div>
-      </div>
-      <span style={{
-        fontFamily:    "'Helvetica Neue', sans-serif",
-        fontWeight:    500,
-        fontSize:      11,
-        letterSpacing: '0.06em',
-        textTransform: 'uppercase',
-        color:         isDark ? '#696969' : '#AAAAAA',
-        transition:    'color 0.3s',
-      }}>
-        {isDark ? 'Dark' : 'Light'}
-      </span>
-    </button>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE
-// ─────────────────────────────────────────────────────────────────────────────
-
-const initial: WaitlistState = { status: 'idle', message: '' }
 
 export default function ComingSoonPage() {
   const [state, formAction] = useFormState(joinWaitlist, initial)
-  const [theme, setTheme]   = useState<Theme>('light')
-  const [mood,  setMood]    = useState<CharacterMood>('idle')
-  const displayMood         = state.status === 'success' ? 'celebrating' : mood
 
-  const t = THEMES[theme]
-
-  const logoRef      = useRef<HTMLDivElement>(null)
-  const tagRef       = useRef<HTMLDivElement>(null)
-  const headRef      = useRef<HTMLHeadingElement>(null)
-  const subRef       = useRef<HTMLParagraphElement>(null)
-  const formRef      = useRef<HTMLFormElement>(null)
-  const successRef   = useRef<HTMLDivElement>(null)
-  const topCharRef    = useRef<HTMLDivElement>(null)
-  const bottomCharRef = useRef<HTMLDivElement>(null)
-
-  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-
-  const resetIdleTimer = useCallback(() => {
-    clearTimeout(idleTimerRef.current)
-    idleTimerRef.current = setTimeout(() => {
-      if (state.status !== 'success') setMood('idle')
-    }, 8000)
-  }, [state.status])
-
-  const animatePeek = useCallback((newMood: CharacterMood) => {
-    const peekPct = PEEK[newMood]
-    // topCharRef slides DOWN from above  → positive Y hides it, negative brings it in
-    gsap.to(topCharRef.current,    { y: `-${100 - peekPct}%`, duration: 0.7, ease: 'power3.out' })
-    // bottomCharRef slides UP from below → negative Y hides it, positive brings it in
-    gsap.to(bottomCharRef.current, { y: `${100 - peekPct}%`,  duration: 0.7, ease: 'power3.out', delay: 0.05 })
-  }, [])
+  const pageRef = useRef<HTMLDivElement>(null)
+  const eyebrowRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const bodyRef = useRef<HTMLParagraphElement>(null)
+  const formShellRef = useRef<HTMLDivElement>(null)
+  const successRef = useRef<HTMLDivElement>(null)
+  const leftCardRef = useRef<HTMLDivElement>(null)
+  const rightCardRef = useRef<HTMLDivElement>(null)
+  const stampRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    animatePeek(displayMood)
-  }, [displayMood, animatePeek])
+    const ctx = gsap.context(() => {
+      gsap.set([leftCardRef.current, rightCardRef.current], { opacity: 0 })
+      gsap.set(stampRef.current, { scale: 0.8, opacity: 0 })
 
-  // Entrance animation
-  useEffect(() => {
-    // Start characters fully off-screen
-    gsap.set(topCharRef.current,    { y: '-100%' })
-    gsap.set(bottomCharRef.current, { y: '100%'  })
+      gsap.timeline({ defaults: { ease: 'power3.out' } })
+        .from(pageRef.current, { opacity: 0, duration: 0.4 })
+        .from(eyebrowRef.current, { y: 24, opacity: 0, duration: 0.7 }, '-=0.1')
+        .from(headingRef.current, { y: 40, opacity: 0, duration: 0.9 }, '-=0.35')
+        .from(bodyRef.current, { y: 24, opacity: 0, duration: 0.7 }, '-=0.45')
+        .from(formShellRef.current, { y: 28, opacity: 0, duration: 0.8 }, '-=0.35')
+        .fromTo(
+          leftCardRef.current,
+          { x: -80, y: 36, rotate: -10, opacity: 0 },
+          { x: 0, y: 0, rotate: -6, opacity: 1, duration: 1.1 },
+          '-=0.65'
+        )
+        .fromTo(
+          rightCardRef.current,
+          { x: 80, y: -30, rotate: 10, opacity: 0 },
+          { x: 0, y: 0, rotate: 8, opacity: 1, duration: 1.1 },
+          '-=0.95'
+        )
+        .to(stampRef.current, { scale: 1, opacity: 1, duration: 0.55 }, '-=0.55')
 
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-    tl.from(logoRef.current, { y: -20, opacity: 0, duration: 0.8 })
-      .from(tagRef.current,  { y: 16,  opacity: 0, duration: 0.6 }, '-=0.4')
-      .from(headRef.current, { y: 30,  opacity: 0, duration: 0.9 }, '-=0.4')
-      .from(subRef.current,  { y: 20,  opacity: 0, duration: 0.7 }, '-=0.5')
-      .from(formRef.current, { y: 20,  opacity: 0, duration: 0.7 }, '-=0.4')
-      // Characters peek in after content lands
-      .to(topCharRef.current,    { y: `-${100 - PEEK.idle}%`, duration: 1.4, ease: 'elastic.out(1, 0.65)' }, '-=0.2')
-      .to(bottomCharRef.current, { y: `${100 - PEEK.idle}%`,  duration: 1.4, ease: 'elastic.out(1, 0.65)' }, '<0.1')
+      gsap.to(leftCardRef.current, {
+        y: -18,
+        x: 10,
+        rotate: -9,
+        duration: 4.4,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      })
 
-    return () => { clearTimeout(idleTimerRef.current) }
+      gsap.to(rightCardRef.current, {
+        y: 20,
+        x: -12,
+        rotate: 11,
+        duration: 5,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      })
+    }, pageRef)
+
+    return () => ctx.revert()
   }, [])
 
-  // Success state
   useEffect(() => {
     if (state.status !== 'success') return
 
-    gsap.timeline()
-      .to([topCharRef.current, bottomCharRef.current], { y: -24, duration: 0.3, ease: 'power2.out' })
-      .to([topCharRef.current, bottomCharRef.current], { y: 0,   duration: 0.5, ease: 'bounce.out' })
-      .to([topCharRef.current, bottomCharRef.current], { y: -12, duration: 0.2, ease: 'power2.out', delay: 0.2 })
-      .to([topCharRef.current, bottomCharRef.current], { y: 0,   duration: 0.4, ease: 'bounce.out' })
-
-    gsap.to(formRef.current, {
-      y: -12, opacity: 0, duration: 0.4, ease: 'power3.in',
+    gsap.to(formShellRef.current, {
+      y: -16,
+      opacity: 0,
+      duration: 0.35,
+      ease: 'power2.inOut',
       onComplete: () => {
-        if (formRef.current) formRef.current.style.display = 'none'
+        if (formShellRef.current) formShellRef.current.style.display = 'none'
         gsap.fromTo(
           successRef.current,
-          { y: 12, opacity: 0 },
-          { y: 0,  opacity: 1, duration: 0.6, ease: 'power3.out' },
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
         )
       },
     })
   }, [state.status])
 
-  const handleThemeToggle = () => {
-    const next = theme === 'light' ? 'dark' : 'light'
-    setTheme(next)
-    setMood(next === 'dark' ? 'sleepy' : 'curious')
-    setTimeout(() => setMood('idle'), 3500)
-  }
-
-  const handleFocus  = () => { setMood('curious');  resetIdleTimer() }
-  const handleChange = () => { setMood('watching'); resetIdleTimer() }
-  const handleBlur   = () => { resetIdleTimer() }
-
-  const inputStyle = (extra?: React.CSSProperties): React.CSSProperties => ({
-    fontFamily:    "'Helvetica Neue', Arial, sans-serif",
-    background:    t.surface,
-    border:        `1px solid ${t.border}`,
-    borderRadius:  6,
-    padding:       '14px 16px',
-    fontWeight:    400,
-    fontSize:      15,
-    letterSpacing: '-0.01em',
-    color:         t.text,
-    outline:       'none',
-    transition:    'border-color 200ms, background 0.4s, color 0.4s',
-    ...extra,
-  })
-
   return (
-    <>
-      <style>{`
-        @keyframes characterBreathe {
-          0%, 100% { transform: scale(1) translateY(0);      opacity: 0.7; }
-          50%      { transform: scale(1.03) translateY(-3px); opacity: 1;   }
-        }
-        @keyframes pulseDot {
-          0%, 100% { opacity: 1;   }
-          50%      { opacity: 0.4; }
-        }
-      `}</style>
+    <div
+      ref={pageRef}
+      className="relative min-h-screen overflow-hidden bg-[#ff5a2a] text-[#111111]"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(17,17,17,0.18),_transparent_28%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(to_right,transparent_0,transparent_calc(25%-1px),rgba(17,17,17,0.35)_calc(25%-1px),rgba(17,17,17,0.35)_25%,transparent_25%,transparent_calc(50%-1px),rgba(17,17,17,0.35)_calc(50%-1px),rgba(17,17,17,0.35)_50%,transparent_50%,transparent_calc(75%-1px),rgba(17,17,17,0.35)_calc(75%-1px),rgba(17,17,17,0.35)_75%,transparent_75%),linear-gradient(to_bottom,transparent_0,transparent_calc(25%-1px),rgba(17,17,17,0.35)_calc(25%-1px),rgba(17,17,17,0.35)_25%,transparent_25%,transparent_calc(50%-1px),rgba(17,17,17,0.35)_calc(50%-1px),rgba(17,17,17,0.35)_50%,transparent_50%,transparent_calc(75%-1px),rgba(17,17,17,0.35)_calc(75%-1px),rgba(17,17,17,0.35)_75%,transparent_75%)]" />
 
-      <div
-        className="relative min-h-screen w-full flex flex-col items-center justify-between px-6 py-12 lg:py-16 overflow-hidden"
-        style={{ background: t.bg, transition: 'background 0.5s ease' }}
-      >
-
-        {/* Grain overlay */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{
-            opacity: t.grain,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
-            backgroundSize:   '128px 128px',
-          }}
-        />
-
-        {/* Gold accent line */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[2px] z-10"
-          style={{ background: 'linear-gradient(90deg, transparent, #B7A073 35%, #B7A073 65%, transparent)' }}
-        />
-
-        {/* TOP character — hangs upside down from top edge, left side */}
-        <div
-          aria-hidden="true"
-          className="hidden xl:block absolute z-20"
-          style={{ top: 0, left: '12%', pointerEvents: 'none' }}
-        >
-          <div ref={topCharRef} style={{ willChange: 'transform', transform: 'scaleY(-1)' }}>
-            <CharacterVideo mood={displayMood} side="left" theme={theme} />
-          </div>
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-5 py-5 sm:px-8 lg:px-10 lg:py-8">
+        <div className="flex items-start justify-between gap-4 border-b border-black/15 pb-4 text-[10px] font-black uppercase tracking-[0.16em] sm:text-[11px]">
+          <span>Barons Digital</span>
+          <span className="text-right">Dar es Salaam / Strategic creative agency / Coming soon</span>
         </div>
 
-        {/* BOTTOM character — peeks up from bottom edge, right side */}
-        <div
-          aria-hidden="true"
-          className="hidden xl:block absolute z-20"
-          style={{ bottom: 0, right: '12%', pointerEvents: 'none' }}
-        >
-          <div ref={bottomCharRef} style={{ willChange: 'transform' }}>
-            <CharacterVideo mood={displayMood} side="right" theme={theme} />
-          </div>
-        </div>
-
-        {/* Theme toggle */}
-        <div className="absolute top-6 right-6 z-30">
-          <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
-        </div>
-
-        {/* Logo */}
-        <div ref={logoRef} className="relative z-10 flex justify-center w-full">
-          <Image
-            src="/logos/barons-white-logo.svg"
-            alt="Barons Digital"
-            width={220}
-            height={58}
-            priority
-            className="w-[160px] lg:w-[220px] h-auto"
-            style={{
-              filter:     theme === 'light' ? 'brightness(0)' : 'none',
-              transition: 'filter 0.4s ease',
-            }}
-          />
-        </div>
-
-        {/* Main content */}
-        <div className="relative z-10 flex flex-col items-center text-center w-full max-w-[640px] gap-8">
-
-          {/* Tag */}
-          <div ref={tagRef}>
-            <span
-              className="inline-flex items-center gap-2 px-3 py-[6px] rounded-full"
-              style={{
-                background:    t.tagBg,
-                border:        `1px solid ${t.tagBorder}`,
-                fontFamily:    "'Helvetica Neue', sans-serif",
-                fontWeight:    500,
-                fontSize:      11,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color:         '#B7A073',
-                transition:    'background 0.4s, border-color 0.4s',
-              }}
+        <div className="grid flex-1 gap-10 py-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] lg:items-center lg:gap-6">
+          <section className="relative flex flex-col justify-center">
+            <div
+              ref={eyebrowRef}
+              className="mb-6 inline-flex w-fit items-center gap-3 border border-black/15 bg-[#f7efe4] px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] sm:text-[11px]"
             >
-              <span style={{
-                width:        5,
-                height:       5,
-                borderRadius: '50%',
-                background:   '#B7A073',
-                flexShrink:   0,
-                animation:    'pulseDot 2s ease-in-out infinite',
-              }} />
-              Coming Soon
-            </span>
-          </div>
-
-          {/* Headline */}
-          <h1
-            ref={headRef}
-            style={{
-              fontFamily:    "'Helvetica Neue', Arial, sans-serif",
-              fontWeight:    700,
-              fontSize:      'clamp(38px, 7.5vw, 96px)',
-              lineHeight:    0.93,
-              letterSpacing: '-0.04em',
-              color:         t.text,
-              transition:    'color 0.4s ease',
-            }}
-          >
-            Something
-            <br />
-            <span style={{ color: '#B7A073' }}>legendary</span>
-            <br />
-            is loading.
-          </h1>
-
-          {/* Sub-headline */}
-          <p
-            ref={subRef}
-            className="max-w-[460px]"
-            style={{
-              fontFamily:    "'Helvetica Neue', Arial, sans-serif",
-              fontWeight:    400,
-              fontSize:      'clamp(14px, 1.3vw, 17px)',
-              lineHeight:    1.65,
-              letterSpacing: '-0.01em',
-              color:         t.subtext,
-              transition:    'color 0.4s ease',
-            }}
-          >
-            We are building Tanzania&apos;s most strategic creative agency.
-            Join the waitlist and be first to know when we launch.
-          </p>
-
-          {/* Waitlist form */}
-          <form ref={formRef} action={formAction} className="w-full flex flex-col gap-3" noValidate>
-            {/* Honeypot */}
-            <input
-              type="text" name="website" tabIndex={-1}
-              autoComplete="off" aria-hidden="true"
-              style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}
-            />
-
-            {/* Name + Company */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="text" name="name" placeholder="Your name"
-                autoComplete="name" maxLength={100} className="flex-1"
-                style={inputStyle()}
-                onFocus={e => { e.currentTarget.style.borderColor = t.borderFocus; handleFocus() }}
-                onBlur={e  => { e.currentTarget.style.borderColor = t.border;      handleBlur()  }}
-                onChange={handleChange}
-              />
-              <input
-                type="text" name="company" placeholder="Company (optional)"
-                autoComplete="organization" maxLength={200} className="flex-1"
-                style={inputStyle()}
-                onFocus={e => { e.currentTarget.style.borderColor = t.borderFocus; handleFocus() }}
-                onBlur={e  => { e.currentTarget.style.borderColor = t.border;      handleBlur()  }}
-                onChange={handleChange}
-              />
+              <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#ff5a2a]" />
+              Building brands that cannot be ignored
             </div>
 
-            {/* Email + Submit */}
-            <div
-              className="flex flex-col sm:flex-row items-stretch"
-              style={{
-                background:   t.surface,
-                border:       `1px solid ${t.border}`,
-                borderRadius: 6,
-                overflow:     'hidden',
-                transition:   'background 0.4s, border-color 0.4s',
-              }}
+            <div className="mb-6 flex flex-wrap items-center gap-4 text-[11px] font-black uppercase tracking-[0.16em] text-black/70 sm:text-[12px]">
+              <span>Strategy</span>
+              <span>Brand identity</span>
+              <span>Web experiences</span>
+            </div>
+
+            <h1
+              ref={headingRef}
+              className="max-w-[9ch] text-[clamp(4.2rem,15vw,10.5rem)] font-black uppercase leading-[0.86] tracking-[-0.08em]"
             >
-              <input
-                type="email" name="email"
-                placeholder="hello@yourbusiness.com"
-                autoComplete="email" required maxLength={254}
-                className="flex-1 bg-transparent outline-none"
-                style={{
-                  fontFamily:    "'Helvetica Neue', Arial, sans-serif",
-                  padding:       '16px 20px',
-                  fontWeight:    400,
-                  fontSize:      15,
-                  letterSpacing: '-0.01em',
-                  color:         t.text,
-                  transition:    'color 0.4s',
-                }}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                onChange={handleChange}
-              />
-              <div className="hidden sm:block self-stretch w-[1px] flex-shrink-0" style={{ background: t.border, transition: 'background 0.4s' }} />
-              <div className="flex items-center px-5 py-4 flex-shrink-0">
-                <SubmitButton theme={theme} />
+              Brands
+              <br />
+              with
+              <br />
+              bite.
+            </h1>
+
+            <p
+              ref={bodyRef}
+              className="mt-6 max-w-[560px] text-[15px] leading-7 text-black/72 sm:text-[17px]"
+            >
+              We are shaping a louder, sharper Barons Digital. Join the waitlist to see the
+              new agency world first when we go live.
+            </p>
+
+            <div
+              ref={formShellRef}
+              className="mt-8 max-w-[720px] border border-black/15 bg-[#f7efe4] p-4 shadow-[10px_10px_0_rgba(17,17,17,0.14)] sm:p-5"
+            >
+              <div className="mb-4 flex items-center justify-between gap-4 border-b border-black/10 pb-4">
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-black/55">
+                    First access
+                  </p>
+                  <p className="mt-1 text-[26px] font-black uppercase leading-none tracking-[-0.06em] sm:text-[32px]">
+                    Join the movement
+                  </p>
+                </div>
+                <Image
+                  src="/logos/barons-blue-icon.svg"
+                  alt="Barons icon"
+                  width={44}
+                  height={44}
+                  className="h-11 w-11"
+                />
+              </div>
+
+              <form action={formAction} className="flex flex-col gap-3" noValidate>
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="hidden"
+                />
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Your name"
+                    autoComplete="name"
+                    maxLength={100}
+                    className="min-h-[58px] border border-black/15 bg-white px-4 text-[15px] outline-none transition-colors focus:border-black"
+                  />
+                  <input
+                    type="text"
+                    name="company"
+                    placeholder="Company (optional)"
+                    autoComplete="organization"
+                    maxLength={200}
+                    className="min-h-[58px] border border-black/15 bg-white px-4 text-[15px] outline-none transition-colors focus:border-black"
+                  />
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="hello@yourbusiness.com"
+                    autoComplete="email"
+                    required
+                    maxLength={254}
+                    className="min-h-[58px] border border-black/15 bg-white px-4 text-[15px] outline-none transition-colors focus:border-black"
+                  />
+                  <SubmitButton />
+                </div>
+
+                {state.status === 'error' && (
+                  <p className="text-[13px] font-medium text-[#b42318]">{state.message}</p>
+                )}
+              </form>
+            </div>
+
+            <div ref={successRef} className="mt-8 max-w-[540px] opacity-0">
+              <div className="border border-black bg-[#111111] px-6 py-6 text-[#f7efe4] shadow-[10px_10px_0_rgba(247,239,228,0.22)]">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#ff8f6e]">
+                  You are in
+                </p>
+                <p className="mt-2 text-[34px] font-black uppercase leading-none tracking-[-0.06em]">
+                  We will reach out first.
+                </p>
+                <p className="mt-3 max-w-[34ch] text-[14px] leading-6 text-[#f7efe4]/75">
+                  Thank you for joining the Barons Digital waitlist. You will hear from us
+                  before the public launch.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="relative flex min-h-[460px] items-center justify-center lg:min-h-[720px]">
+            <div className="pointer-events-none absolute left-[4%] top-[6%] text-[clamp(4.2rem,13vw,9rem)] font-black uppercase leading-[0.85] tracking-[-0.08em] text-[#f7efe4]/28">
+              Make
+              <br />
+              them
+              <br />
+              look
+            </div>
+
+            <div
+              ref={leftCardRef}
+              className="absolute left-0 top-[12%] w-[58%] max-w-[360px] border-[10px] border-[#f7efe4] bg-[#f7efe4] shadow-[16px_18px_0_rgba(17,17,17,0.16)]"
+            >
+              <div className="relative aspect-[4/5] overflow-hidden bg-black">
+                <Image
+                  src="/images/work/timeless-vows/359ff917848def04bb82818d27d9f535.jpg"
+                  alt="Barons creative campaign preview"
+                  fill
+                  priority
+                  className="object-cover"
+                />
+              </div>
+              <div className="border-t border-black/10 px-4 py-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-black/55">
+                  Preview 01
+                </p>
+                <p className="mt-1 text-[24px] font-black uppercase leading-none tracking-[-0.05em]">
+                  New mood. New force.
+                </p>
               </div>
             </div>
 
-            {/* Error */}
-            {state.status === 'error' && (
-              <p style={{ fontFamily: "'Helvetica Neue', sans-serif", fontWeight: 400, fontSize: 13, letterSpacing: '-0.01em', color: '#FF6B6B', textAlign: 'left' }}>
-                {state.message}
-              </p>
-            )}
-          </form>
-
-          {/* Success card */}
-          <div ref={successRef} className="w-full" style={{ opacity: 0 }}>
             <div
-              className="flex flex-col items-center gap-3 py-8 px-8 rounded-lg"
-              style={{ background: 'rgba(183,160,115,0.07)', border: '1px solid rgba(183,160,115,0.18)' }}
+              ref={rightCardRef}
+              className="absolute bottom-[7%] right-[2%] w-[54%] max-w-[330px] border-[8px] border-[#111111] bg-[#111111] text-[#f7efe4] shadow-[18px_18px_0_rgba(247,239,228,0.2)]"
             >
-              <span style={{ fontSize: 28, color: '#B7A073' }}>✦</span>
-              <p style={{ fontFamily: "'Helvetica Neue', sans-serif", fontWeight: 600, fontSize: 18, letterSpacing: '-0.03em', color: t.text, transition: 'color 0.4s' }}>
-                You&apos;re on the list.
-              </p>
-              <p style={{ fontFamily: "'Helvetica Neue', sans-serif", fontWeight: 400, fontSize: 14, letterSpacing: '-0.01em', color: t.subtext, transition: 'color 0.4s' }}>
-                We will be in touch before anyone else.
-              </p>
+              <div className="relative aspect-[4/5] overflow-hidden">
+                <Image
+                  src="/images/work/timeless-vows/4b78a00c1f111b0799b26265e539ecd6.webp"
+                  alt="Barons second campaign preview"
+                  fill
+                  priority
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/20 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#ff8f6e]">
+                        Preview 02
+                      </p>
+                      <p className="mt-2 max-w-[9ch] text-[30px] font-black uppercase leading-[0.9] tracking-[-0.06em]">
+                        Built to be seen.
+                      </p>
+                    </div>
+                    <Image
+                      src="/logos/barons-white-icon.svg"
+                      alt="Barons mark"
+                      width={42}
+                      height={42}
+                      className="h-10 w-10"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="border-t border-white/10 bg-[#111111] px-4 py-4">
+                <Image
+                  src="/logos/barons-white-logo.svg"
+                  alt="Barons Digital"
+                  width={180}
+                  height={48}
+                  className="h-auto w-[150px]"
+                />
+                <p className="mt-3 text-[13px] leading-6 text-white/72">
+                  A sharper identity, premium websites, and strategy that does not whisper.
+                </p>
+              </div>
             </div>
-          </div>
 
+            <div
+              ref={stampRef}
+              className="absolute bottom-[20%] left-[16%] rotate-[-12deg] border border-black bg-[#f7efe4] px-4 py-3 text-[11px] font-black uppercase tracking-[0.18em] shadow-[8px_8px_0_rgba(17,17,17,0.14)]"
+            >
+              Coming soon 2026
+            </div>
+          </section>
         </div>
 
-        {/* Footer */}
-        <div className="relative z-10 flex flex-col items-center gap-3 w-full">
-          <div className="flex flex-wrap justify-center items-center gap-3">
-            {['Locally Made', 'World Class', 'Nothing Less'].map((tag, i) => (
-              <span key={tag} className="flex items-center gap-3">
-                <span style={{ fontFamily: "'Helvetica Neue', sans-serif", fontWeight: 700, fontSize: 'clamp(9px, 1vw, 12px)', letterSpacing: '0.1em', textTransform: 'uppercase', color: t.footerText, transition: 'color 0.4s' }}>
-                  {tag}
-                </span>
-                {i < 2 && <span style={{ display: 'inline-block', width: 3, height: 3, borderRadius: '50%', background: '#B7A073', flexShrink: 0 }} />}
-              </span>
-            ))}
+        <div className="flex flex-col gap-3 border-t border-black/15 pt-4 text-[10px] font-black uppercase tracking-[0.16em] sm:flex-row sm:items-center sm:justify-between sm:text-[11px]">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-black/68">
+            <span>Locally made</span>
+            <span>World class</span>
+            <span>Nothing less</span>
           </div>
-          <p style={{ fontFamily: "'Helvetica Neue', sans-serif", fontWeight: 400, fontSize: 11, letterSpacing: '0.04em', color: t.footerText, transition: 'color 0.4s' }}>
-            © {new Date().getFullYear()} Barons Digital · Dar es Salaam, Tanzania
+          <p className="text-black/68">
+            Copyright {new Date().getFullYear()} Barons Digital
           </p>
         </div>
-
       </div>
-    </>
+    </div>
   )
 }
