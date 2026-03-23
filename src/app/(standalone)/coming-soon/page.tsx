@@ -37,15 +37,23 @@ export default function ComingSoonPage() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set([leftCardRef.current, rightCardRef.current], { opacity: 0 })
-      gsap.set(stampRef.current, { scale: 0.8, opacity: 0 })
+      const showFloatingCards = window.matchMedia('(min-width: 1024px)').matches
 
-      gsap.timeline({ defaults: { ease: 'power3.out' } })
+      if (showFloatingCards) {
+        gsap.set([leftCardRef.current, rightCardRef.current], { opacity: 0 })
+        gsap.set(stampRef.current, { scale: 0.8, opacity: 0 })
+      }
+
+      const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
         .from(pageRef.current, { opacity: 0, duration: 0.4 })
         .from(eyebrowRef.current, { y: 24, opacity: 0, duration: 0.7 }, '-=0.1')
         .from(headingRef.current, { y: 40, opacity: 0, duration: 0.9 }, '-=0.35')
         .from(bodyRef.current, { y: 24, opacity: 0, duration: 0.7 }, '-=0.45')
         .from(formShellRef.current, { y: 28, opacity: 0, duration: 0.8 }, '-=0.35')
+
+      if (!showFloatingCards) return
+
+      intro
         .fromTo(
           leftCardRef.current,
           { x: -80, y: 36, rotate: -10, opacity: 0 },
@@ -106,28 +114,29 @@ export default function ComingSoonPage() {
   return (
     <div
       ref={pageRef}
-      className="relative min-h-screen overflow-hidden bg-[#ff5a2a] text-[#111111]"
+      className="relative min-h-screen overflow-hidden bg-[#efebe4] text-[#111111]"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(17,17,17,0.18),_transparent_28%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.65),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(116,105,90,0.14),_transparent_30%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(to_right,transparent_0,transparent_calc(25%-1px),rgba(17,17,17,0.35)_calc(25%-1px),rgba(17,17,17,0.35)_25%,transparent_25%,transparent_calc(50%-1px),rgba(17,17,17,0.35)_calc(50%-1px),rgba(17,17,17,0.35)_50%,transparent_50%,transparent_calc(75%-1px),rgba(17,17,17,0.35)_calc(75%-1px),rgba(17,17,17,0.35)_75%,transparent_75%),linear-gradient(to_bottom,transparent_0,transparent_calc(25%-1px),rgba(17,17,17,0.35)_calc(25%-1px),rgba(17,17,17,0.35)_25%,transparent_25%,transparent_calc(50%-1px),rgba(17,17,17,0.35)_calc(50%-1px),rgba(17,17,17,0.35)_50%,transparent_50%,transparent_calc(75%-1px),rgba(17,17,17,0.35)_calc(75%-1px),rgba(17,17,17,0.35)_75%,transparent_75%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.22] [background-image:radial-gradient(rgba(17,17,17,0.12)_0.7px,transparent_0.7px)] [background-position:0_0] [background-size:16px_16px]" />
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-5 py-5 sm:px-8 lg:px-10 lg:py-8">
-        <div className="flex items-start justify-between gap-4 border-b border-black/15 pb-4 text-[10px] font-black uppercase tracking-[0.16em] sm:text-[11px]">
+        <div className="flex flex-col gap-2 border-b border-black/15 pb-4 text-[10px] font-black uppercase tracking-[0.16em] sm:flex-row sm:items-start sm:justify-between sm:gap-4 sm:text-[11px]">
           <span>Barons Digital</span>
-          <span className="text-right">Dar es Salaam / Strategic creative agency / Coming soon</span>
+          <span className="max-w-[26ch] sm:max-w-none sm:text-right">Dar es Salaam / Strategic creative agency / Coming soon</span>
         </div>
 
-        <div className="grid flex-1 gap-10 py-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] lg:items-center lg:gap-6">
+        <div className="grid flex-1 gap-8 py-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] lg:items-center lg:gap-6">
           <section className="relative flex flex-col justify-center">
             <div
               ref={eyebrowRef}
-              className="mb-6 inline-flex w-fit items-center gap-3 border border-black/15 bg-[#f7efe4] px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] sm:text-[11px]"
+              className="mb-5 inline-flex w-fit items-center gap-3 border border-black/15 bg-[#f8f5ef] px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] sm:text-[11px]"
             >
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#ff5a2a]" />
-              Building brands that cannot be ignored
+              <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#111111]" />
+              The agency Tanzania has been waiting for
             </div>
 
-            <div className="mb-6 flex flex-wrap items-center gap-4 text-[11px] font-black uppercase tracking-[0.16em] text-black/70 sm:text-[12px]">
+            <div className="mb-5 flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-black/70 sm:gap-4 sm:text-[12px]">
               <span>Strategy</span>
               <span>Brand identity</span>
               <span>Web experiences</span>
@@ -135,26 +144,26 @@ export default function ComingSoonPage() {
 
             <h1
               ref={headingRef}
-              className="max-w-[9ch] text-[clamp(4.2rem,15vw,10.5rem)] font-black uppercase leading-[0.86] tracking-[-0.08em]"
+              className="max-w-[8ch] text-[clamp(3.4rem,18vw,10.5rem)] font-black uppercase leading-[0.84] tracking-[-0.08em] sm:max-w-[9ch]"
             >
-              Brands
+              Work
               <br />
-              with
+              that
               <br />
-              bite.
+              wins.
             </h1>
 
             <p
               ref={bodyRef}
-              className="mt-6 max-w-[560px] text-[15px] leading-7 text-black/72 sm:text-[17px]"
+              className="mt-5 max-w-[560px] text-[15px] leading-7 text-black/72 sm:mt-6 sm:text-[17px]"
             >
-              We are shaping a louder, sharper Barons Digital. Join the waitlist to see the
-              new agency world first when we go live.
+              We build brands that are impossible to overlook. Join the waitlist and get
+              first access when we open doors.
             </p>
 
             <div
               ref={formShellRef}
-              className="mt-8 max-w-[720px] border border-black/15 bg-[#f7efe4] p-4 shadow-[10px_10px_0_rgba(17,17,17,0.14)] sm:p-5"
+              className="mt-7 max-w-[720px] border border-black/15 bg-[#f8f5ef] p-4 shadow-[8px_8px_0_rgba(17,17,17,0.1)] sm:mt-8 sm:p-5 sm:shadow-[10px_10px_0_rgba(17,17,17,0.12)]"
             >
               <div className="mb-4 flex items-center justify-between gap-4 border-b border-black/10 pb-4">
                 <div>
@@ -222,9 +231,9 @@ export default function ComingSoonPage() {
               </form>
             </div>
 
-            <div ref={successRef} className="mt-8 max-w-[540px] opacity-0">
+            <div ref={successRef} className="mt-7 max-w-[540px] opacity-0 sm:mt-8">
               <div className="border border-black bg-[#111111] px-6 py-6 text-[#f7efe4] shadow-[10px_10px_0_rgba(247,239,228,0.22)]">
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#ff8f6e]">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#d7a186]">
                   You are in
                 </p>
                 <p className="mt-2 text-[34px] font-black uppercase leading-none tracking-[-0.06em]">
@@ -238,8 +247,8 @@ export default function ComingSoonPage() {
             </div>
           </section>
 
-          <section className="relative flex min-h-[460px] items-center justify-center lg:min-h-[720px]">
-            <div className="pointer-events-none absolute left-[4%] top-[6%] text-[clamp(4.2rem,13vw,9rem)] font-black uppercase leading-[0.85] tracking-[-0.08em] text-[#f7efe4]/28">
+          <section className="relative hidden min-h-[720px] items-center justify-center lg:flex">
+            <div className="pointer-events-none absolute left-[4%] top-[6%] text-[clamp(4.2rem,13vw,9rem)] font-black uppercase leading-[0.85] tracking-[-0.08em] text-black/[0.08]">
               Make
               <br />
               them
@@ -249,7 +258,7 @@ export default function ComingSoonPage() {
 
             <div
               ref={leftCardRef}
-              className="absolute left-0 top-[12%] w-[58%] max-w-[360px] border-[10px] border-[#f7efe4] bg-[#f7efe4] shadow-[16px_18px_0_rgba(17,17,17,0.16)]"
+              className="absolute left-0 top-[12%] w-[58%] max-w-[360px] border-[10px] border-[#f8f5ef] bg-[#f8f5ef] shadow-[16px_18px_0_rgba(17,17,17,0.12)]"
             >
               <div className="relative aspect-[4/5] overflow-hidden bg-black">
                 <Image
@@ -286,8 +295,8 @@ export default function ComingSoonPage() {
                 <div className="absolute inset-x-0 bottom-0 p-5">
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#ff8f6e]">
-                        Preview 02
+                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#d7a186]">
+                      Preview 02
                       </p>
                       <p className="mt-2 max-w-[9ch] text-[30px] font-black uppercase leading-[0.9] tracking-[-0.06em]">
                         Built to be seen.
@@ -319,7 +328,7 @@ export default function ComingSoonPage() {
 
             <div
               ref={stampRef}
-              className="absolute bottom-[20%] left-[16%] rotate-[-12deg] border border-black bg-[#f7efe4] px-4 py-3 text-[11px] font-black uppercase tracking-[0.18em] shadow-[8px_8px_0_rgba(17,17,17,0.14)]"
+              className="absolute bottom-[20%] left-[16%] rotate-[-12deg] border border-black bg-[#f8f5ef] px-4 py-3 text-[11px] font-black uppercase tracking-[0.18em] shadow-[8px_8px_0_rgba(17,17,17,0.12)]"
             >
               Coming soon 2026
             </div>
