@@ -58,21 +58,26 @@ export async function joinWaitlist(
 
     // Send confirmation email
     const resendKey = process.env.RESEND_API_KEY
-    if (resendKey) {
+    if (!resendKey) {
+      console.warn('[waitlist] RESEND_API_KEY is not set — skipping confirmation email.')
+      console.info('[waitlist] confirm link:', confirmUrl)
+    } else {
+      // Use verified domain address, fallback to Resend test address during domain setup
+      const fromAddress = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
       try {
         const resend = new Resend(resendKey)
-        await resend.emails.send({
-          from:    'Barons Digital <hello@barons-digital.com>',
+        const { error: emailError } = await resend.emails.send({
+          from:    fromAddress,
           to:      email,
           subject: 'Confirm your spot — Barons Digital',
           html:    buildConfirmationEmail({ name, confirmUrl }),
         })
+        if (emailError) {
+          console.error('[waitlist:email] Resend error:', emailError)
+        }
       } catch (emailErr) {
-        // Email failed but user is already in DB — log and continue
-        console.error('[waitlist:email]', emailErr)
+        console.error('[waitlist:email] Unexpected error:', emailErr)
       }
-    } else {
-      console.warn('[waitlist] RESEND_API_KEY is not set — confirmation email not sent.')
     }
 
     return {
