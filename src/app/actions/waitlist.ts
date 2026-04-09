@@ -59,27 +59,30 @@ export async function joinWaitlist(
     // Send confirmation email
     const resendKey = process.env.RESEND_API_KEY
     if (!resendKey) {
-      console.warn('[waitlist] RESEND_API_KEY is not set — skipping confirmation email.')
-      console.info('[waitlist] confirm link:', confirmUrl)
-    } else {
-      // Use verified domain address, fallback to Resend test address during domain setup
-      const fromAddress = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
-      try {
-        const resend = new Resend(resendKey)
-        const { error: emailError } = await resend.emails.send({
-          from:    fromAddress,
-          to:      email,
-          subject: 'Confirm your spot — Barons Digital',
-          html:    buildConfirmationEmail({ name, confirmUrl }),
-        })
-        if (emailError) {
-          console.error('[waitlist:email] Resend error:', emailError)
-        }
-      } catch (emailErr) {
-        console.error('[waitlist:email] Unexpected error:', emailErr)
+      console.warn('[waitlist] RESEND_API_KEY not set — email skipped. Confirm link:', confirmUrl)
+      return { status: 'pending', message: 'Check your inbox to confirm your spot.' }
+    }
+
+    const resend      = new Resend(resendKey)
+    const fromAddress = 'Barons Digital <hello@barons-digital.com>'
+
+    const { data: emailData, error: emailError } = await resend.emails.send({
+      from:    fromAddress,
+      to:      email,
+      subject: 'Confirm your spot — Barons Digital',
+      html:    buildConfirmationEmail({ name, confirmUrl }),
+    })
+
+    if (emailError) {
+      console.error('[waitlist:email] Resend rejected:', JSON.stringify(emailError))
+      // Row is already in DB — don't fail silently, tell user to check spam or retry
+      return {
+        status:  'error',
+        message: `Your details were saved but we could not send the confirmation email (${emailError.message}). Please contact hello@barons-digital.com directly.`,
       }
     }
 
+    console.info('[waitlist:email] sent id=%s to=%s', emailData?.id, email)
     return {
       status:  'pending',
       message: 'Check your inbox to confirm your spot.',
