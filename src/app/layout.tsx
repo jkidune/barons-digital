@@ -1,11 +1,18 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { Geist, Source_Serif_4 } from 'next/font/google'
 import './globals.css'
 import { InitialLoadProvider } from '@/context/InitialLoadContext'
 
 const geist = Geist({
   subsets: ['latin'],
   variable: '--font-geist',
+})
+
+const sourceSerif4 = Source_Serif_4({
+  subsets: ['latin'],
+  variable: '--font-source-serif-4',
+  weight: ['500'],
+  style: ['italic'],
 })
 
 export const metadata: Metadata = {
@@ -28,7 +35,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={geist.variable}>
+    <html lang="en" className={`${geist.variable} ${sourceSerif4.variable}`}>
       <body>
         <InitialLoadProvider>
           {children}

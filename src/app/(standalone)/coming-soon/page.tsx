@@ -18,27 +18,27 @@ function IconCheck() {
 
 function IconPhone() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="5" y="1" width="10" height="18" rx="2" />
-      <circle cx="10" cy="15.5" r="0.75" fill="currentColor" stroke="none" />
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="6" y="1" width="10" height="20" rx="2.5" />
+      <circle cx="11" cy="17" r="0.8" fill="currentColor" stroke="none" />
     </svg>
   )
 }
 
 function IconMail() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="4" width="16" height="12" rx="2" />
-      <polyline points="2,4 10,11 18,4" />
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="5" width="18" height="13" rx="2" />
+      <polyline points="2,5 11,13 20,5" />
     </svg>
   )
 }
 
 function IconMapPin() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 18s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z" />
-      <circle cx="10" cy="7" r="2.5" />
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 20s-8-7.5-8-12.5a8 8 0 0 1 16 0C19 12.5 11 20 11 20z" />
+      <circle cx="11" cy="7.5" r="2.5" />
     </svg>
   )
 }
@@ -61,9 +61,27 @@ function IconPlus({ open }: { open: boolean }) {
 // ── Contact info ───────────────────────────────────────────────────────────────
 
 const contactDetails = [
-  { Icon: IconPhone,  label: 'Phone',   value: '+255 719 906 205' },
-  { Icon: IconMail,   label: 'Email',   value: 'hello@barons-digital.com' },
-  { Icon: IconMapPin, label: 'Office',  value: 'Mbezi Beach, Kinondoni, Dar es Salaam' },
+  {
+    Icon: IconPhone,
+    label: 'Phone',
+    value: '+255 719 906 205',
+    href: 'https://wa.me/255719906205',
+    external: true,
+  },
+  {
+    Icon: IconMail,
+    label: 'Email',
+    value: 'hello@barons-digital.com',
+    href: 'mailto:hello@barons-digital.com',
+    external: false,
+  },
+  {
+    Icon: IconMapPin,
+    label: 'Office',
+    value: 'Mbezi Beach, Kinondoni, Dar es Salaam',
+    href: 'https://maps.google.com/?q=Mbezi+Beach,+Kinondoni,+Dar+es+Salaam,+Tanzania',
+    external: true,
+  },
 ]
 
 // ── FAQ data ───────────────────────────────────────────────────────────────────
@@ -91,6 +109,15 @@ const faqs = [
   },
 ]
 
+// ── Social links ───────────────────────────────────────────────────────────────
+
+const socialLinks = [
+  { label: 'Instagram', href: 'https://www.instagram.com/baronsdigital/' },
+  { label: 'Facebook',  href: 'https://www.facebook.com/baronsdigital' },
+  { label: 'LinkedIn',  href: 'https://www.linkedin.com/company/barons-digital/' },
+  { label: 'Twitter / X', href: 'https://x.com/barons_dig19387' },
+]
+
 // ── FAQ accordion ──────────────────────────────────────────────────────────────
 
 function FaqItem({
@@ -99,27 +126,30 @@ function FaqItem({
   q: string; a: string; isFirst: boolean; isLast: boolean
 }) {
   const [open, setOpen] = useState(false)
-
-  const borderTopLeft    = isFirst ? '16px' : '0'
-  const borderTopRight   = isFirst ? '16px' : '0'
-  const borderBottomLeft  = isLast  ? '16px' : '0'
-  const borderBottomRight = isLast  ? '16px' : '0'
+  const [hovered, setHovered] = useState(false)
 
   return (
     <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        backgroundColor: '#000000',
+        backgroundColor: hovered ? '#0d0d0d' : '#000000',
         borderTop:    '1px solid #1a1a1a',
         borderLeft:   '1px solid #1a1a1a',
         borderRight:  '1px solid #1a1a1a',
         borderBottom: isLast ? '1px solid #1a1a1a' : 'none',
-        borderRadius: `${borderTopLeft} ${borderTopRight} ${borderBottomRight} ${borderBottomLeft}`,
+        borderRadius: isFirst
+          ? '16px 16px 0 0'
+          : isLast
+          ? '0 0 16px 16px'
+          : '0',
+        transition: 'background-color 0.2s ease',
       }}
     >
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left"
+        className="flex w-full cursor-pointer items-center justify-between gap-6 px-6 py-5 text-left"
       >
         <span
           className="text-[15px] font-normal leading-snug transition-colors duration-200"
@@ -127,7 +157,7 @@ function FaqItem({
         >
           {q}
         </span>
-        <span className="text-white/50">
+        <span className="text-white/40">
           <IconPlus open={open} />
         </span>
       </button>
@@ -139,7 +169,7 @@ function FaqItem({
           transition: 'max-height 0.35s ease, opacity 0.28s ease',
         }}
       >
-        <p className="px-6 pb-6 text-[14px] font-normal leading-[1.85] text-white/50">
+        <p className="px-6 pb-6 text-[14px] font-normal leading-[1.85] text-white/45">
           {a}
         </p>
       </div>
@@ -157,7 +187,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex shrink-0 items-center justify-center rounded-[64px] bg-white px-6 py-3 text-[15px] font-medium text-black transition-opacity duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      className="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-[64px] bg-white px-6 py-3 text-[15px] font-medium text-black transition-opacity duration-200 hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Joining…' : 'Join waitlist'}
     </button>
@@ -221,7 +251,7 @@ export default function ComingSoonPage() {
           className="h-auto w-[108px] sm:w-[124px]"
         />
         <div
-          className="flex items-center gap-2 rounded-[64px] px-4 py-2 text-[12px] font-normal"
+          className="flex cursor-default items-center gap-2 rounded-[64px] px-4 py-2 text-[12px] font-normal"
           style={{
             border: '1px solid rgba(255,255,255,0.12)',
             backgroundColor: 'rgba(255,255,255,0.06)',
@@ -250,18 +280,19 @@ export default function ComingSoonPage() {
           style={{ opacity: 0.28 }}
           src="/videos/hero-video.mp4"
         />
-
-        {/* Gradient overlays */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,1) 100%)' }} />
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,1) 100%)' }}
+        />
 
         {/* Content */}
         <div
           ref={heroContentRef}
           className="relative z-10 mx-auto flex max-w-[800px] flex-col items-center gap-6 px-6 text-center sm:px-10"
         >
-          {/* Location badge */}
+          {/* Badge */}
           <div
-            className="flex items-center gap-2.5 rounded-[64px] px-4 py-2 text-[12px] font-normal"
+            className="flex cursor-default items-center gap-2.5 rounded-[64px] px-4 py-2 text-[12px] font-normal"
             style={{
               border: '1px solid rgba(255,255,255,0.1)',
               backgroundColor: 'rgba(255,255,255,0.05)',
@@ -272,19 +303,28 @@ export default function ComingSoonPage() {
             Dar es Salaam · Tanzania
           </div>
 
-          {/* Heading — 64px / 500 */}
+          {/* Heading — 64px / 500 / tight tracking / 2 lines */}
           <h1
             style={{
               fontSize: 'clamp(2.5rem, 5.5vw, 4rem)',
               fontWeight: 500,
               lineHeight: '1.2',
+              letterSpacing: '-0.03em',
               color: 'rgb(250, 250, 250)',
             }}
           >
-            The agency
+            We are the agency
             <br />
-            <em style={{ fontStyle: 'italic' }}>Tanzania</em>
-            <br />
+            <em
+              style={{
+                fontFamily: 'var(--font-source-serif-4, "Georgia", serif)',
+                fontStyle: 'italic',
+                fontWeight: 500,
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Tanzania
+            </em>{' '}
             deserves.
           </h1>
 
@@ -295,7 +335,7 @@ export default function ComingSoonPage() {
               fontWeight: 400,
               lineHeight: '25px',
               color: 'rgba(255, 255, 255, 0.8)',
-              maxWidth: '40ch',
+              maxWidth: '42ch',
             }}
           >
             Strategy, brand identity, and web experiences for businesses that refuse to be ordinary. Launching&nbsp;2026.
@@ -308,7 +348,6 @@ export default function ComingSoonPage() {
               className="flex flex-col items-stretch gap-2.5 sm:flex-row sm:items-center"
               noValidate
             >
-              {/* Honeypot */}
               <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
               <input
                 type="text"
@@ -327,9 +366,9 @@ export default function ComingSoonPage() {
                   padding: '12px 20px',
                   outline: 'none',
                   backdropFilter: 'blur(5px)',
-                  width: '180px',
+                  cursor: 'text',
                 }}
-                className="placeholder:text-white/30 focus:border-white/25 sm:w-[180px]"
+                className="w-full placeholder:text-white/30 focus:border-white/25 sm:w-[180px]"
               />
               <input
                 type="email"
@@ -349,7 +388,7 @@ export default function ComingSoonPage() {
                   padding: '12px 20px',
                   outline: 'none',
                   backdropFilter: 'blur(5px)',
-                  minWidth: '220px',
+                  cursor: 'text',
                 }}
                 className="flex-1 placeholder:text-white/30 focus:border-white/25"
               />
@@ -392,24 +431,31 @@ export default function ComingSoonPage() {
             className="overflow-hidden rounded-2xl"
             style={{ border: '1px solid #1a1a1a' }}
           >
-            {contactDetails.map(({ Icon, label, value }, i) => (
-              <div
+            {contactDetails.map(({ Icon, label, value, href, external }, i) => (
+              <a
                 key={label}
-                className="flex flex-col gap-3 p-6"
-                style={{
-                  borderTop: i > 0 ? '1px solid #1a1a1a' : 'none',
-                }}
+                href={href}
+                target={external ? '_blank' : undefined}
+                rel={external ? 'noopener noreferrer' : undefined}
+                className="group flex cursor-pointer flex-col gap-4 p-6 transition-colors duration-200 hover:bg-[#0d0d0d]"
+                style={{ borderTop: i > 0 ? '1px solid #1a1a1a' : 'none' }}
               >
-                <span style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <span
+                  className="transition-colors duration-200 group-hover:text-white/70"
+                  style={{ color: 'rgba(255,255,255,0.35)' }}
+                >
                   <Icon />
                 </span>
                 <div>
                   <p style={{ fontSize: '14px', fontWeight: 500, color: 'rgb(255,255,255)' }}>{label}</p>
-                  <p style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
+                  <p
+                    className="mt-0.5 transition-colors duration-200 group-hover:text-white/75"
+                    style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}
+                  >
                     {value}
                   </p>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -418,12 +464,12 @@ export default function ComingSoonPage() {
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
       <section className="px-6 pb-24 pt-16 sm:px-10 lg:px-14">
         <div className="mx-auto flex max-w-5xl flex-col items-center">
-
           <h2
             style={{
               fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)',
               fontWeight: 500,
               lineHeight: '1.15',
+              letterSpacing: '-0.02em',
               color: 'rgb(250, 250, 250)',
               marginBottom: '48px',
               textAlign: 'center',
@@ -432,7 +478,7 @@ export default function ComingSoonPage() {
             We&apos;ve got answers.
           </h2>
 
-          <div className="flex w-full max-w-[700px] flex-col gap-0">
+          <div className="flex w-full max-w-[700px] flex-col">
             {faqs.map((faq, i) => (
               <FaqItem
                 key={faq.q}
@@ -450,7 +496,6 @@ export default function ComingSoonPage() {
       <footer className="px-6 pb-16 pt-12 sm:px-10 lg:px-14">
         <div className="mx-auto max-w-5xl">
 
-          {/* Main row */}
           <div className="flex flex-col gap-12 sm:flex-row sm:items-start sm:justify-between">
 
             {/* Brand */}
@@ -476,11 +521,13 @@ export default function ComingSoonPage() {
               </p>
             </div>
 
-            {/* Nav columns — no uppercase, no border, normal weight headers */}
+            {/* Nav columns */}
             <div className="flex gap-12 sm:gap-20">
 
               <div className="flex flex-col gap-3">
-                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)' }}>Services</p>
+                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)', marginBottom: '4px' }}>
+                  Services
+                </p>
                 {['Strategy', 'Brand Identity', 'Web Experiences'].map((item) => (
                   <span
                     key={item}
@@ -493,7 +540,9 @@ export default function ComingSoonPage() {
               </div>
 
               <div className="flex flex-col gap-3">
-                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)' }}>Company</p>
+                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)', marginBottom: '4px' }}>
+                  Company
+                </p>
                 {['About', 'Work', 'Contact'].map((item) => (
                   <span
                     key={item}
@@ -506,25 +555,28 @@ export default function ComingSoonPage() {
               </div>
 
               <div className="flex flex-col gap-3">
-                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)' }}>Connect</p>
-                {['Instagram', 'LinkedIn', 'Twitter / X'].map((item) => (
-                  <span
-                    key={item}
-                    className="cursor-default transition-colors duration-200 hover:text-white"
+                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)', marginBottom: '4px' }}>
+                  Connect
+                </p>
+                {socialLinks.map(({ label, href }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cursor-pointer transition-colors duration-200 hover:text-white"
                     style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}
                   >
-                    {item}
-                  </span>
+                    {label}
+                  </a>
                 ))}
               </div>
 
             </div>
           </div>
 
-          {/* Copyright — no border, large top margin */}
-          <div
-            className="mt-20 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
-          >
+          {/* Copyright */}
+          <div className="mt-20 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <span style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}>
               © {new Date().getFullYear()} Barons Digital. All rights reserved.
             </span>
