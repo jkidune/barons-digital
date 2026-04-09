@@ -224,8 +224,12 @@ export default function ComingSoonPage() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (!heroContentRef.current) return
+      // Exclude the success/pending div (data-no-entrance) from entrance animation
+      const targets = Array.from(heroContentRef.current.children).filter(
+        (el) => !(el as HTMLElement).dataset.noEntrance
+      )
       gsap.fromTo(
-        Array.from(heroContentRef.current.children),
+        targets,
         { y: 28, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: 'power3.out', delay: 0.1 }
       )
@@ -243,6 +247,7 @@ export default function ComingSoonPage() {
       ease: 'power2.in',
       onComplete: () => {
         if (formShellRef.current) formShellRef.current.style.display = 'none'
+        if (successRef.current) successRef.current.style.display = 'block'
         gsap.fromTo(
           successRef.current,
           { y: 12, opacity: 0 },
@@ -462,7 +467,7 @@ export default function ComingSoonPage() {
           </div>
 
           {/* Pending — shown after form submit, waiting for email confirmation */}
-          <div ref={successRef} style={{ opacity: 0 }} className="w-full max-w-lg">
+          <div ref={successRef} data-no-entrance style={{ display: 'none', opacity: 0 }} className="w-full max-w-lg">
             <div
               style={{
                 border:          '1px solid rgba(255,255,255,0.1)',

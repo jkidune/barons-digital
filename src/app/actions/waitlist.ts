@@ -52,8 +52,8 @@ export async function joinWaitlist(
       if (dbError.code === '23505') {
         return { status: 'error', message: 'You are already on the waitlist.' }
       }
-      console.error('[waitlist:insert]', dbError)
-      return { status: 'error', message: 'Something went wrong. Please try again.' }
+      console.error('[waitlist:insert] code=%s message=%s', dbError.code, dbError.message)
+      return { status: 'error', message: `Database error: ${dbError.message}` }
     }
 
     // Send confirmation email
