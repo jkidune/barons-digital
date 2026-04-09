@@ -177,6 +177,24 @@ function FaqItem({
   )
 }
 
+// ── Shared input style ─────────────────────────────────────────────────────────
+
+const inputStyle: React.CSSProperties = {
+  width:           '100%',
+  display:         'block',
+  backgroundColor: 'transparent',
+  border:          'none',
+  outline:         'none',
+  color:           'rgba(255,255,255,0.8)',
+  fontSize:        '15px',
+  fontWeight:      400,
+  lineHeight:      '21px',
+  padding:         '14px 20px',
+  cursor:          'text',
+  fontFamily:      'inherit',
+  transition:      'background-color 0.15s ease',
+}
+
 // ── Submit button ──────────────────────────────────────────────────────────────
 
 const initial: WaitlistState = { status: 'idle', message: '' }
@@ -216,7 +234,8 @@ export default function ComingSoonPage() {
   }, [])
 
   useEffect(() => {
-    if (state.status !== 'success') return
+    // Trigger on 'pending' — form submitted, email sent, waiting for confirmation
+    if (state.status !== 'pending') return
     gsap.to(formShellRef.current, {
       y: -10,
       opacity: 0,
@@ -341,84 +360,133 @@ export default function ComingSoonPage() {
             Strategy, brand identity, and web experiences for businesses that refuse to be ordinary. Launching&nbsp;2026.
           </p>
 
-          {/* Waitlist form */}
-          <div ref={formShellRef} className="mt-2 flex flex-col items-center gap-3">
+          {/* Waitlist form — card layout */}
+          <div ref={formShellRef} className="mt-2 w-full max-w-lg">
             <form
               action={formAction}
-              className="flex flex-col items-stretch gap-2.5 sm:flex-row sm:items-center"
+              className="flex flex-col gap-0"
               noValidate
             >
+              {/* Honeypot */}
               <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
-              <input
-                type="text"
-                name="name"
-                placeholder="Your name"
-                autoComplete="name"
-                maxLength={100}
+
+              {/* Card */}
+              <div
                 style={{
-                  borderRadius: '64px',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  backgroundColor: 'rgba(255,255,255,0.06)',
-                  color: 'rgba(255,255,255,0.8)',
-                  fontSize: '15px',
-                  fontWeight: 400,
-                  lineHeight: '21px',
-                  padding: '12px 20px',
-                  outline: 'none',
-                  backdropFilter: 'blur(5px)',
-                  cursor: 'text',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '16px',
+                  backgroundColor: 'rgba(255,255,255,0.04)',
+                  backdropFilter: 'blur(8px)',
+                  overflow: 'hidden',
                 }}
-                className="w-full placeholder:text-white/30 focus:border-white/25 sm:w-[180px]"
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email address"
-                autoComplete="email"
-                required
-                maxLength={254}
-                style={{
-                  borderRadius: '64px',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  backgroundColor: 'rgba(255,255,255,0.06)',
-                  color: 'rgba(255,255,255,0.8)',
-                  fontSize: '15px',
-                  fontWeight: 400,
-                  lineHeight: '21px',
-                  padding: '12px 20px',
-                  outline: 'none',
-                  backdropFilter: 'blur(5px)',
-                  cursor: 'text',
-                }}
-                className="flex-1 placeholder:text-white/30 focus:border-white/25"
-              />
-              <SubmitButton />
+              >
+                {/* Row 1: Name + Company */}
+                <div className="grid grid-cols-1 gap-0 sm:grid-cols-2">
+                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', borderRight: '0' }} className="sm:border-r sm:border-r-white/[0.08]">
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Name"
+                      autoComplete="name"
+                      maxLength={100}
+                      required
+                      style={inputStyle}
+                      className="placeholder:text-white/25 focus:bg-white/[0.04]"
+                    />
+                  </div>
+                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <input
+                      type="text"
+                      name="company"
+                      placeholder="Company (optional)"
+                      autoComplete="organization"
+                      maxLength={200}
+                      style={inputStyle}
+                      className="placeholder:text-white/25 focus:bg-white/[0.04]"
+                    />
+                  </div>
+                </div>
+
+                {/* Row 2: Email */}
+                <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email address"
+                    autoComplete="email"
+                    required
+                    maxLength={254}
+                    style={inputStyle}
+                    className="placeholder:text-white/25 focus:bg-white/[0.04]"
+                  />
+                </div>
+
+                {/* Row 3: Message */}
+                <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                  <textarea
+                    name="message"
+                    placeholder="Tell us about your project or what you need help with…"
+                    maxLength={1000}
+                    rows={4}
+                    style={{
+                      ...inputStyle,
+                      resize:   'none',
+                      height:   'auto',
+                      display:  'block',
+                      width:    '100%',
+                      paddingTop: '16px',
+                    }}
+                    className="placeholder:text-white/25 focus:bg-white/[0.04]"
+                  />
+                </div>
+
+                {/* Row 4: Submit */}
+                <div
+                  className="flex items-center justify-between gap-4 px-5 py-4"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}
+                >
+                  {state.status === 'error' && (
+                    <p style={{ fontSize: '13px', color: 'rgba(248,113,113,0.8)', margin: 0 }}>
+                      {state.message}
+                    </p>
+                  )}
+                  {state.status !== 'error' && (
+                    <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)' }}>
+                      We will confirm via email.
+                    </p>
+                  )}
+                  <SubmitButton />
+                </div>
+              </div>
             </form>
-            {state.status === 'error' && (
-              <p style={{ fontSize: '13px', color: 'rgba(248,113,113,0.8)' }}>{state.message}</p>
-            )}
           </div>
 
-          {/* Success */}
-          <div ref={successRef} style={{ opacity: 0 }}>
+          {/* Pending — shown after form submit, waiting for email confirmation */}
+          <div ref={successRef} style={{ opacity: 0 }} className="w-full max-w-lg">
             <div
-              className="inline-flex items-center gap-3"
               style={{
-                borderRadius: '64px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                padding: '12px 20px',
+                border:          '1px solid rgba(255,255,255,0.1)',
+                borderRadius:    '16px',
+                backgroundColor: 'rgba(255,255,255,0.04)',
+                padding:         '28px 28px',
+                textAlign:       'center',
               }}
             >
-              <span
-                className="flex h-5 w-5 items-center justify-center rounded-full text-emerald-400"
-                style={{ border: '1px solid rgba(74,222,128,0.3)', backgroundColor: 'rgba(74,222,128,0.1)' }}
+              <div
+                className="mx-auto mb-5 flex h-10 w-10 items-center justify-center rounded-full"
+                style={{ border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.06)' }}
               >
-                <IconCheck />
-              </span>
-              <span style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.65)' }}>
-                You are on the list — we will reach out first.
-              </span>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="14" height="10" rx="2" />
+                  <polyline points="2,4 9,10 16,4" />
+                </svg>
+              </div>
+              <p style={{ fontSize: '16px', fontWeight: 500, color: 'rgb(250,250,250)', margin: '0 0 8px' }}>
+                Check your inbox.
+              </p>
+              <p style={{ fontSize: '14px', fontWeight: 400, lineHeight: '1.7', color: 'rgba(255,255,255,0.5)', margin: 0 }}>
+                We sent you a confirmation link. Click it to secure your spot on the Barons Digital waitlist.
+              </p>
             </div>
           </div>
         </div>
