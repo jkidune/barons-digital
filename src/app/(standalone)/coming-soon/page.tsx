@@ -1,111 +1,190 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { gsap } from 'gsap'
 import { joinWaitlist, type WaitlistState } from '@/app/actions/waitlist'
 
+// ── Thin SVG icons ─────────────────────────────────────────────────────────────
+
+function IconCheck() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="1.5,6 4.5,9 10.5,3" />
+    </svg>
+  )
+}
+
+function IconArrowRight() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="1" y1="6.5" x2="12" y2="6.5" />
+      <polyline points="7.5,2 12,6.5 7.5,11" />
+    </svg>
+  )
+}
+
+function IconPlus({ open }: { open: boolean }) {
+  return (
+    <span className="relative flex h-[18px] w-[18px] shrink-0 items-center justify-center">
+      <span
+        className="absolute h-px w-full bg-current"
+        style={{ opacity: open ? 0 : 1, transition: 'opacity 0.25s ease' }}
+      />
+      <span
+        className="absolute h-full w-px bg-current"
+        style={{ transform: open ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}
+      />
+    </span>
+  )
+}
+
+function IconInstagram() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="12" height="12" rx="3.2" />
+      <circle cx="8" cy="8" r="3" />
+      <circle cx="11.5" cy="4.5" r="0.5" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function IconLinkedIn() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="12" height="12" rx="2" />
+      <line x1="5.5" y1="7" x2="5.5" y2="11" />
+      <line x1="5.5" y1="5" x2="5.5" y2="5.5" />
+      <path d="M8 11V8.5c0-1 .5-1.5 1.5-1.5s1.5.5 1.5 1.5V11" />
+    </svg>
+  )
+}
+
+function IconX() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round">
+      <path d="M3 3l10 10M13 3L3 13" />
+    </svg>
+  )
+}
+
+// ── FAQ data ───────────────────────────────────────────────────────────────────
+
+const faqs = [
+  {
+    q: 'What services does Barons Digital offer?',
+    a: 'We specialise in brand strategy, visual identity, and premium web experiences. From naming and positioning to full website design and development — we handle the full spectrum for businesses that refuse to settle for average.',
+  },
+  {
+    q: 'When will Barons Digital officially launch?',
+    a: 'We are launching in 2026. Join the waitlist above to be among the first to know and to get priority access when we open our doors.',
+  },
+  {
+    q: 'What kinds of businesses do you work with?',
+    a: 'We work with ambitious founders and established businesses across Tanzania and East Africa who are serious about standing out. If you demand excellence, we are the right fit.',
+  },
+  {
+    q: 'How is Barons Digital different from other agencies?',
+    a: 'We combine strategic thinking with premium craft. Every decision — from typography to copywriting to code — is intentional. We do not produce generic work; we build brands that earn attention and drive results.',
+  },
+  {
+    q: 'Can I get in touch before the official launch?',
+    a: 'Yes. Join the waitlist and we will reach out personally. For select projects, we may begin early conversations well before the public launch.',
+  },
+]
+
+// ── FAQ accordion item ─────────────────────────────────────────────────────────
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="border-t border-white/[0.07]">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-6 py-5 text-left"
+      >
+        <span
+          className="text-[14px] font-light leading-snug tracking-[-0.01em] transition-colors duration-200 sm:text-[15px]"
+          style={{ color: open ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.48)' }}
+        >
+          {q}
+        </span>
+        <span style={{ color: open ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.18)' }}>
+          <IconPlus open={open} />
+        </span>
+      </button>
+      <div
+        className="overflow-hidden"
+        style={{
+          maxHeight: open ? '400px' : '0px',
+          opacity: open ? 1 : 0,
+          transition: 'max-height 0.35s ease, opacity 0.28s ease',
+        }}
+      >
+        <p className="pb-6 text-[13px] font-light leading-[1.95] text-white/28 sm:text-[14px]">
+          {a}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ── Submit button ──────────────────────────────────────────────────────────────
+
 const initial: WaitlistState = { status: 'idle', message: '' }
 
 function SubmitButton() {
   const { pending } = useFormStatus()
-
   return (
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex min-h-[58px] items-center justify-center bg-[#111111] px-6 text-[12px] font-black uppercase tracking-[0.18em] text-[#f7efe4] transition-transform duration-300 hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50"
+      className="inline-flex items-center justify-center gap-2.5 border border-white/15 bg-white/[0.06] px-5 py-[13px] text-[11px] font-medium uppercase tracking-[0.18em] text-white/58 transition-all duration-200 hover:border-white/25 hover:bg-white/10 hover:text-white/88 disabled:cursor-not-allowed disabled:opacity-40 sm:justify-start"
     >
-      {pending ? 'Joining' : 'Join waitlist'}
+      <span>{pending ? 'Joining…' : 'Join waitlist'}</span>
+      {!pending && <IconArrowRight />}
     </button>
   )
 }
 
+// ── Page ───────────────────────────────────────────────────────────────────────
+
 export default function ComingSoonPage() {
   const [state, formAction] = useFormState(joinWaitlist, initial)
-
   const pageRef = useRef<HTMLDivElement>(null)
-  const eyebrowRef = useRef<HTMLDivElement>(null)
-  const headingRef = useRef<HTMLHeadingElement>(null)
-  const bodyRef = useRef<HTMLParagraphElement>(null)
+  const heroContentRef = useRef<HTMLDivElement>(null)
   const formShellRef = useRef<HTMLDivElement>(null)
   const successRef = useRef<HTMLDivElement>(null)
-  const leftCardRef = useRef<HTMLDivElement>(null)
-  const rightCardRef = useRef<HTMLDivElement>(null)
-  const stampRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const showFloatingCards = window.matchMedia('(min-width: 1024px)').matches
-
-      if (showFloatingCards) {
-        gsap.set([leftCardRef.current, rightCardRef.current], { opacity: 0 })
-        gsap.set(stampRef.current, { scale: 0.8, opacity: 0 })
-      }
-
-      const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
-        .from(pageRef.current, { opacity: 0, duration: 0.4 })
-        .from(eyebrowRef.current, { y: 24, opacity: 0, duration: 0.7 }, '-=0.1')
-        .from(headingRef.current, { y: 40, opacity: 0, duration: 0.9 }, '-=0.35')
-        .from(bodyRef.current, { y: 24, opacity: 0, duration: 0.7 }, '-=0.45')
-        .from(formShellRef.current, { y: 28, opacity: 0, duration: 0.8 }, '-=0.35')
-
-      if (!showFloatingCards) return
-
-      intro
-        .fromTo(
-          leftCardRef.current,
-          { x: -80, y: 36, rotate: -10, opacity: 0 },
-          { x: 0, y: 0, rotate: -6, opacity: 1, duration: 1.1 },
-          '-=0.65'
-        )
-        .fromTo(
-          rightCardRef.current,
-          { x: 80, y: -30, rotate: 10, opacity: 0 },
-          { x: 0, y: 0, rotate: 8, opacity: 1, duration: 1.1 },
-          '-=0.95'
-        )
-        .to(stampRef.current, { scale: 1, opacity: 1, duration: 0.55 }, '-=0.55')
-
-      gsap.to(leftCardRef.current, {
-        y: -18,
-        x: 10,
-        rotate: -9,
-        duration: 4.4,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-      })
-
-      gsap.to(rightCardRef.current, {
-        y: 20,
-        x: -12,
-        rotate: 11,
-        duration: 5,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-      })
+      if (!heroContentRef.current) return
+      const children = Array.from(heroContentRef.current.children)
+      gsap.fromTo(
+        children,
+        { y: 32, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: 'power3.out', delay: 0.15 }
+      )
     }, pageRef)
-
     return () => ctx.revert()
   }, [])
 
   useEffect(() => {
     if (state.status !== 'success') return
-
     gsap.to(formShellRef.current, {
-      y: -16,
+      y: -10,
       opacity: 0,
-      duration: 0.35,
-      ease: 'power2.inOut',
+      duration: 0.3,
+      ease: 'power2.in',
       onComplete: () => {
         if (formShellRef.current) formShellRef.current.style.display = 'none'
         gsap.fromTo(
           successRef.current,
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
+          { y: 14, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.55, ease: 'power3.out' }
         )
       },
     })
@@ -114,238 +193,216 @@ export default function ComingSoonPage() {
   return (
     <div
       ref={pageRef}
-      className="relative min-h-screen overflow-hidden bg-[#efebe4] text-[#111111]"
+      style={{ fontFamily: 'var(--font-geist, "Helvetica Neue", sans-serif)' }}
+      className="min-h-screen bg-[#080808] text-white"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.65),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(116,105,90,0.14),_transparent_30%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(to_right,transparent_0,transparent_calc(25%-1px),rgba(17,17,17,0.35)_calc(25%-1px),rgba(17,17,17,0.35)_25%,transparent_25%,transparent_calc(50%-1px),rgba(17,17,17,0.35)_calc(50%-1px),rgba(17,17,17,0.35)_50%,transparent_50%,transparent_calc(75%-1px),rgba(17,17,17,0.35)_calc(75%-1px),rgba(17,17,17,0.35)_75%,transparent_75%),linear-gradient(to_bottom,transparent_0,transparent_calc(25%-1px),rgba(17,17,17,0.35)_calc(25%-1px),rgba(17,17,17,0.35)_25%,transparent_25%,transparent_calc(50%-1px),rgba(17,17,17,0.35)_calc(50%-1px),rgba(17,17,17,0.35)_50%,transparent_50%,transparent_calc(75%-1px),rgba(17,17,17,0.35)_calc(75%-1px),rgba(17,17,17,0.35)_75%,transparent_75%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.22] [background-image:radial-gradient(rgba(17,17,17,0.12)_0.7px,transparent_0.7px)] [background-position:0_0] [background-size:16px_16px]" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-5 py-5 sm:px-8 lg:px-10 lg:py-8">
-        <div className="flex flex-col gap-2 border-b border-black/15 pb-4 text-[10px] font-black uppercase tracking-[0.16em] sm:flex-row sm:items-start sm:justify-between sm:gap-4 sm:text-[11px]">
-          <span>Barons Digital</span>
-          <span className="max-w-[26ch] sm:max-w-none sm:text-right">Dar es Salaam / Strategic creative agency / Coming soon</span>
+      {/* ── Navbar ─────────────────────────────────────────────────────────── */}
+      <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-5 sm:px-10 lg:px-14">
+        <Image
+          src="/logos/barons-white-logo.svg"
+          alt="Barons Digital"
+          width={140}
+          height={38}
+          priority
+          className="h-auto w-[108px] opacity-85 sm:w-[124px]"
+        />
+        <div className="flex items-center gap-2 border border-white/[0.09] bg-white/[0.03] px-3 py-1.5">
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+            style={{ boxShadow: '0 0 7px rgba(74,222,128,0.55)' }}
+          />
+          <span className="text-[9px] font-medium uppercase tracking-[0.22em] text-white/35">
+            Coming 2026
+          </span>
         </div>
+      </header>
 
-        <div className="grid flex-1 gap-8 py-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] lg:items-center lg:gap-6">
-          <section className="relative flex flex-col justify-center">
-            <div
-              ref={eyebrowRef}
-              className="mb-5 inline-flex w-fit items-center gap-3 border border-black/15 bg-[#f8f5ef] px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] sm:text-[11px]"
-            >
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#111111]" />
-              The agency Tanzania has been waiting for
-            </div>
+      {/* ── Hero ───────────────────────────────────────────────────────────── */}
+      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
 
-            <div className="mb-5 flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-black/70 sm:gap-4 sm:text-[12px]">
-              <span>Strategy</span>
-              <span>Brand identity</span>
-              <span>Web experiences</span>
-            </div>
+        {/* Video background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover opacity-35"
+          src="/videos/work/timeless-vows/preview.mp4"
+        />
 
-            <h1
-              ref={headingRef}
-              className="max-w-[8ch] text-[clamp(3.4rem,18vw,10.5rem)] font-black uppercase leading-[0.84] tracking-[-0.08em] sm:max-w-[9ch]"
-            >
-              Work
-              <br />
-              that
-              <br />
-              wins.
-            </h1>
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080808]/75 via-[#080808]/30 to-[#080808]" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#080808]/60 via-transparent to-[#080808]/60" />
 
-            <p
-              ref={bodyRef}
-              className="mt-5 max-w-[560px] text-[15px] leading-7 text-black/72 sm:mt-6 sm:text-[17px]"
-            >
-              We build brands that are impossible to overlook. Join the waitlist and get
-              first access when we open doors.
-            </p>
-
-            <div
-              ref={formShellRef}
-              className="mt-7 max-w-[720px] border border-black/15 bg-[#f8f5ef] p-4 shadow-[8px_8px_0_rgba(17,17,17,0.1)] sm:mt-8 sm:p-5 sm:shadow-[10px_10px_0_rgba(17,17,17,0.12)]"
-            >
-              <div className="mb-4 flex items-center justify-between gap-4 border-b border-black/10 pb-4">
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-black/55">
-                    First access
-                  </p>
-                  <p className="mt-1 text-[26px] font-black uppercase leading-none tracking-[-0.06em] sm:text-[32px]">
-                    Join the movement
-                  </p>
-                </div>
-                <Image
-                  src="/logos/barons-blue-icon.svg"
-                  alt="Barons icon"
-                  width={44}
-                  height={44}
-                  className="h-11 w-11"
-                />
-              </div>
-
-              <form action={formAction} className="flex flex-col gap-3" noValidate>
-                <input
-                  type="text"
-                  name="website"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  aria-hidden="true"
-                  className="hidden"
-                />
-
-                <div className="grid gap-3 md:grid-cols-2">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Your name"
-                    autoComplete="name"
-                    maxLength={100}
-                    className="min-h-[58px] border border-black/15 bg-white px-4 text-[15px] outline-none transition-colors focus:border-black"
-                  />
-                  <input
-                    type="text"
-                    name="company"
-                    placeholder="Company (optional)"
-                    autoComplete="organization"
-                    maxLength={200}
-                    className="min-h-[58px] border border-black/15 bg-white px-4 text-[15px] outline-none transition-colors focus:border-black"
-                  />
-                </div>
-
-                <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="hello@yourbusiness.com"
-                    autoComplete="email"
-                    required
-                    maxLength={254}
-                    className="min-h-[58px] border border-black/15 bg-white px-4 text-[15px] outline-none transition-colors focus:border-black"
-                  />
-                  <SubmitButton />
-                </div>
-
-                {state.status === 'error' && (
-                  <p className="text-[13px] font-medium text-[#b42318]">{state.message}</p>
-                )}
-              </form>
-            </div>
-
-            <div ref={successRef} className="mt-7 max-w-[540px] opacity-0 sm:mt-8">
-              <div className="border border-black bg-[#111111] px-6 py-6 text-[#f7efe4] shadow-[10px_10px_0_rgba(247,239,228,0.22)]">
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#d7a186]">
-                  You are in
-                </p>
-                <p className="mt-2 text-[34px] font-black uppercase leading-none tracking-[-0.06em]">
-                  We will reach out first.
-                </p>
-                <p className="mt-3 max-w-[34ch] text-[14px] leading-6 text-[#f7efe4]/75">
-                  Thank you for joining the Barons Digital waitlist. You will hear from us
-                  before the public launch.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section className="relative hidden min-h-[720px] items-center justify-center lg:flex">
-            <div className="pointer-events-none absolute left-[4%] top-[6%] text-[clamp(4.2rem,13vw,9rem)] font-black uppercase leading-[0.85] tracking-[-0.08em] text-black/[0.08]">
-              Make
-              <br />
-              them
-              <br />
-              look
-            </div>
-
-            <div
-              ref={leftCardRef}
-              className="absolute left-0 top-[12%] w-[58%] max-w-[360px] border-[10px] border-[#f8f5ef] bg-[#f8f5ef] shadow-[16px_18px_0_rgba(17,17,17,0.12)]"
-            >
-              <div className="relative aspect-[4/5] overflow-hidden bg-black">
-                <Image
-                  src="/images/work/timeless-vows/359ff917848def04bb82818d27d9f535.jpg"
-                  alt="Barons creative campaign preview"
-                  fill
-                  priority
-                  className="object-cover"
-                />
-              </div>
-              <div className="border-t border-black/10 px-4 py-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-black/55">
-                  Preview 01
-                </p>
-                <p className="mt-1 text-[24px] font-black uppercase leading-none tracking-[-0.05em]">
-                  New mood. New force.
-                </p>
-              </div>
-            </div>
-
-            <div
-              ref={rightCardRef}
-              className="absolute bottom-[7%] right-[2%] w-[54%] max-w-[330px] border-[8px] border-[#111111] bg-[#111111] text-[#f7efe4] shadow-[18px_18px_0_rgba(247,239,228,0.2)]"
-            >
-              <div className="relative aspect-[4/5] overflow-hidden">
-                <Image
-                  src="/images/work/timeless-vows/4b78a00c1f111b0799b26265e539ecd6.webp"
-                  alt="Barons second campaign preview"
-                  fill
-                  priority
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/20 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-5">
-                  <div className="flex items-end justify-between gap-4">
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#d7a186]">
-                      Preview 02
-                      </p>
-                      <p className="mt-2 max-w-[9ch] text-[30px] font-black uppercase leading-[0.9] tracking-[-0.06em]">
-                        Built to be seen.
-                      </p>
-                    </div>
-                    <Image
-                      src="/logos/barons-white-icon.svg"
-                      alt="Barons mark"
-                      width={42}
-                      height={42}
-                      className="h-10 w-10"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="border-t border-white/10 bg-[#111111] px-4 py-4">
-                <Image
-                  src="/logos/barons-white-logo.svg"
-                  alt="Barons Digital"
-                  width={180}
-                  height={48}
-                  className="h-auto w-[150px]"
-                />
-                <p className="mt-3 text-[13px] leading-6 text-white/72">
-                  A sharper identity, premium websites, and strategy that does not whisper.
-                </p>
-              </div>
-            </div>
-
-            <div
-              ref={stampRef}
-              className="absolute bottom-[20%] left-[16%] rotate-[-12deg] border border-black bg-[#f8f5ef] px-4 py-3 text-[11px] font-black uppercase tracking-[0.18em] shadow-[8px_8px_0_rgba(17,17,17,0.12)]"
-            >
-              Coming soon 2026
-            </div>
-          </section>
-        </div>
-
-        <div className="flex flex-col gap-3 border-t border-black/15 pt-4 text-[10px] font-black uppercase tracking-[0.16em] sm:flex-row sm:items-center sm:justify-between sm:text-[11px]">
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-black/68">
-            <span>Locally made</span>
-            <span>World class</span>
-            <span>Nothing less</span>
+        {/* Center content */}
+        <div
+          ref={heroContentRef}
+          className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center sm:px-10"
+        >
+          {/* Location badge */}
+          <div className="flex items-center gap-3 border border-white/[0.09] bg-white/[0.03] px-4 py-2">
+            <span className="h-1 w-1 rounded-full bg-white/25" />
+            <span className="text-[10px] font-medium uppercase tracking-[0.24em] text-white/30">
+              Dar es Salaam · Tanzania
+            </span>
           </div>
-          <p className="text-black/68">
-            Copyright {new Date().getFullYear()} Barons Digital
+
+          {/* Heading */}
+          <h1 className="mt-9 text-[clamp(3rem,9.5vw,7.5rem)] font-light leading-[0.9] tracking-[-0.04em] text-white">
+            The agency
+            <br />
+            <em>Tanzania</em>
+            <br />
+            deserves.
+          </h1>
+
+          {/* Sub copy */}
+          <p className="mt-7 max-w-[38ch] text-[14px] font-light leading-[1.9] text-white/38 sm:text-[15px]">
+            Strategy, brand identity, and web experiences for businesses that refuse to be ordinary. Launching&nbsp;2026.
           </p>
+
+          {/* Waitlist form */}
+          <div ref={formShellRef} className="mt-9 w-full max-w-[500px]">
+            <form action={formAction} className="flex flex-col gap-2 sm:flex-row" noValidate>
+              {/* Honeypot */}
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                autoComplete="name"
+                maxLength={100}
+                className="w-full border border-white/[0.09] bg-white/[0.04] px-4 py-[13px] text-[13px] font-light text-white placeholder-white/18 outline-none transition-colors duration-200 focus:border-white/20 focus:bg-white/[0.06] sm:w-[155px]"
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email address"
+                autoComplete="email"
+                required
+                maxLength={254}
+                className="flex-1 border border-white/[0.09] bg-white/[0.04] px-4 py-[13px] text-[13px] font-light text-white placeholder-white/18 outline-none transition-colors duration-200 focus:border-white/20 focus:bg-white/[0.06]"
+              />
+              <SubmitButton />
+            </form>
+            {state.status === 'error' && (
+              <p className="mt-3 text-[12px] font-light text-red-400/70">{state.message}</p>
+            )}
+          </div>
+
+          {/* Success state */}
+          <div ref={successRef} className="mt-9 opacity-0">
+            <div className="inline-flex items-center gap-3 border border-white/[0.09] bg-white/[0.04] px-5 py-3.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full border border-emerald-400/25 bg-emerald-400/10 text-emerald-400">
+                <IconCheck />
+              </span>
+              <span className="text-[13px] font-light text-white/50">
+                You are on the list — we will reach out first.
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
+
+        {/* Scroll cue */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2.5 text-white/15">
+          <span className="text-[9px] uppercase tracking-[0.24em]">Scroll</span>
+          <span className="block h-8 w-px bg-gradient-to-b from-white/20 to-transparent" />
+        </div>
+      </section>
+
+      {/* ── FAQ ────────────────────────────────────────────────────────────── */}
+      <section className="bg-[#080808] px-6 pb-28 pt-24 sm:px-10 sm:pb-36 sm:pt-32">
+        <div className="mx-auto max-w-2xl">
+
+          <div className="mb-12">
+            <span className="text-[10px] font-medium uppercase tracking-[0.24em] text-white/20">
+              FAQ
+            </span>
+            <h2 className="mt-4 text-[clamp(1.7rem,4.5vw,2.7rem)] font-light leading-[1.1] tracking-[-0.03em] text-white">
+              We have answers.
+            </h2>
+          </div>
+
+          <div className="border-b border-white/[0.07]">
+            {faqs.map((faq) => (
+              <FaqItem key={faq.q} q={faq.q} a={faq.a} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Divider ────────────────────────────────────────────────────────── */}
+      <div className="h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+
+      {/* ── Footer ─────────────────────────────────────────────────────────── */}
+      <footer className="bg-[#080808] px-6 py-14 sm:px-10 lg:px-14">
+        <div className="mx-auto max-w-5xl">
+
+          <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
+
+            {/* Brand */}
+            <div className="max-w-[220px]">
+              <Image
+                src="/logos/barons-white-logo.svg"
+                alt="Barons Digital"
+                width={130}
+                height={36}
+                className="h-auto w-[96px] opacity-55"
+              />
+              <p className="mt-4 text-[12px] font-light leading-[1.85] text-white/22">
+                Strategy, brand identity, and web experiences for businesses that refuse to be ordinary.
+              </p>
+              <div className="mt-6 flex items-center gap-4 text-white/22">
+                <span className="cursor-default transition-colors duration-200 hover:text-white/48">
+                  <IconInstagram />
+                </span>
+                <span className="cursor-default transition-colors duration-200 hover:text-white/48">
+                  <IconLinkedIn />
+                </span>
+                <span className="cursor-default transition-colors duration-200 hover:text-white/48">
+                  <IconX />
+                </span>
+              </div>
+            </div>
+
+            {/* Nav columns */}
+            <div className="flex gap-14 sm:gap-20">
+              <div className="flex flex-col gap-3">
+                <span className="mb-1 text-[9px] font-medium uppercase tracking-[0.22em] text-white/18">
+                  Services
+                </span>
+                {['Strategy', 'Brand Identity', 'Web Experiences'].map((item) => (
+                  <span key={item} className="cursor-default text-[12px] font-light text-white/27 transition-colors duration-200 hover:text-white/48">
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <div className="flex flex-col gap-3">
+                <span className="mb-1 text-[9px] font-medium uppercase tracking-[0.22em] text-white/18">
+                  Company
+                </span>
+                {['About', 'Work', 'Contact'].map((item) => (
+                  <span key={item} className="cursor-default text-[12px] font-light text-white/27 transition-colors duration-200 hover:text-white/48">
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="mt-14 flex flex-col gap-2 border-t border-white/[0.06] pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-[11px] font-light text-white/18">
+              © {new Date().getFullYear()} Barons Digital. All rights reserved.
+            </span>
+            <span className="text-[11px] font-light text-white/18">
+              Dar es Salaam, Tanzania
+            </span>
+          </div>
+        </div>
+      </footer>
+
     </div>
   )
 }
