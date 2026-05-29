@@ -2,7 +2,7 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   async redirects() {
-    const isLaunched = process.env.SITE_LAUNCHED === 'true'
+    const isLaunched = process.env.SITE_LAUNCHED !== 'false'
 
     if (isLaunched) return []
 

@@ -5,6 +5,7 @@ import { useFormState, useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { gsap } from 'gsap'
 import { joinWaitlist, type WaitlistState } from '@/app/actions/waitlist'
+import ComingSoonFooter from '@/components/layout/ComingSoonFooter'
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
 
@@ -109,14 +110,7 @@ const faqs = [
   },
 ]
 
-// ── Social links ───────────────────────────────────────────────────────────────
 
-const socialLinks = [
-  { label: 'Instagram', href: 'https://www.instagram.com/baronsdigital/' },
-  { label: 'Facebook',  href: 'https://www.facebook.com/baronsdigital' },
-  { label: 'LinkedIn',  href: 'https://www.linkedin.com/company/barons-digital/' },
-  { label: 'Twitter / X', href: 'https://x.com/barons_dig19387' },
-]
 
 // ── FAQ accordion ──────────────────────────────────────────────────────────────
 
@@ -566,97 +560,7 @@ export default function ComingSoonPage() {
       </section>
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
-      <footer className="px-6 pb-16 pt-12 sm:px-10 lg:px-14">
-        <div className="mx-auto max-w-5xl">
-
-          <div className="flex flex-col gap-12 sm:flex-row sm:items-start sm:justify-between">
-
-            {/* Brand */}
-            <div style={{ maxWidth: '240px' }}>
-              <Image
-                src="/logos/barons-white-logo.svg"
-                alt="Barons Digital"
-                width={130}
-                height={36}
-                className="h-auto w-[100px]"
-                style={{ opacity: 0.75 }}
-              />
-              <p
-                style={{
-                  marginTop: '16px',
-                  fontSize: '14px',
-                  fontWeight: 400,
-                  lineHeight: '1.75',
-                  color: 'rgba(255,255,255,0.5)',
-                }}
-              >
-                Strategy, brand identity, and web experiences for businesses that refuse to be ordinary.
-              </p>
-            </div>
-
-            {/* Nav columns */}
-            <div className="flex gap-12 sm:gap-20">
-
-              <div className="flex flex-col gap-3">
-                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)', marginBottom: '4px' }}>
-                  Services
-                </p>
-                {['Strategy', 'Brand Identity', 'Web Experiences'].map((item) => (
-                  <span
-                    key={item}
-                    className="cursor-default transition-colors duration-200 hover:text-white"
-                    style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)', marginBottom: '4px' }}>
-                  Company
-                </p>
-                {['About', 'Work', 'Contact'].map((item) => (
-                  <span
-                    key={item}
-                    className="cursor-default transition-colors duration-200 hover:text-white"
-                    style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <p style={{ fontSize: '15px', fontWeight: 500, color: 'rgb(255,255,255)', marginBottom: '4px' }}>
-                  Connect
-                </p>
-                {socialLinks.map(({ label, href }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cursor-pointer transition-colors duration-200 hover:text-white"
-                    style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}
-                  >
-                    {label}
-                  </a>
-                ))}
-              </div>
-
-            </div>
-          </div>
-
-          {/* Copyright */}
-          <div className="mt-20 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <span style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}>
-              © {new Date().getFullYear()} Barons Digital. All rights reserved.
-            </span>
-          </div>
-
-        </div>
-      </footer>
+      <ComingSoonFooter />
 
     </div>
   )
