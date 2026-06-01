@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -76,20 +77,12 @@ export default function WorkCard({ project }: { project: Project }) {
             className="absolute inset-0 w-full will-change-transform"
             style={{ height: '120%', top: '-10%' }}
           >
-            {/*
-              ── PLACEHOLDER ─────────────────────────────────────────
-              Replace with:
-              <Image
-                src={project.coverImage}
-                alt={project.title}
-                fill
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-              />
-              File: /public/images/work/[slug]/cover.jpg  (780 × 440)
-            */}
-            <div
-              className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-105"
-              style={{ background: '#3A3A3A' }}
+            <Image
+              src={project.coverImage}
+              alt={project.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           </div>
 
@@ -152,7 +145,7 @@ export default function WorkCard({ project }: { project: Project }) {
         >
           {/* Icon circle */}
           <div
-            className="flex items-center justify-center flex-shrink-0 overflow-hidden"
+            className="flex items-center justify-center flex-shrink-0 overflow-hidden border border-black/5"
             style={{
               width:        42,
               height:       42,
@@ -160,24 +153,12 @@ export default function WorkCard({ project }: { project: Project }) {
               borderRadius: 360,
             }}
           >
-            {/*
-              PLACEHOLDER — replace with:
-              <Image
-                src={project.icon}
-                alt={project.title}
-                width={32}
-                height={32}
-                className="rounded-full object-cover"
-              />
-              File: /public/images/work/[slug]/icon.png  (32 × 32)
-            */}
-            <div
-              style={{
-                width:      32,
-                height:     32,
-                background: '#D4C5B5',
-                borderRadius: '50%',
-              }}
+            <Image
+              src={project.icon}
+              alt={project.title}
+              width={32}
+              height={32}
+              className="rounded-full object-cover animate-pulse-subtle"
             />
           </div>
 
