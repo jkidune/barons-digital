@@ -1,7 +1,15 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { projects } from '@/data/project'
+import { getProjectBySlug, getProjects } from '@/lib/projects'
+
+export async function generateStaticParams() {
+  const projects = await getProjects()
+
+  return projects.map((project) => ({
+    slug: project.slug,
+  }))
+}
 
 export default async function WorkCaseStudyPage({
   params,
@@ -9,12 +17,11 @@ export default async function WorkCaseStudyPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const projectIndex = projects.findIndex((p) => p.slug === slug)
+  const result = await getProjectBySlug(slug)
 
-  if (projectIndex === -1) notFound()
+  if (!result) notFound()
 
-  const project = projects[projectIndex]
-  const nextProject = projects[(projectIndex + 1) % projects.length]
+  const { project, nextProject } = result
 
   return (
     <article className="w-full bg-[#FAF9F6] text-[#1c1c1c] selection:bg-black selection:text-white">
@@ -51,13 +58,13 @@ export default async function WorkCaseStudyPage({
                 {/* Col 2: Scope */}
                 <div className="py-6 md:py-8 md:px-8 flex flex-col justify-between gap-2">
                   <span className="text-xs uppercase tracking-widest text-[#7C7C7C] font-semibold">Scope</span>
-                  <span className="text-lg font-medium text-black">{project.scope}</span>
+                  <span className="text-lg font-medium text-black">{project.projectType || project.scope}</span>
                 </div>
 
                 {/* Col 3: Timeline */}
                 <div className="py-6 md:py-8 md:px-8 flex flex-col justify-between gap-2">
-                  <span className="text-xs uppercase tracking-widest text-[#7C7C7C] font-semibold">Timeline</span>
-                  <span className="text-lg font-medium text-black">{project.timeline}</span>
+                  <span className="text-xs uppercase tracking-widest text-[#7C7C7C] font-semibold">Duration</span>
+                  <span className="text-lg font-medium text-black">{project.duration || project.timeline}</span>
                 </div>
 
                 {/* Col 4: Live Preview */}
@@ -86,6 +93,28 @@ export default async function WorkCaseStudyPage({
         </div>
       </section>
 
+      {/* ── CLIENT CONTEXT ─────────────────────────────────────────────── */}
+      <section className="w-full px-6 md:px-12 lg:px-16 max-w-[1440px] mx-auto pb-[60px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-y border-black/10 py-8">
+          {[
+            ['Client', project.client],
+            ['Client Type', project.clientType],
+            ['Our Role', project.role],
+          ].map(([label, value]) => (
+            value ? (
+              <div key={label} className="flex flex-col gap-2">
+                <span className="text-xs uppercase tracking-widest text-[#7C7C7C] font-semibold">
+                  {label}
+                </span>
+                <span className="text-base md:text-lg leading-snug text-black">
+                  {value}
+                </span>
+              </div>
+            ) : null
+          ))}
+        </div>
+      </section>
+
       {/* ── BIG HERO COVER ──────────────────────────────────────────────── */}
       <section className="w-full px-6 md:px-12 lg:px-16 max-w-[1440px] mx-auto pb-[60px] md:pb-[100px]">
         <div className="w-full relative overflow-hidden rounded-[16px] aspect-[16/9] max-h-[720px] bg-black/5 shadow-sm">
@@ -107,17 +136,24 @@ export default async function WorkCaseStudyPage({
           <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8 pt-8 border-t border-black/10">
             <div>
               <span className="text-sm font-bold tracking-widest text-[#7C7C7C] sticky top-[100px] block">
-                01 / OVERVIEW
+                01 / INTRODUCTION
               </span>
             </div>
             <div className="flex flex-col gap-6 max-w-[800px]">
-              <p className="text-xl md:text-2xl font-normal leading-relaxed text-black/90">
-                {project.overview}
-              </p>
+              {project.introductionTitle && (
+                <h2 className="text-2xl md:text-4xl font-semibold leading-tight text-black">
+                  {project.introductionTitle}
+                </h2>
+              )}
+              {(project.introduction?.length ? project.introduction : [project.overview]).map((paragraph) => (
+                <p key={paragraph} className="text-xl md:text-2xl font-normal leading-relaxed text-black/90">
+                  {paragraph}
+                </p>
+              ))}
               
               {/* Keywords / Tags inside Overview */}
               <div className="flex flex-wrap gap-2 mt-4">
-                {project.keywords.map((k) => (
+                {(project.services?.length ? project.services : project.keywords).map((k) => (
                   <span
                     key={k}
                     className="px-4 py-1.5 rounded-full border border-black/10 text-xs font-semibold uppercase tracking-wider text-black bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
@@ -136,10 +172,12 @@ export default async function WorkCaseStudyPage({
                 02 / THE CHALLENGE
               </span>
             </div>
-            <div className="max-w-[800px]">
-              <p className="text-xl md:text-2xl font-normal leading-relaxed text-black/90">
-                {project.problem}
-              </p>
+            <div className="max-w-[800px] flex flex-col gap-6">
+              {(project.challenge?.length ? project.challenge : [project.problem]).map((paragraph) => (
+                <p key={paragraph} className="text-xl md:text-2xl font-normal leading-relaxed text-black/90">
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </div>
 
@@ -147,7 +185,7 @@ export default async function WorkCaseStudyPage({
           {project.media && project.media.length > 0 && (
             <div className="w-full pt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                {project.media.map((m, idx) => (
+                {project.media.map((m) => (
                   <div
                     key={m.url}
                     className={`group flex flex-col gap-3 overflow-hidden ${m.gridClass || 'col-span-1'}`}
@@ -184,15 +222,51 @@ export default async function WorkCaseStudyPage({
           <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8 pt-8 border-t border-black/10">
             <div>
               <span className="text-sm font-bold tracking-widest text-[#7C7C7C] sticky top-[100px] block">
-                03 / WHAT WE DID
+                03 / OUR APPROACH
               </span>
             </div>
-            <div className="max-w-[800px]">
-              <p className="text-xl md:text-2xl font-normal leading-relaxed text-black/90">
-                {project.solution}
-              </p>
+            <div className="max-w-[800px] flex flex-col gap-6">
+              {(project.approach?.length ? project.approach : [project.solution]).map((paragraph) => (
+                <p key={paragraph} className="text-xl md:text-2xl font-normal leading-relaxed text-black/90">
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </div>
+
+          {project.features && project.features.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8 pt-8 border-t border-black/10">
+              <div>
+                <span className="text-sm font-bold tracking-widest text-[#7C7C7C] sticky top-[100px] block">
+                  04 / KEY FEATURES
+                </span>
+              </div>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 max-w-[900px]">
+                {project.features.map((feature) => (
+                  <li key={feature} className="border-t border-black/10 pt-4 text-lg md:text-xl leading-snug text-black/90">
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {project.outcome && project.outcome.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8 pt-8 border-t border-black/10">
+              <div>
+                <span className="text-sm font-bold tracking-widest text-[#7C7C7C] sticky top-[100px] block">
+                  05 / OUTCOME
+                </span>
+              </div>
+              <div className="max-w-[800px] flex flex-col gap-6">
+                {project.outcome.map((paragraph) => (
+                  <p key={paragraph} className="text-xl md:text-2xl font-normal leading-relaxed text-black/90">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
 
         </div>
       </section>

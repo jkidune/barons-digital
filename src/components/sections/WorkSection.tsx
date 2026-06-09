@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
-import { projects } from '@/data/project'
+import type { Project } from '@/data/project'
 import WorkCard from '@/components/ui/WorkCard'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export default function WorkSection() {
+export default function WorkSection({ projects }: { projects: Project[] }) {
   const sectionRef = useRef<HTMLElement>(null)
   const titleRef   = useRef<HTMLDivElement>(null)
   const card1Ref   = useRef<HTMLLIElement>(null)
@@ -113,12 +113,15 @@ export default function WorkSection() {
 
         {/* ── Cards grid ────────────────────────────────────────── */}
         <ul className="flex flex-col lg:flex-row gap-5 w-full">
-          <li ref={card1Ref} className="w-full lg:w-1/2">
-            <WorkCard project={projects[0]} />
-          </li>
-          <li ref={card2Ref} className="w-full lg:w-1/2">
-            <WorkCard project={projects[1]} />
-          </li>
+          {projects.slice(0, 2).map((project, index) => (
+            <li
+              key={project.slug}
+              ref={index === 0 ? card1Ref : card2Ref}
+              className="w-full lg:w-1/2"
+            >
+              <WorkCard project={project} />
+            </li>
+          ))}
         </ul>
 
         {/* ── See all — below grid, centered, larger ────────────── */}

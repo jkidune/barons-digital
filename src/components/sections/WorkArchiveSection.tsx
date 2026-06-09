@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
-import { projects } from '@/data/project'
+import type { Project } from '@/data/project'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -20,12 +20,12 @@ function getSortYear(year: string) {
   return match ? Number(match[1]) : 0
 }
 
-export default function WorkArchiveSection() {
+export default function WorkArchiveSection({ projects }: { projects: Project[] }) {
   const sectionRef = useRef<HTMLElement>(null)
   const [activeYear, setActiveYear] = useState(0)
 
   const projectGroups = useMemo(() => {
-    const groups = new Map<string, typeof projects>()
+    const groups = new Map<string, Project[]>()
 
     projects.forEach((project) => {
       const year = getDisplayYear(project.year)
@@ -40,7 +40,7 @@ export default function WorkArchiveSection() {
         projects: groupProjects,
       }))
       .sort((a, b) => b.sortYear - a.sortYear)
-  }, [])
+  }, [projects])
 
   useGSAP(() => {
     if (!sectionRef.current) return

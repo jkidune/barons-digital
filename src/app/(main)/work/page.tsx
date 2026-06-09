@@ -1,10 +1,13 @@
 import WorkArchiveSection from '@/components/sections/WorkArchiveSection'
 import CTASection from '@/components/sections/CtaSection'
+import { getProjects } from '@/lib/projects'
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const projects = await getProjects()
+
   return (
     <>
-      <WorkArchiveSection />
+      <WorkArchiveSection projects={projects} />
       <CTASection />
     </>
   )
