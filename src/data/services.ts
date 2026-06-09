@@ -19,7 +19,7 @@ export const services: Service[] = [
       'Workshops',
       'Brand Strategy',
     ],
-    hoverImage: '/images/services/brand-strategy.jpg',
+    hoverImage: '/images/services/brand-design.png',
   },
   {
     number:      '02',
@@ -46,7 +46,7 @@ export const services: Service[] = [
       'Performance',
       'SEO',
     ],
-    hoverImage: '/images/services/web-development.jpg',
+    hoverImage: '/images/services/website-mockup.jpg',
   },
   {
     number:      '04',
@@ -65,9 +65,9 @@ export const services: Service[] = [
 
 /*
   ── Hover image file guide ──────────────────────────────────────────
-  /public/images/services/brand-strategy.jpg         400 × 300
+  /public/images/services/brand-design.png           400 × 300
   /public/images/services/identity-design.jpg        400 × 300
-  /public/images/services/web-development.jpg        400 × 300
+  /public/images/services/website-mockup.jpg         400 × 300
   /public/images/services/content-production.jpg     400 × 300
 
   Use real project photography or mood imagery.

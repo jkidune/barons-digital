@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import Image from 'next/image'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -59,188 +60,178 @@ const tickerItems = [
   'Designed for Growth',
 ]
 
-// ── Service row with hover image ──────────────────────────────────
+// ── Service row with open/close on click ──────────────────────────
 function ServiceRow({ service }: { service: typeof services[0] }) {
-  const rowRef      = useRef<HTMLDivElement>(null)
-  const imgRef      = useRef<HTMLDivElement>(null)
-  const [hovered, setHovered] = useState(false)
+  const rowRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false)
 
-  // Track mouse position within the row for image follow
-  const mousePos = useRef({ x: 0, y: 0 })
+  useGSAP(() => {
+    if (!contentRef.current || !imageRef.current) return
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!rowRef.current || !imgRef.current) return
-    const rect = rowRef.current.getBoundingClientRect()
-    mousePos.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+    if (isOpen) {
+      gsap.to(contentRef.current, {
+        height: 'auto',
+        opacity: 1,
+        duration: 0.6,
+        ease: 'power3.out',
+      })
+      gsap.to(imageRef.current, {
+        height: '300px',
+        opacity: 1,
+        duration: 0.6,
+        ease: 'power3.out',
+      })
+    } else {
+      gsap.to(contentRef.current, {
+        height: 0,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power3.in',
+      })
+      gsap.to(imageRef.current, {
+        height: 0,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power3.in',
+      })
     }
-    // Move image to follow cursor, offset so image doesn't cover cursor
-    imgRef.current.style.transform = `
-      translate(${mousePos.current.x - 80}px, ${mousePos.current.y - 160}px)
-      scale(${hovered ? 1 : 0.85})
-    `
-  }
-
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    setHovered(true)
-    if (!rowRef.current || !imgRef.current) return
-    const rect = rowRef.current.getBoundingClientRect()
-    imgRef.current.style.transform = `
-      translate(${e.clientX - rect.left - 80}px, ${e.clientY - rect.top - 160}px)
-      scale(1)
-    `
-    gsap.to(imgRef.current, {
-      opacity:  1,
-      scale:    1,
-      duration: 0.45,
-      ease:     'power3.out',
-    })
-  }
-
-  const handleMouseLeave = () => {
-    setHovered(false)
-    if (!imgRef.current) return
-    gsap.to(imgRef.current, {
-      opacity:  0,
-      scale:    0.88,
-      duration: 0.35,
-      ease:     'power3.in',
-    })
-  }
+  }, [isOpen])
 
   return (
     <div
       ref={rowRef}
-      className="relative flex flex-col md:flex-row items-start w-full cursor-default overflow-hidden gap-4 md:gap-20"
+      className="flex flex-col w-full cursor-pointer"
       style={{
-        background:   '#272727',
+        background: '#272727',
         borderRadius: 10,
-        padding:      16,
-        minHeight:    200,
       }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
+      onClick={() => setIsOpen(!isOpen)}
     >
-
-      {/* ── Hover image — follows cursor, fades in ────────────────── */}
-      {/*
-        Positioned absolute inside the row (overflow-hidden on row clips it).
-        GSAP drives opacity + scale. Mouse move drives translate via style.
-        pointer-events-none so it never blocks hover detection.
-
-        PLACEHOLDER — replace bg with:
-        <Image src={service.hoverImage} alt={service.title} fill className="object-cover" />
-        File: /public/images/services/[slug].jpg  (400 × 300)
-      */}
+      {/* ── Top bar: number + title + plus ──────────────────────── */}
       <div
-        ref={imgRef}
-        className="hidden md:block absolute z-20 pointer-events-none overflow-hidden will-change-transform"
-        style={{
-          width:        200,
-          height:       150,
-          borderRadius: 8,
-          opacity:      0,
-          top:          0,
-          left:         0,
-          transform:    'translate(0px, 0px) scale(0.88)',
-          background:   '#3D3D3D',
-        }}
-        aria-hidden="true"
+        className="flex flex-row items-center justify-between w-full p-4"
+        style={{ gap: 16 }}
       >
-        {/* Gradient shimmer on placeholder */}
+        <div className="flex flex-row items-start gap-6">
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 18,
+              lineHeight: '22px',
+              letterSpacing: '-0.01em',
+              color: '#D3D3D3',
+              paddingTop: 4,
+            }}
+          >
+            {service.number}
+          </span>
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 'clamp(28px, 3.2vw, 48px)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.01em',
+              color: '#D3D3D3',
+            }}
+          >
+            {service.title}
+          </span>
+        </div>
         <div
-          className="w-full h-full"
+          className="flex items-center justify-center"
           style={{
-            background: 'linear-gradient(135deg, #3D3D3D 0%, #4A4A4A 50%, #3D3D3D 100%)',
-          }}
-        />
-      </div>
-
-      {/* ── Left: number + title ─────────────────────────────────── */}
-      <div
-        className="flex flex-row items-start flex-shrink-0 w-full md:w-[385px]"
-        style={{ gap: 24 }}
-      >
-        {/* Index number */}
-        <span
-          style={{
-            fontWeight:    700,
-            fontSize:      18,
-            lineHeight:    '22px',
-            letterSpacing: '-0.01em',
-            color:         '#D3D3D3',
-            paddingTop:    4,
-            flexShrink:    0,
+            flexShrink: 0,
+            transition: 'transform 0.5s ease',
           }}
         >
-          {service.number}
-        </span>
-
-        {/* Service title */}
-        <span
-          style={{
-            fontWeight:    700,
-            fontSize:      'clamp(28px, 3.2vw, 48px)',
-            lineHeight:    1.05,
-            letterSpacing: '-0.01em',
-            color:         '#D3D3D3',
-          }}
-        >
-          {service.title}
-        </span>
-      </div>
-
-      {/* ── Right: description + pills ───────────────────────────── */}
-      <div
-        className="flex flex-col items-start w-full pl-12 md:pl-8 lg:pl-12 md:flex-1"
-        style={{ gap: 20, maxWidth: '100%' }}
-      >
-        {/* Description */}
-        <p
-          className="w-full md:max-w-[760px]"
-          style={{
-            fontWeight:    400,
-            fontSize:      19,
-            lineHeight:    '24px',
-            letterSpacing: '-0.01em',
-            color:         '#D3D3D3',
-          }}
-        >
-          {service.description}
-        </p>
-
-        {/* Pills */}
-        <div
-          className="flex flex-row flex-wrap items-center w-full md:max-w-[560px]"
-          style={{ gap: 8 }}
-        >
-          {service.pills.map((pill) => (
-            <span
-              key={pill}
-              style={{
-                display:       'inline-flex',
-                alignItems:    'center',
-                justifyContent:'center',
-                padding:       '6px 8px',
-                background:    '#3D3D3D',
-                borderRadius:  4,
-                fontWeight:    400,
-                fontSize:      12,
-                lineHeight:    '15px',
-                letterSpacing: '-0.01em',
-                textTransform: 'uppercase',
-                color:         '#D3D3D3',
-                whiteSpace:    'nowrap',
-              }}
-            >
-              {pill}
-            </span>
-          ))}
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 32,
+              color: '#D3D3D3',
+              lineHeight: 1,
+            }}
+          >
+            {isOpen ? '−' : '+'}
+          </span>
         </div>
       </div>
 
+      {/* ── Expandable content: description + pills + image ───────── */}
+      <div className="flex flex-col md:flex-row px-4 pb-4 gap-4">
+        {/* Details */}
+        <div
+          ref={contentRef}
+          className="w-full md:flex-1 overflow-hidden"
+          style={{
+            height: 0,
+            opacity: 0,
+          }}
+        >
+          <p
+            className="w-full md:max-w-[760px] mb-5"
+            style={{
+              fontWeight: 400,
+              fontSize: 19,
+              lineHeight: '24px',
+              letterSpacing: '-0.01em',
+              color: '#D3D3D3',
+            }}
+          >
+            {service.description}
+          </p>
+          <div
+            className="flex flex-row flex-wrap items-center"
+            style={{ gap: 8 }}
+          >
+            {service.pills.map((pill) => (
+              <span
+                key={pill}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px 8px',
+                  background: '#3D3D3D',
+                  borderRadius: 4,
+                  fontWeight: 400,
+                  fontSize: 12,
+                  lineHeight: '15px',
+                  letterSpacing: '-0.01em',
+                  textTransform: 'uppercase',
+                  color: '#D3D3D3',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {pill}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Image */}
+        <div
+          ref={imageRef}
+          className="w-full md:w-[300px] overflow-hidden rounded-lg"
+          style={{
+            height: 0,
+            opacity: 0,
+            background: '#3D3D3D',
+          }}
+        >
+          <div className="relative w-full h-full">
+            <Image
+              src={service.hoverImage}
+              alt={service.title}
+              fill
+              sizes="300px"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -248,8 +239,8 @@ function ServiceRow({ service }: { service: typeof services[0] }) {
 // ── Main section ──────────────────────────────────────────────────
 export default function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null)
-  const titleRef   = useRef<HTMLDivElement>(null)
-  const rowsRef    = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLDivElement>(null)
+  const rowsRef = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
     if (!sectionRef.current) return
@@ -291,11 +282,6 @@ export default function ServicesSection() {
     >
 
       {/* ── Ticker strip — absolute at top:0 ────────────────────────── */}
-      {/*
-        Sits flush to the top of the section.
-        Two copies of the word list for seamless infinite loop.
-        CSS animation `ticker` already defined in globals.css.
-      */}
       <div
         className="absolute top-0 left-0 right-0 overflow-hidden z-0"
         style={{ height: 39 }}
@@ -307,8 +293,8 @@ export default function ServicesSection() {
               key={copy}
               className="flex items-center"
               style={{
-                animation:  'ticker 22s linear infinite',
-                gap:        24,
+                animation: 'ticker 22s linear infinite',
+                gap: 24,
                 paddingRight: 24,
                 willChange: 'transform',
               }}
@@ -317,13 +303,13 @@ export default function ServicesSection() {
                 <div key={i} className="flex items-center" style={{ gap: 24 }}>
                   <span
                     style={{
-                      fontWeight:    500,
-                      fontSize:      32,
-                      lineHeight:    '39px',
+                      fontWeight: 500,
+                      fontSize: 32,
+                      lineHeight: '39px',
                       letterSpacing: '-0.01em',
                       textTransform: 'uppercase',
-                      color:         '#4F4F4F',
-                      whiteSpace:    'nowrap',
+                      color: '#4F4F4F',
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     {item}
@@ -344,10 +330,10 @@ export default function ServicesSection() {
         <div
           className="w-full flex flex-col"
           style={{
-            background:   '#242424',
+            background: '#242424',
             borderRadius: 29,
-            padding:      24,
-            gap:          10,
+            padding: 24,
+            gap: 10,
           }}
         >
 
@@ -360,11 +346,11 @@ export default function ServicesSection() {
               <span
                 className="services-title-word block"
                 style={{
-                  fontWeight:    700,
-                  fontSize:      'clamp(56px, 11vw, 160px)',
-                  lineHeight:    1,
+                  fontWeight: 700,
+                  fontSize: 'clamp(56px, 11vw, 160px)',
+                  lineHeight: 1,
                   letterSpacing: '-0.01em',
-                  color:         '#FFFFFF',
+                  color: '#FFFFFF',
                 }}
               >
                 SERVICES
@@ -375,11 +361,11 @@ export default function ServicesSection() {
               <span
                 className="services-title-word block"
                 style={{
-                  fontWeight:    700,
-                  fontSize:      'clamp(56px, 11vw, 160px)',
-                  lineHeight:    1,
+                  fontWeight: 700,
+                  fontSize: 'clamp(56px, 11vw, 160px)',
+                  lineHeight: 1,
                   letterSpacing: '-0.01em',
-                  color:         '#F8F8F8',
+                  color: '#F8F8F8',
                 }}
               >
                 &apos;26
