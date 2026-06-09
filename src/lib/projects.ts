@@ -110,7 +110,7 @@ function normalizeProject(project: SanityProject, index: number): Project {
 }
 
 export async function getProjects(): Promise<Project[]> {
-  if (!hasSanityConfig) return fallbackProjects
+  if (!hasSanityConfig || !client) return fallbackProjects
 
   try {
     const sanityProjects = await client.fetch<SanityProject[]>(projectQuery, {}, {
