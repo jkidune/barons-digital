@@ -273,16 +273,15 @@ export default function AboutSection() {
             ref={imageRef}
             className="flex-shrink-0 overflow-hidden w-full max-w-[409px] h-[320px] sm:h-[360px] md:h-[413px] rounded-[6px] mx-auto lg:mx-0"
           >
-            {/*
-              PLACEHOLDER — replace with video when ready:
-              <video
-                src="/media/about-video.mp4"
-                autoPlay muted loop playsInline
-                className="w-full h-full object-cover pointer-events-none"
-              />
-              File: /public/media/about-video.mp4  (409 × 413)
-            */}
-            <div className="w-full h-full bg-bd-placeholder" />
+            <video
+              src="/videos/about-showreel.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="w-full h-full object-cover pointer-events-none bg-bd-black"
+            />
           </div>
 
           {/* Body + CTA */}

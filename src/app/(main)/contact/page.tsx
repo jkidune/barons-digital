@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import Footer from '@/components/layout/Footer'
-
 export default function ContactPage() {
   return (
     <>
@@ -49,7 +47,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-      <Footer />
     </>
   )
 }

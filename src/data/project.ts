@@ -36,7 +36,7 @@ export const projects: Project[] = [
     scope:        'Branding & Website',
     timeline:     '8 weeks',
     liveUrl:      'https://clonify.agency',
-    previewVideo: 'https://assets.mixkit.co/videos/preview/mixkit-interactive-designer-working-on-his-computer-39912-large.mp4',
+    previewVideo: '/videos/work/clonify/preview.mp4',
     summary: [
       'A boutique creative agency specializing in playful branding ',
       'and personality-packed campaigns. We developed a cheeky but ',
@@ -83,7 +83,7 @@ export const projects: Project[] = [
     scope:        'Product Strategy & UX/UI',
     timeline:     '10 weeks',
     liveUrl:      'https://sonido.audio',
-    previewVideo: 'https://assets.mixkit.co/videos/preview/mixkit-rhythmic-sound-waves-42171-large.mp4',
+    previewVideo: '/videos/work/sonido/preview.mp4',
     summary: [
       'A next-generation acoustic tech company creating high-end audio ',
       'devices. We designed a tactile, minimalist dark-mode mobile application ',
@@ -130,7 +130,7 @@ export const projects: Project[] = [
     scope:        'Branding & Web Design',
     timeline:     '12 weeks',
     liveUrl:      null,
-    previewVideo: 'https://assets.mixkit.co/videos/preview/mixkit-bride-and-groom-holding-hands-during-wedding-celebration-42104-large.mp4',
+    previewVideo: '/videos/work/timeless-vows/preview.mp4',
     summary: [
       'A premium wedding brand identity and digital experience built ',
       'for a high-end wedding planning company. The project focused ',
@@ -178,7 +178,7 @@ export const projects: Project[] = [
     scope:        'Visual Identity & Web',
     timeline:     '8 weeks',
     liveUrl:      null,
-    previewVideo: 'https://assets.mixkit.co/videos/preview/mixkit-startup-team-working-in-a-modern-office-space-40003-large.mp4',
+    previewVideo: '/videos/work/brand-inspiration/preview.mp4',
     summary: [
       'A full brand identity and website for a creative consultancy ',
       'entering the Tanzanian market. Strategy-led visual system ',

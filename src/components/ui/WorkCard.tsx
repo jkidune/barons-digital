@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { gsap } from 'gsap'
@@ -11,10 +11,13 @@ import { Project } from '@/data/project'
 gsap.registerPlugin(ScrollTrigger)
 
 export default function WorkCard({ project }: { project: Project }) {
-  const cardRef        = useRef<HTMLDivElement>(null)
-  const imageWrapRef   = useRef<HTMLDivElement>(null)
-  const imageInnerRef  = useRef<HTMLDivElement>(null)
-  const videoRef       = useRef<HTMLVideoElement>(null)
+  const cardRef       = useRef<HTMLDivElement>(null)
+  const imageWrapRef  = useRef<HTMLDivElement>(null)
+  const imageInnerRef = useRef<HTMLDivElement>(null)
+  const videoRef      = useRef<HTMLVideoElement>(null)
+  const floatRef      = useRef<HTMLDivElement>(null)   // the floating window
+  const rafRef        = useRef<number | null>(null)
+
   const [hovered, setHovered] = useState(false)
 
   // ── Parallax: image drifts as card scrolls through viewport ───────
@@ -36,20 +39,58 @@ export default function WorkCard({ project }: { project: Project }) {
     )
   }, { scope: cardRef })
 
+  // ── Smooth cursor tracker using rAF ────────────────────────────────
+  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!floatRef.current || !imageWrapRef.current) return
+
+    const rect = imageWrapRef.current.getBoundingClientRect()
+    // position relative to the image container
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    rafRef.current = requestAnimationFrame(() => {
+      if (!floatRef.current) return
+      // use GSAP quickSetter-style direct set for zero-lag feel
+      gsap.set(floatRef.current, {
+        x: x - floatRef.current.offsetWidth / 2,
+        y: y - floatRef.current.offsetHeight / 2,
+      })
+    })
+  }, [])
+
   const handleMouseEnter = () => {
     setHovered(true)
     videoRef.current?.play().catch(() => {})
+    // animate floating window IN
+    if (floatRef.current) {
+      gsap.killTweensOf(floatRef.current)
+      gsap.to(floatRef.current, {
+        scale: 1,
+        opacity: 1,
+        duration: 0.45,
+        ease: 'back.out(1.4)',
+      })
+    }
   }
 
   const handleMouseLeave = () => {
     setHovered(false)
-    // Delay pause until clip-path exit animation finishes
-    setTimeout(() => {
-      if (videoRef.current && !hovered) {
-        videoRef.current.pause()
-        videoRef.current.currentTime = 0
-      }
-    }, 600)
+    // animate floating window OUT
+    if (floatRef.current) {
+      gsap.killTweensOf(floatRef.current)
+      gsap.to(floatRef.current, {
+        scale: 0.6,
+        opacity: 0,
+        duration: 0.35,
+        ease: 'power3.in',
+        onComplete: () => {
+          videoRef.current?.pause()
+          if (videoRef.current) videoRef.current.currentTime = 0
+        },
+      })
+    }
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
   }
 
   return (
@@ -57,21 +98,22 @@ export default function WorkCard({ project }: { project: Project }) {
       ref={cardRef}
       className="flex flex-col justify-between w-full h-full group rounded-[6px] p-4 sm:p-6"
       style={{
-        background:   '#242424',
-        gap:          10,
+        background: '#242424',
+        gap:        10,
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
 
-      {/* ── Image + hover video ─────────────────────────────────────── */}
+      {/* ── Image wrap + cursor-following video ───────────────────────── */}
       <Link href={`/work/${project.slug}`} className="block flex-1">
         <div
           ref={imageWrapRef}
           className="relative overflow-hidden rounded-[10px] h-[260px] sm:h-[320px] md:h-[439px]"
+          onMouseMove={onMouseMove}
         >
 
-          {/* Background image with parallax + hover scale */}
+          {/* Cover image with parallax + subtle scale on hover */}
           <div
             ref={imageInnerRef}
             className="absolute inset-0 w-full will-change-transform"
@@ -82,68 +124,63 @@ export default function WorkCard({ project }: { project: Project }) {
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
           </div>
 
-          {/* Blur + dark overlay — fades in on hover */}
+          {/* Dark + blur overlay — fades in on hover */}
           <div
-            className="absolute inset-0 z-10 transition-all duration-500 ease-out"
+            className="absolute inset-0 z-10 transition-[opacity,backdrop-filter] duration-500 ease-out"
             style={{
-              background:    'rgba(20, 20, 20, 0.5)',
-              backdropFilter: hovered ? 'blur(4px)' : 'blur(0px)',
-              opacity:       hovered ? 1 : 0,
+              background:     'rgba(10, 10, 10, 0.45)',
+              backdropFilter: hovered ? 'blur(6px)' : 'blur(0px)',
+              WebkitBackdropFilter: hovered ? 'blur(6px)' : 'blur(0px)',
+              opacity:        hovered ? 1 : 0,
             }}
           />
 
-          {/* Preview video — clip-path polygon reveal on hover */}
-          {/*
-            Collapsed state: horizontal line at center
-              polygon(30% 50%, 70% 50%, 70% 50%, 30% 50%)
-            Expanded state:  full rectangle
-              polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)
-            Easing: cubic-bezier(0.87, 0, 0.13, 1) — sharp deceleration
-          */}
-          <video
-            ref={videoRef}
-            src={project.previewVideo}
-            muted
-            loop
-            playsInline
-            className="absolute z-20 rounded-lg object-cover pointer-events-none"
+          {/* ── Cursor-following floating video window ─────────────────
+              Starts scaled-down & transparent. GSAP animates it in/out.
+              Position is set via GSAP in onMouseMove so it's lag-free.
+          ──────────────────────────────────────────────────────────── */}
+          <div
+            ref={floatRef}
+            className="absolute z-30 pointer-events-none"
             style={{
-              width:      '65%',
-              height:     'auto',
-              top:        '50%',
-              left:       '50%',
-              transform:  hovered
-                ? 'translate(-50%, -54%)'
-                : 'translate(-50%, -50%)',
-              clipPath: hovered
-                ? 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)'
-                : 'polygon(30% 50%, 70% 50%, 70% 50%, 30% 50%)',
-              transition: hovered
-                ? 'clip-path 700ms cubic-bezier(0.87, 0, 0.13, 1), transform 700ms cubic-bezier(0.87, 0, 0.13, 1)'
-                : 'clip-path 500ms cubic-bezier(0.87, 0, 0.13, 1), transform 500ms cubic-bezier(0.87, 0, 0.13, 1)',
+              width:        '62%',
+              top:          0,
+              left:         0,
+              opacity:      0,
+              scale:        0.6,
+              willChange:   'transform, opacity',
             }}
-          />
-          {/*
-            PLACEHOLDER video:
-            /public/videos/work/[slug]/preview.mp4  — keep under 5MB
-          */}
+          >
+            <video
+              ref={videoRef}
+              src={project.previewVideo}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="w-full h-auto object-cover shadow-2xl"
+              style={{
+                borderRadius: 16,
+                display:      'block',
+              }}
+            />
+          </div>
 
         </div>
       </Link>
 
-      {/* ── Bottom content row ──────────────────────────────────────── */}
+      {/* ── Bottom content row ────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-3 sm:gap-0">
 
-        {/* Brand: icon circle + project name uppercase */}
+        {/* Brand: icon + project name */}
         <Link
           href={`/work/${project.slug}`}
           className="flex flex-row items-center gap-[10px] group/brand"
         >
-          {/* Icon circle */}
           <div
             className="flex items-center justify-center flex-shrink-0 overflow-hidden border border-black/5"
             style={{
@@ -158,11 +195,10 @@ export default function WorkCard({ project }: { project: Project }) {
               alt={project.title}
               width={32}
               height={32}
-              className="rounded-full object-cover animate-pulse-subtle"
+              className="rounded-full object-cover"
             />
           </div>
 
-          {/* Project name — uppercase */}
           <span
             className="group-hover/brand:opacity-50 transition-opacity duration-200 text-[16px] leading-[20px] sm:text-[20px] sm:leading-[24px] whitespace-normal sm:whitespace-nowrap"
             style={{
@@ -191,7 +227,7 @@ export default function WorkCard({ project }: { project: Project }) {
 
       </div>
 
-      {/* ── Keyword ticker ─────────────────────────────────────────── */}
+      {/* ── Keyword ticker ───────────────────────────────────────────── */}
       <div className="relative overflow-hidden" style={{ height: 18 }}>
         <div
           className="absolute left-0 top-0 h-full w-10 z-10 pointer-events-none"

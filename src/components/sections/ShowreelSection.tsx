@@ -170,25 +170,15 @@ export default function ShowreelSection() {
           ref={mediaRef}
           className="relative w-full overflow-hidden will-change-transform rounded-[8px] h-[420px] sm:h-[520px] md:h-[650px] lg:h-[809px]"
         >
-          {/*
-            PLACEHOLDER — replace with:
-            <video
-              src="/media/showreel.mp4"
-              autoPlay muted loop playsInline
-              className="w-full h-full object-cover pointer-events-none"
-            />
-            File: /public/media/showreel.mp4  (1920 × 1080 recommended)
-          */}
-          <div className="w-full h-full bg-bd-placeholder flex items-center justify-center">
-            <div className="text-center space-y-2">
-              <span className="block text-white text-[13px] font-medium tracking-[0.15em] uppercase">
-                Showreel
-              </span>
-              <span className="block text-white/40 text-[11px] tracking-[0.1em] uppercase">
-                /public/media/showreel.mp4
-              </span>
-            </div>
-          </div>
+          <video
+            src="/videos/hero-showreel.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="h-full w-full bg-bd-black object-cover pointer-events-none"
+          />
 
         </div>
       </div>
