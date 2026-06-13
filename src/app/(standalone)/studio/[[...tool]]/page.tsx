@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import Studio from '@/sanity/Studio'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'Barons Digital CMS',
@@ -13,5 +13,5 @@ export const viewport: Viewport = {
 }
 
 export default function StudioPage() {
-  return <Studio />
+  redirect(process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || 'https://www.sanity.io/manage')
 }

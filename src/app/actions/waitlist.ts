@@ -31,7 +31,7 @@ export async function joinWaitlist(
   }
 
   const confirmToken = randomUUID()
-  const siteUrl      = process.env.NEXT_PUBLIC_SITE_URL || 'https://baronsdigital.co.tz'
+  const siteUrl      = process.env.NEXT_PUBLIC_SITE_URL || 'https://barons-digital.com'
   const confirmUrl   = `${siteUrl}/confirm?token=${confirmToken}`
 
   try {

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title:       'Barons Digital',
     description: 'Strategy, Branding and Website Design for Serious Tanzanian Businesses',
-    url:         'https://baronsdigital.co.tz',
+    url:         'https://barons-digital.com',
     siteName:    'Barons Digital',
     type:        'website',
   },

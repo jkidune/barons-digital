@@ -11,6 +11,16 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "routes": [
+    {
+      "pattern": "barons-digital.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.barons-digital.com",
+      "custom_domain": true
+    }
+  ],
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
