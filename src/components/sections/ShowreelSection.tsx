@@ -8,6 +8,8 @@ import useWindowSize from '@/hooks/useWindowSize'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const heroShowreelUrl = process.env.NEXT_PUBLIC_HERO_SHOWREEL_URL || '/videos/hero-showreel.mp4'
+
 export default function ShowreelSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const mediaRef   = useRef<HTMLDivElement>(null)
@@ -171,7 +173,7 @@ export default function ShowreelSection() {
           className="relative w-full overflow-hidden will-change-transform rounded-[8px] h-[420px] sm:h-[520px] md:h-[650px] lg:h-[809px]"
         >
           <video
-            src="/videos/hero-showreel.mp4"
+            src={heroShowreelUrl}
             autoPlay
             muted
             loop

@@ -9,14 +9,6 @@ import ComingSoonFooter from '@/components/layout/ComingSoonFooter'
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
 
-function IconCheck() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="1.5,6 4.5,9 10.5,3" />
-    </svg>
-  )
-}
-
 function IconPhone() {
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">

@@ -37,6 +37,8 @@ export type Project = {
   }[]
 }
 
+const heroShowreelUrl = process.env.NEXT_PUBLIC_HERO_SHOWREEL_URL || '/videos/hero-showreel.mp4'
+
 export const projects: Project[] = [
   {
     title: 'AfrONet',
@@ -52,7 +54,7 @@ export const projects: Project[] = [
     projectType: 'Organisational Website',
     role: 'Website strategy, information architecture, UX/UI design, development, CMS configuration, SEO and LLM optimisation',
     liveUrl: 'https://www.afronet.bio',
-    previewVideo: '/videos/hero-showreel.mp4',
+    previewVideo: heroShowreelUrl,
     summary: [
       'A digital platform connecting Africa’s organic agriculture movement.',
       'We helped AfrONet turn a continental mandate into a clear, connected digital experience.',
@@ -110,7 +112,7 @@ export const projects: Project[] = [
     projectType: 'Organisational and Knowledge Website',
     role: 'Website strategy, UX/UI design, Webflow development, CMS configuration and responsive implementation',
     liveUrl: 'https://www.kilimo.org',
-    previewVideo: '/videos/hero-showreel.mp4',
+    previewVideo: heroShowreelUrl,
     summary: [
       'Turning field knowledge, training and impact into an accessible digital ecosystem.',
       'A content-rich bilingual platform for agroecology, farmer training, research and organisational impact.',
@@ -171,7 +173,7 @@ export const projects: Project[] = [
     projectType: 'Programme Website',
     role: 'Website strategy, information architecture, UX/UI design, development and CMS configuration',
     liveUrl: 'https://www.safatanzania.org',
-    previewVideo: '/videos/hero-showreel.mp4',
+    previewVideo: heroShowreelUrl,
     summary: [
       'One digital identity for a multi-partner youth development programme.',
       'A unified programme platform connecting partners, programmes and young people.',
@@ -233,7 +235,7 @@ export const projects: Project[] = [
     projectType: 'Organisational Website',
     role: 'Website strategy, information architecture, UX/UI design, development and CMS setup',
     liveUrl: 'https://www.geoclimateaction.org',
-    previewVideo: '/videos/hero-showreel.mp4',
+    previewVideo: heroShowreelUrl,
     summary: [
       'Building a digital platform that turns environmental awareness into participation.',
       'A website designed around climate action, community involvement, volunteering and support.',
