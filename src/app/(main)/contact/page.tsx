@@ -95,7 +95,7 @@ export default function ContactPage() {
                     margin: 0,
                   }}
                 >
-                  Mbezi Beach, Dar es Salaam
+                  Wazo Hill, Kinondoni, Dar es Salaam, Tanzania, 14121, TZ
                 </p>
               </div>
 

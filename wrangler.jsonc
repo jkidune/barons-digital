@@ -21,6 +21,10 @@
       "custom_domain": true
     }
   ],
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://barons-digital.com",
+    "NEXT_PUBLIC_SANITY_STUDIO_URL": "https://barons-digital-studio.kidunejoseph91.workers.dev"
+  },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
