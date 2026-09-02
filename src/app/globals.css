@@ -2,6 +2,14 @@
 
 /* ─── Design Tokens ──────────────────────────────────────────────── */
 @theme {
+  /* Barons Design System v1 — mirrors the Figma semantic contract */
+  --color-canvas: #FFFFFF;
+  --color-canvas-subtle: #FAFAF8;
+  --color-canvas-muted: #F2F2EF;
+  --color-ink: #000000;
+  --color-ink-secondary: #3A3A37;
+  --color-ink-muted: #777771;
+
   /* Colors */
   --color-bd-white:       #FFFFFF;
   --color-bd-black:       #000000;
@@ -15,7 +23,8 @@
   --color-bd-placeholder: #1C94F6;
 
   /* Typography */
-  --font-sans: "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-sans: var(--font-geist), "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-editorial: var(--font-source-serif-4), Georgia, serif;
 
   /* Breakpoints */
   --breakpoint-3xl: 1700px;
@@ -30,6 +39,24 @@
   --radius-media-lg:10px;
   --radius-panel:   29px;
   --radius-pill:    360px;
+}
+
+:root {
+  --bd-color-surface-canvas: #FFFFFF;
+  --bd-color-surface-subtle: #FAFAF8;
+  --bd-color-surface-muted: #F2F2EF;
+  --bd-color-surface-strong: #0B0B0A;
+  --bd-color-surface-inverse: #000000;
+  --bd-color-text-primary: #000000;
+  --bd-color-text-secondary: #3A3A37;
+  --bd-color-text-muted: #777771;
+  --bd-color-text-inverse: #FFFFFF;
+  --bd-color-border-subtle: #E4E4DF;
+  --bd-color-border-default: #B7B7B0;
+  --bd-color-border-strong: #000000;
+  --bd-space-section: clamp(7rem, 13vw, 14rem);
+  --bd-layout-gutter: clamp(1.25rem, 4vw, 4rem);
+  --bd-layout-container: 90rem;
 }
 
 /* ─── Base Reset ─────────────────────────────────────────────────── */
@@ -47,8 +74,17 @@
 
   body {
     font-family: var(--font-sans);
-    background-color: var(--color-bd-white);
-    color: var(--color-bd-black);
+    background-color: var(--bd-color-surface-canvas);
+    color: var(--bd-color-text-primary);
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline-color: currentColor;
   }
 }
 
@@ -126,4 +162,27 @@ html.lenis {
 }
 .blink-animation {
   animation: blink 1s infinite;
+}
+
+.bd-home {
+  font-family: var(--font-geist), "Helvetica Neue", Arial, sans-serif;
+}
+
+.bd-home section[id] {
+  scroll-margin-top: 4rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
