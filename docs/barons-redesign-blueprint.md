@@ -1,4 +1,4 @@
-# Barons Website Redesign Blueprint
+# Barons Digital Website Redesign Blueprint
 
 Status: Proposed foundation for review  
 Branch: `develop`  
@@ -7,18 +7,31 @@ Implementation status: No production UI changes in this document
 
 ## 1. Purpose
 
-This document defines the strategic and visual foundation for the next Barons website before implementation begins. It is intended to keep writing, design, components, CMS content and CRM workflows aligned.
+This document defines the strategic and visual foundation for the next Barons Digital website before implementation begins. It is intended to keep writing, design, components, CMS content and CRM workflows aligned.
 
-The redesign should feel editorial, confident and contemporary while remaining unmistakably Barons: Tanzanian in context, precise in execution and focused on making real quality visible.
+The redesign should feel editorial, confident and contemporary while remaining unmistakably Barons Digital: Tanzanian in context, precise in execution and focused on making real quality visible.
 
 The redesign is informed by:
 
-- Barons' approved public positioning and the line **Make Quality Visible.**
-- The existing Barons website, portfolio content and technical architecture.
+- Barons Digital's approved public positioning and the line **Make Quality Visible.**
+- The existing Barons Digital website, portfolio content and technical architecture.
 - The Foster Digital Agency community design as a visual reference for editorial scale, whitespace, project composition and modular page rhythm.
 - Motto as a strategic reference for belief-led positioning, named methods, evidence-rich case studies, structured engagements and thought leadership.
 
 These sources are references, not templates. We should adopt useful principles without copying protected copy, layouts, branding, imagery or proprietary naming.
+
+### 1.1 Approved direction - 2 September 2026
+
+| Decision | Approved direction |
+|---|---|
+| Public master brand | **Barons Digital** |
+| Capability structure | Retain all five capability groups |
+| Visual palette | Black, white and neutral greys; imagery carries the visual weight |
+| Initial case studies | Use clearly labelled sample content until final case studies are supplied |
+| Initial articles | Use clearly labelled sample content until final articles are supplied |
+| Evidence policy | Use samples during design and development; publish only verified claims and approved testimonials |
+
+These decisions are locked for the first design-system and prototype phase. Changing them later may require content, component and layout revisions.
 
 ## 2. Strategic recommendation
 
@@ -26,7 +39,7 @@ Keep the existing Next.js application and redesign it systematically. Do not mig
 
 The target platform remains one connected system:
 
-1. The public website communicates the Barons proposition and generates qualified enquiries.
+1. The public website communicates the Barons Digital proposition and generates qualified enquiries.
 2. Sanity manages public editorial content such as work, articles, team profiles and reusable page modules.
 3. Supabase manages private operational data such as users, enquiries, leads, clients, projects, tasks and activity history.
 4. A protected `/admin` experience connects website publishing with CRM workflows.
@@ -35,16 +48,16 @@ The target platform remains one connected system:
 
 Turn qualified visitors into confident prospective clients by showing:
 
-- what Barons believes;
-- who Barons is for;
-- what Barons can solve;
-- how Barons works;
-- evidence that Barons can deliver; and
+- what Barons Digital believes;
+- who Barons Digital is for;
+- what Barons Digital can solve;
+- how Barons Digital works;
+- evidence that Barons Digital can deliver; and
 - a clear next step.
 
 ### Supporting goals
 
-- Present Barons as a strategic partner, not a production-only vendor.
+- Present Barons Digital as a strategic partner, not a production-only vendor.
 - Make diverse capabilities feel like one coherent business.
 - Establish a consistent language and visual system.
 - Make projects and articles easy to publish without code changes.
@@ -57,7 +70,7 @@ Turn qualified visitors into confident prospective clients by showing:
 
 **Make Quality Visible.**
 
-This should be treated as the central organizing idea, not merely a footer tagline. Every page should demonstrate how Barons closes the gap between the quality of a client's work and the way that work is perceived or experienced.
+This should be treated as the central organizing idea, not merely a footer tagline. Every page should demonstrate how Barons Digital closes the gap between the quality of a client's work and the way that work is perceived or experienced.
 
 ### Supporting line
 
@@ -65,11 +78,11 @@ This should be treated as the central organizing idea, not merely a footer tagli
 
 ### Short description
 
-Barons is a Tanzanian creative and business solutions company helping serious businesses, brands and organizations present themselves clearly, communicate with confidence and deliver experiences worthy of the quality behind them.
+Barons Digital is a Tanzanian creative and business solutions company helping serious businesses, brands and organizations present themselves clearly, communicate with confidence and deliver experiences worthy of the quality behind them.
 
 ### One-sentence digital description
 
-Barons turns strong businesses into clear brands, effective digital experiences, memorable moments and practical solutions people can trust.
+Barons Digital turns strong businesses into clear brands, effective digital experiences, memorable moments and practical solutions people can trust.
 
 ### Positioning guardrail
 
@@ -85,7 +98,7 @@ They need to improve how their company is positioned, understood and trusted.
 
 Questions they bring:
 
-- Can Barons understand the business problem behind the design request?
+- Can Barons Digital understand the business problem behind the design request?
 - Have they solved serious problems before?
 - Will the process be organized and reliable?
 - What level of investment and participation will be required?
@@ -98,7 +111,7 @@ They need credible communication, digital platforms, campaigns, reports or event
 
 Questions they bring:
 
-- Can Barons work with multiple stakeholders and detailed requirements?
+- Can Barons Digital work with multiple stakeholders and detailed requirements?
 - Can they manage content-heavy or multilingual work?
 - Do they understand accessibility, reporting and institutional standards?
 
@@ -118,7 +131,7 @@ Primary path: Sourcing capability -> Process and safeguards -> Enquiry.
 
 ### E. Readers and future clients
 
-They discover Barons through an article, recommendation or search result and need useful thinking before they are ready to enquire.
+They discover Barons Digital through an article, recommendation or search result and need useful thinking before they are ready to enquire.
 
 Primary path: Article -> Related work or capability -> Newsletter or enquiry.
 
@@ -164,10 +177,10 @@ Use **Capabilities** instead of **Services** because the offer includes strategi
 2. Visitor sees selected evidence rather than an unverified list of claims.
 3. Visitor opens a case study relevant to their need.
 4. Visitor reviews the challenge, thinking, execution and outcome.
-5. Visitor reviews the Barons method and capability fit.
+5. Visitor reviews the Barons Digital method and capability fit.
 6. Visitor submits a structured project enquiry.
 7. The submission creates a CRM lead with source and interest data.
-8. Barons receives an internal notification and begins qualification.
+8. Barons Digital receives an internal notification and begins qualification.
 
 ### Journey 2: Article-led discovery
 
@@ -179,7 +192,7 @@ Use **Capabilities** instead of **Services** because the offer includes strategi
 
 ### Journey 3: Referral visitor
 
-1. Visitor arrives already aware of Barons.
+1. Visitor arrives already aware of Barons Digital.
 2. Work, process and contact actions are visible immediately.
 3. Contact form asks only information needed for a useful first conversation.
 4. Confirmation explains what will happen next and when.
@@ -249,7 +262,7 @@ The following copy is a first editorial draft. Final publication still requires 
 
 Eyebrow:
 
-> BARONS / DAR ES SALAAM
+> BARONS DIGITAL / DAR ES SALAAM
 
 Headline:
 
@@ -276,7 +289,7 @@ Headline:
 
 Body:
 
-> Too many capable businesses are held back by unclear positioning, inconsistent communication or experiences that do not reflect the quality behind them. Barons closes that gap—combining strategic thinking, creative direction and reliable execution to help quality become visible.
+> Too many capable businesses are held back by unclear positioning, inconsistent communication or experiences that do not reflect the quality behind them. Barons Digital closes that gap—combining strategic thinking, creative direction and reliable execution to help quality become visible.
 
 #### Selected work
 
@@ -363,9 +376,9 @@ Headline:
 
 Body:
 
-> Barons is a creative and business solutions company for people who take their work seriously. We combine local understanding with disciplined strategy, modern craft and accountable delivery—so strong ideas and capable businesses are seen at their true value.
+> Barons Digital is a creative and business solutions company for people who take their work seriously. We combine local understanding with disciplined strategy, modern craft and accountable delivery—so strong ideas and capable businesses are seen at their true value.
 
-Action: **Meet Barons**.
+Action: **Meet Barons Digital**.
 
 #### Journal
 
@@ -447,7 +460,7 @@ Hero headline:
 
 Intro:
 
-> Barons combines strategic thinking and careful execution across five capability areas. We recommend the right combination for the problem rather than selling a fixed list of outputs.
+> Barons Digital combines strategic thinking and careful execution across five capability areas. We recommend the right combination for the problem rather than selling a fixed list of outputs.
 
 Each capability module should answer:
 
@@ -491,11 +504,11 @@ Hero headline:
 
 Lead:
 
-> Barons exists because capable businesses should not be invisible, inconsistent or underestimated. We help make their quality clear through strategy, communication, creative work, experiences and dependable execution.
+> Barons Digital exists because capable businesses should not be invisible, inconsistent or underestimated. We help make their quality clear through strategy, communication, creative work, experiences and dependable execution.
 
 Recommended sections:
 
-- Why Barons exists
+- Why Barons Digital exists
 - The public brand promise
 - How the company works
 - Selected values expressed as behaviors
@@ -527,7 +540,7 @@ Initial editorial categories:
 - Marketing and communication
 - Events and audience experience
 - Sourcing and business systems
-- Inside Barons
+- Inside Barons Digital
 
 Initial article directions:
 
@@ -561,16 +574,48 @@ Recommended fields:
 - Indicative budget range
 - Preferred launch or delivery period
 - What needs to change?
-- How did you hear about Barons?
+- How did you hear about Barons Digital?
 - Consent to the privacy notice
 
 Submit label: **Send project enquiry**
 
 Success message:
 
-> Thank you. Your enquiry has reached Barons. We will review it and respond within the published response window.
+> Thank you. Your enquiry has reached Barons Digital. We will review it and respond within the published response window.
 
 Only publish a response-time commitment that the team can consistently meet.
+
+### 8.9 Sample content for design and development
+
+Sample content exists to test hierarchy, image behavior, long and short titles, filters, related-content links and responsive layouts. It must never be presented as completed client work or published expertise.
+
+#### Sample case studies
+
+| Working title | Capability | Layout purpose |
+|---|---|---|
+| Sample 01 - Brand System | Brand and creative | Tests identity imagery, strategic narrative and outcome modules |
+| Sample 02 - Digital Platform | Digital marketing | Tests interface media, feature lists and responsive screenshots |
+| Sample 03 - Campaign and Experience | Wedding and event creative | Tests portrait/landscape media, campaign touchpoints and event storytelling |
+
+The sourcing and business-support capabilities should still be represented in the capability system even if the first three sample case studies emphasize the most visual work.
+
+#### Sample articles
+
+1. Why strong businesses are often underestimated online.
+2. What a serious website brief should include before design begins.
+3. From a logo to a working brand system.
+4. How to measure a website beyond traffic.
+
+#### Safety rules for samples
+
+- Use a dedicated `sample` or `prototype` status in the content model.
+- Sample content must be available only in local development, protected previews or a non-production dataset.
+- Sample routes must use `noindex, nofollow` when externally previewed.
+- Never attach a real client name to fabricated outcomes, quotations or statistics.
+- Use neutral labels such as **Sample project** and **Sample article** in visible prototype content.
+- Sample media must be licensed for prototype use and replaced before launch.
+- Production builds must fail or omit entries where `status` is `sample`.
+- Replacing a sample requires content review, factual verification, media approval, accessibility text and SEO approval.
 
 ## 9. Design direction
 
@@ -582,11 +627,11 @@ The interface should behave like a well-directed publication: strong hierarchy, 
 
 ### Principles to adopt from the references
 
-| Principle | Barons interpretation |
+| Principle | Barons Digital interpretation |
 |---|---|
 | Oversized editorial type | Use short, meaningful statements at large scale; never enlarge weak copy. |
 | Asymmetric project rhythm | Alternate image scale and alignment while preserving a consistent grid and metadata system. |
-| Restrained palette | Let warm paper, ink and media dominate; use Barons navy and gold as signals. |
+| Restrained palette | Use black, white and neutral greys; let project imagery provide color, texture and emotional range. |
 | Named methodology | Turn the existing five-step quality gate into a clear, ownable method. |
 | Outcome-led services | Explain capabilities through problems, outcomes and proof—not a shopping list. |
 | Thought leadership | Make useful articles part of the main experience, not an abandoned blog. |
@@ -597,7 +642,7 @@ The interface should behave like a well-directed publication: strong hierarchy, 
 
 - Reference-site headlines, slogans, proprietary programme names or body copy.
 - Identical hero composition or project sequence.
-- Decorative statistics without Barons evidence.
+- Decorative statistics without Barons Digital evidence.
 - Pricing cards designed for a different commercial model.
 - Generic team, testimonial or blog modules with placeholder content.
 - Motion that slows access to information or ignores reduced-motion preferences.
@@ -606,26 +651,28 @@ The interface should behave like a well-directed publication: strong hierarchy, 
 
 ### 10.1 Color roles
 
-The final values should be tested in design and code, but the proposed foundation is:
+The first release uses a deliberately achromatic system. The final values should be tested in design and code, but the proposed foundation is:
 
 | Token | Proposed value | Role |
 |---|---:|---|
-| `color.ink` | `#101725` | Primary text and dark sections |
-| `color.navy` | `#14264A` | Core Barons brand field |
-| `color.navyStrong` | `#0C1B36` | High-contrast dark surface |
-| `color.paper` | `#F3F0E8` | Warm editorial background |
-| `color.surface` | `#FFFFFF` | Cards, forms and clean sections |
-| `color.gold` | `#E89A00` | Brand signal and selected emphasis |
-| `color.blue` | `#315A98` | Interactive or supporting brand color |
-| `color.muted` | `#69707C` | Secondary text |
-| `color.line` | `rgba(16, 23, 37, 0.16)` | Rules and borders |
-| `color.positive` | `#176246` | Confirmed success states |
-| `color.critical` | `#B9382F` | Errors and destructive warnings |
+| `color.black` | `#000000` | Primary dark field and strongest text |
+| `color.ink` | `#111111` | Default text and dark surfaces |
+| `color.graphite` | `#2A2A2A` | Secondary dark surface |
+| `color.grey700` | `#555555` | Strong secondary text |
+| `color.grey500` | `#7A7A7A` | Metadata and supporting text |
+| `color.grey300` | `#C8C8C8` | Strong rules and disabled borders |
+| `color.grey150` | `#E5E5E5` | Subtle rules and card boundaries |
+| `color.grey050` | `#F5F5F5` | Secondary light surface |
+| `color.white` | `#FFFFFF` | Primary light field and reversed text |
+| `color.positive` | `#1F6B45` | Functional success state only |
+| `color.critical` | `#B9382F` | Functional error state only |
 
 Rules:
 
-- Gold is an accent, not a default text color on white.
-- Media and typography should provide most of the visual energy.
+- Black and white create the identity; project imagery provides the color.
+- Functional success and error colors appear only when interface meaning requires them.
+- Avoid decorative gradients and brand accent colors in the first release.
+- Media, typography, scale and composition should provide the visual energy.
 - Every text/background pair must meet WCAG 2.2 AA contrast.
 - Interactive states must not rely on color alone.
 
@@ -1019,7 +1066,7 @@ Every implementation PR should include:
 
 ## 20. Content and evidence still required
 
-Before final design, Barons should provide or approve:
+Before final design, Barons Digital should provide or approve:
 
 - final public description of each capability;
 - priority order of capabilities;
@@ -1037,17 +1084,24 @@ Before final design, Barons should provide or approve:
 - newsletter ownership and cadence;
 - whether wedding/event and sourcing work remain within this website or link to dedicated experiences.
 
-## 21. Immediate approval decisions
+## 21. Approved decisions and remaining inputs
 
-The following decisions should be made before interface coding begins:
+Approved on 2 September 2026:
 
-1. Approve **Make Quality Visible.** as the dominant website proposition.
-2. Approve the primary navigation: Work, Capabilities, Method, About, Journal and Start a project.
-3. Approve the five public capability groups or request consolidation.
-4. Decide whether the site presents **Barons** as the master brand or **Barons Digital** as a specialist unit.
-5. Approve Geist and Source Serif 4 as the initial typography system.
-6. Approve the warm-paper, ink, navy and gold visual direction.
-7. Confirm that unverified statistics will not be published.
-8. Confirm the first three case studies and first four journal articles to prepare.
+1. **Make Quality Visible.** is the dominant website proposition.
+2. The primary navigation is Work, Capabilities, Method, About, Journal and Start a project.
+3. All five public capability groups are retained.
+4. **Barons Digital** is the public master brand.
+5. Geist and Source Serif 4 form the initial typography system.
+6. The first release uses black, white and neutral greys, with imagery carrying the visual weight.
+7. Unverified statistics and testimonials will not be published as real evidence.
+8. Sample case studies and sample articles may be used during design and development.
+
+Remaining inputs:
+
+1. Final case-study content and approved media.
+2. Final article drafts and author assignments.
+3. Verified statistics, testimonials and client permissions for production publication.
+4. Confirmation of which sample layouts and content structures should become final patterns.
 
 Once these decisions are approved, design-system work can begin without creating avoidable component or content rework.
