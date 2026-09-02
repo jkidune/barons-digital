@@ -16,12 +16,12 @@ const sourceSerif4 = Source_Serif_4({
 })
 
 export const metadata: Metadata = {
-  title: 'Barons Digital | Strategy, Branding and Website Design for Serious Tanzanian Businesses',
+  title: 'Barons Digital — Make Quality Visible',
   description:
-    'Barons Digital is the agency for Tanzanian businesses that are too serious to settle for average. We build brands, websites, and communications systems with strategy, clarity, and premium execution.',
+    'Barons Digital helps serious Tanzanian businesses and organizations turn the quality of what they do into brands, digital experiences and practical solutions people can trust.',
   openGraph: {
-    title:       'Barons Digital',
-    description: 'Strategy, Branding and Website Design for Serious Tanzanian Businesses',
+    title:       'Barons Digital — Make Quality Visible',
+    description: 'Strategy, creativity and disciplined delivery for serious Tanzanian businesses and organizations.',
     url:         'https://barons-digital.com',
     siteName:    'Barons Digital',
     type:        'website',

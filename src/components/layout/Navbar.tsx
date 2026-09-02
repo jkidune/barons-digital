@@ -1,169 +1,98 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { NAV_LINKS } from '@/constants/navigation'
-import { cn } from '@/utils/cn'
-import { gsap } from 'gsap'
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const navRef = useRef<HTMLElement>(null)
-  const bodyOverflowRef = useRef<string | null>(null)
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMenuOpen(false)
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [])
-
-  useEffect(() => {
-    if (menuOpen) {
-      if (bodyOverflowRef.current === null) {
-        bodyOverflowRef.current = document.body.style.overflow
-      }
-      document.body.style.overflow = 'hidden'
-      return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
     }
 
-    if (bodyOverflowRef.current !== null) {
-      document.body.style.overflow = bodyOverflowRef.current
-      bodyOverflowRef.current = null
+    document.addEventListener('keydown', closeOnEscape)
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape)
+      document.body.style.overflow = ''
     }
   }, [menuOpen])
 
-  useEffect(() => {
-    gsap.from(navRef.current, {
-      y: -20,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-      delay: 0.1,
-    })
-  }, [])
-
   return (
-    <nav
-      ref={navRef}
-      className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-        scrolled
-          ? 'bg-white/95 backdrop-blur-sm border-b border-black/5'
-          : 'bg-transparent'
-      )}
-    >
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-0 h-[64px] flex items-center justify-between">
-        
-        {/* Logo */}
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/15 bg-white/95 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-[1568px] items-center justify-between px-5 md:px-8 lg:px-16">
         <Link
+          className="text-[0.8rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
           href="/"
-          className="text-[15px] font-bold tracking-[0.1em] uppercase text-bd-black"
         >
           Barons Digital
         </Link>
 
-        {/* Nav Links */}
-        <ul className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className="text-[15px] tracking-[-0.01em] text-bd-black hover:opacity-50 transition-opacity duration-200"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        {/* CTA */}
-        <Link
-          href="/contact"
-          className="hidden md:inline-flex text-[15px] tracking-[-0.01em] text-bd-black border border-bd-black px-4 py-2 rounded-full hover:bg-bd-black hover:text-white transition-all duration-300"
-        >
-          Start a Project
-        </Link>
-
-        <button
-          type="button"
-          className="md:hidden text-bd-black"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-          onClick={() => setMenuOpen((v) => !v)}
-        >
-          {menuOpen ? (
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <line x1="4" y1="4" x2="18" y2="18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <line x1="18" y1="4" x2="4" y2="18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          ) : (
-            <svg width="22" height="14" viewBox="0 0 22 14" fill="none">
-              <line x1="0" y1="1" x2="22" y2="1" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="0" y1="7" x2="22" y2="7" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="0" y1="13" x2="22" y2="13" stroke="currentColor" strokeWidth="1.5"/>
-            </svg>
-          )}
-        </button>
-
-      </div>
-
-      <div
-        className={cn(
-          'md:hidden fixed inset-0 transition-opacity duration-200',
-          menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        )}
-        style={{ top: 64 }}
-      >
-        <button
-          type="button"
-          aria-label="Close menu"
-          className="absolute inset-0 bg-black/20"
-          onClick={() => setMenuOpen(false)}
-        />
-
-        <div
-          id="mobile-nav"
-          className={cn(
-            'relative bg-white border-t border-black/5 px-6 py-6',
-            'transition-transform duration-300 ease-out',
-            menuOpen ? 'translate-y-0' : '-translate-y-2'
-          )}
-        >
-          <ul className="flex flex-col gap-5">
+        <nav aria-label="Primary navigation" className="hidden md:block">
+          <ul className="flex items-center gap-7">
             {NAV_LINKS.map((link) => (
-              <li key={link.href}>
+              <li key={link.label}>
                 <Link
+                  className="text-[0.8rem] font-medium transition-opacity duration-200 hover:opacity-45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                   href={link.href}
-                  className="text-[18px] tracking-[-0.01em] text-bd-black"
-                  onClick={() => setMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               </li>
             ))}
           </ul>
+        </nav>
 
-          <div className="pt-6">
-            <Link
-              href="/contact"
-              className="inline-flex text-[16px] tracking-[-0.01em] text-bd-black border border-bd-black px-4 py-2 rounded-full"
-              onClick={() => setMenuOpen(false)}
-            >
-              Start a Project
-            </Link>
-          </div>
-        </div>
+        <Link
+          className="hidden min-h-11 items-center border-b border-black text-[0.8rem] font-medium transition-opacity hover:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 md:inline-flex"
+          href="/contact"
+        >
+          Start a project
+        </Link>
+
+        <button
+          aria-controls="mobile-navigation"
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          className="flex min-h-11 min-w-11 items-center justify-end text-[0.75rem] font-medium uppercase tracking-[0.08em] md:hidden"
+          onClick={() => setMenuOpen((open) => !open)}
+          type="button"
+        >
+          {menuOpen ? 'Close' : 'Menu'}
+        </button>
       </div>
-    </nav>
+
+      <div
+        aria-hidden={!menuOpen}
+        className={`fixed inset-x-0 top-16 h-[calc(100svh-4rem)] bg-black px-5 py-8 text-white transition duration-300 md:hidden ${
+          menuOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-3 opacity-0'
+        }`}
+        id="mobile-navigation"
+      >
+        <nav aria-label="Mobile navigation" className="flex h-full flex-col justify-between">
+          <ul>
+            {NAV_LINKS.map((link, index) => (
+              <li className="border-t border-white/35" key={link.label}>
+                <Link
+                  className="flex min-h-16 items-center justify-between py-4 text-[clamp(2rem,10vw,3.75rem)] font-medium leading-none tracking-[-0.04em]"
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  tabIndex={menuOpen ? 0 : -1}
+                >
+                  <span>{link.label}</span>
+                  <span className="text-[0.7rem] tracking-[0.08em] text-white/45">0{index + 1}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="border-t border-white/35 pt-4 text-[0.75rem] uppercase tracking-[0.1em] text-white/50">
+            Dar es Salaam / Tanzania
+          </p>
+        </nav>
+      </div>
+    </header>
   )
 }
