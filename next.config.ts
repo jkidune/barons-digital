@@ -13,19 +13,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async redirects() {
-    const isLaunched = process.env.SITE_LAUNCHED !== 'false'
-
-    if (isLaunched) return []
-
-    const sitePaths = ['/', '/about', '/services', '/contact', '/work', '/work/:slug*']
-
-    return sitePaths.map((source) => ({
-      source,
-      destination: '/coming-soon',
-      permanent:   false, // 307 — easy to revert
-    }))
-  },
 }
 
 export default nextConfig
