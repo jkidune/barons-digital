@@ -18,13 +18,13 @@ const nextConfig: NextConfig = {
 
     if (isLaunched) return []
 
-    return [
-      {
-        source:      '/',
-        destination: '/coming-soon',
-        permanent:   false, // 307 — easy to revert
-      },
-    ]
+    const sitePaths = ['/', '/about', '/services', '/contact', '/work', '/work/:slug*']
+
+    return sitePaths.map((source) => ({
+      source,
+      destination: '/coming-soon',
+      permanent:   false, // 307 — easy to revert
+    }))
   },
 }
 
