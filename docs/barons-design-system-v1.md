@@ -64,6 +64,42 @@ Use semantic roles in components; do not bind components directly to primitives.
 
 Figma Starter supports one variable mode in this workspace. Light and dark compositions therefore use explicit canvas and inverse tokens rather than a second mode.
 
+### 3.3 Dark glass system (approved 5 September 2026)
+
+The coming-soon page established a quiet, dark-mode surface language — full black canvas, translucent "glass" panels, opacity-led text hierarchy — that reads as restrained rather than decorative. This has been approved as a second, dark-specific surface system for the redesign, alongside the light system above. It supersedes the "legacy, do not carry forward" note in §12 for these specific values.
+
+**Dark surfaces** (`--color-bd-dark-*` in `globals.css`):
+
+| Token | Value | Role |
+|---|---:|---|
+| `bd-dark-canvas` | `#000000` | Page background |
+| `bd-dark-raised` | `#0D0D0D` | Hover / raised state on a dark row or card |
+| `bd-dark-hairline` | `#1A1A1A` | Solid (non-glass) dividers and borders on dark |
+
+**Text hierarchy on dark** — use Tailwind's native `text-white/<alpha>` utilities against this scale rather than inventing new opacity values per component:
+
+| Utility | Alpha | Role |
+|---|---:|---|
+| `text-white` | 100% | Primary heading, strongest value |
+| `text-white/80` | 80% | Body copy, active/open state |
+| `text-white/60` | 60% | Secondary label, badge copy |
+| `text-white/50` | 50% | Supporting text — footer links, contact values |
+| `text-white/45` | 45% | Long-form secondary copy (e.g. FAQ answers) |
+| `text-white/35` | 35% | Default icon tone |
+| `text-white/30` | 30% | Faint notes, decorative dots |
+| `text-white/25` | 25% | Placeholder text |
+
+**Compound surfaces** (component classes in `globals.css`):
+
+| Class | Composition | Use |
+|---|---|---|
+| `.bd-glass` | `border-white/10` + `bg-white/5` + `blur(8px)` | Base translucent panel |
+| `.bd-glass-badge` | glass + pill radius + compact padding | Status/eyebrow badges |
+| `.bd-glass-card` | glass + 16px radius, `bg-white/4` | Form, success and info card shells |
+| `.bd-status-dot` | emerald dot + soft glow | Live/availability indicator |
+
+Reference implementation: `src/app/(standalone)/coming-soon/page.tsx` and `src/components/layout/ComingSoonFooter.tsx`.
+
 ## 4. Typography
 
 ### 4.1 Families
@@ -248,7 +284,7 @@ Recommended easing:
 - React components must consume semantic tokens.
 - Tailwind theme variables should mirror the Figma names.
 - Component names and variant properties should match code APIs where practical.
-- The current hardcoded blue, cream, glass and oversized-radius values are legacy and should not be carried into the redesign unless explicitly approved.
+- The current hardcoded blue, cream and oversized-radius values are legacy and should not be carried into the redesign. The dark glass system (§3.3) is the exception: it is explicitly approved and should be used for dark sections/pages going forward, via its tokens and component classes rather than new one-off hex/rgba values.
 - Build public components before page implementation.
 - The CRM may share typography and semantic colours while using denser spacing and more conventional application layouts.
 

@@ -119,11 +119,11 @@ function FaqItem({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        backgroundColor: hovered ? '#0d0d0d' : '#000000',
-        borderTop:    '1px solid #1a1a1a',
-        borderLeft:   '1px solid #1a1a1a',
-        borderRight:  '1px solid #1a1a1a',
-        borderBottom: isLast ? '1px solid #1a1a1a' : 'none',
+        backgroundColor: hovered ? 'var(--color-bd-dark-raised)' : 'var(--color-bd-dark-canvas)',
+        borderTop:    '1px solid var(--color-bd-dark-hairline)',
+        borderLeft:   '1px solid var(--color-bd-dark-hairline)',
+        borderRight:  '1px solid var(--color-bd-dark-hairline)',
+        borderBottom: isLast ? '1px solid var(--color-bd-dark-hairline)' : 'none',
         borderRadius: isFirst
           ? '16px 16px 0 0'
           : isLast
@@ -171,7 +171,6 @@ const inputStyle: React.CSSProperties = {
   backgroundColor: 'transparent',
   border:          'none',
   outline:         'none',
-  color:           'rgba(255,255,255,0.8)',
   fontSize:        '15px',
   fontWeight:      400,
   lineHeight:      '21px',
@@ -246,8 +245,8 @@ export default function ComingSoonPage() {
   return (
     <div
       ref={pageRef}
-      style={{ fontFamily: 'var(--font-geist, "Helvetica Neue", sans-serif)', backgroundColor: '#000000' }}
-      className="text-white"
+      style={{ fontFamily: 'var(--font-geist, "Helvetica Neue", sans-serif)' }}
+      className="bg-bd-dark-canvas text-white"
     >
 
       {/* ── Navbar ──────────────────────────────────────────────────────────── */}
@@ -260,19 +259,8 @@ export default function ComingSoonPage() {
           priority
           className="h-auto w-[108px] sm:w-[124px]"
         />
-        <div
-          className="flex cursor-default items-center gap-2 rounded-[64px] px-4 py-2 text-[12px] font-normal"
-          style={{
-            border: '1px solid rgba(255,255,255,0.12)',
-            backgroundColor: 'rgba(255,255,255,0.06)',
-            color: 'rgba(255,255,255,0.6)',
-            backdropFilter: 'blur(5px)',
-          }}
-        >
-          <span
-            className="h-1.5 w-1.5 rounded-full bg-emerald-400"
-            style={{ boxShadow: '0 0 6px rgba(74,222,128,0.6)' }}
-          />
+        <div className="bd-glass-badge cursor-default text-[12px] font-normal text-white/60">
+          <span className="bd-status-dot" />
           Coming 2026
         </div>
       </header>
@@ -301,26 +289,19 @@ export default function ComingSoonPage() {
           className="relative z-10 mx-auto flex max-w-[800px] flex-col items-center gap-6 px-6 text-center sm:px-10"
         >
           {/* Badge */}
-          <div
-            className="flex cursor-default items-center gap-2.5 rounded-[64px] px-4 py-2 text-[12px] font-normal"
-            style={{
-              border: '1px solid rgba(255,255,255,0.1)',
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              color: 'rgba(255,255,255,0.5)',
-            }}
-          >
+          <div className="bd-glass-badge cursor-default text-[12px] font-normal text-white/50">
             <span className="h-1 w-1 rounded-full bg-white/30" />
             Dar es Salaam · Tanzania
           </div>
 
           {/* Heading — 64px / 500 / tight tracking / 2 lines */}
           <h1
+            className="text-white"
             style={{
               fontSize: 'clamp(2.5rem, 5.5vw, 4rem)',
               fontWeight: 500,
               lineHeight: '1.2',
               letterSpacing: '-0.03em',
-              color: 'rgb(250, 250, 250)',
             }}
           >
             We are the agency
@@ -340,11 +321,11 @@ export default function ComingSoonPage() {
 
           {/* Paragraph — 18px / 400 */}
           <p
+            className="text-white/80"
             style={{
               fontSize: '18px',
               fontWeight: 400,
               lineHeight: '25px',
-              color: 'rgba(255, 255, 255, 0.8)',
               maxWidth: '42ch',
             }}
           >
@@ -362,18 +343,10 @@ export default function ComingSoonPage() {
               <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
 
               {/* Card */}
-              <div
-                style={{
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '16px',
-                  backgroundColor: 'rgba(255,255,255,0.04)',
-                  backdropFilter: 'blur(8px)',
-                  overflow: 'hidden',
-                }}
-              >
+              <div className="bd-glass-card">
                 {/* Row 1: Name + Company */}
                 <div className="grid grid-cols-1 gap-0 sm:grid-cols-2">
-                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', borderRight: '0' }} className="sm:border-r sm:border-r-white/[0.08]">
+                  <div className="border-b border-white/[0.08] sm:border-r sm:border-r-white/[0.08]">
                     <input
                       type="text"
                       name="name"
@@ -382,10 +355,10 @@ export default function ComingSoonPage() {
                       maxLength={100}
                       required
                       style={inputStyle}
-                      className="placeholder:text-white/25 focus:bg-white/[0.04]"
+                      className="text-white/80 placeholder:text-white/25 focus:bg-white/[0.04]"
                     />
                   </div>
-                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div className="border-b border-white/[0.08]">
                     <input
                       type="text"
                       name="company"
@@ -393,13 +366,13 @@ export default function ComingSoonPage() {
                       autoComplete="organization"
                       maxLength={200}
                       style={inputStyle}
-                      className="placeholder:text-white/25 focus:bg-white/[0.04]"
+                      className="text-white/80 placeholder:text-white/25 focus:bg-white/[0.04]"
                     />
                   </div>
                 </div>
 
                 {/* Row 2: Email */}
-                <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="border-b border-white/[0.08]">
                   <input
                     type="email"
                     name="email"
@@ -408,12 +381,12 @@ export default function ComingSoonPage() {
                     required
                     maxLength={254}
                     style={inputStyle}
-                    className="placeholder:text-white/25 focus:bg-white/[0.04]"
+                    className="text-white/80 placeholder:text-white/25 focus:bg-white/[0.04]"
                   />
                 </div>
 
                 {/* Row 3: Message */}
-                <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="border-b border-white/[0.08]">
                   <textarea
                     name="message"
                     placeholder="Tell us about your project or what you need help with…"
@@ -427,22 +400,19 @@ export default function ComingSoonPage() {
                       width:    '100%',
                       paddingTop: '16px',
                     }}
-                    className="placeholder:text-white/25 focus:bg-white/[0.04]"
+                    className="text-white/80 placeholder:text-white/25 focus:bg-white/[0.04]"
                   />
                 </div>
 
                 {/* Row 4: Submit */}
-                <div
-                  className="flex items-center justify-between gap-4 px-5 py-4"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}
-                >
+                <div className="flex items-center justify-between gap-4 bg-white/[0.02] px-5 py-4">
                   {state.status === 'error' && (
                     <p style={{ fontSize: '13px', color: 'rgba(248,113,113,0.8)', margin: 0 }}>
                       {state.message}
                     </p>
                   )}
                   {state.status !== 'error' && (
-                    <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)' }}>
+                    <p className="text-white/30" style={{ fontSize: '13px' }}>
                       We will confirm via email.
                     </p>
                   )}
@@ -454,28 +424,17 @@ export default function ComingSoonPage() {
 
           {/* Pending — shown after form submit, waiting for email confirmation */}
           <div ref={successRef} data-no-entrance style={{ display: 'none', opacity: 0 }} className="w-full max-w-lg">
-            <div
-              style={{
-                border:          '1px solid rgba(255,255,255,0.1)',
-                borderRadius:    '16px',
-                backgroundColor: 'rgba(255,255,255,0.04)',
-                padding:         '28px 28px',
-                textAlign:       'center',
-              }}
-            >
-              <div
-                className="mx-auto mb-5 flex h-10 w-10 items-center justify-center rounded-full"
-                style={{ border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.06)' }}
-              >
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="bd-glass-card p-7 text-center">
+              <div className="bd-glass mx-auto mb-5 flex h-10 w-10 items-center justify-center rounded-full">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="stroke-white/70" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="4" width="14" height="10" rx="2" />
                   <polyline points="2,4 9,10 16,4" />
                 </svg>
               </div>
-              <p style={{ fontSize: '16px', fontWeight: 500, color: 'rgb(250,250,250)', margin: '0 0 8px' }}>
+              <p className="mb-2 text-white" style={{ fontSize: '16px', fontWeight: 500 }}>
                 Check your inbox.
               </p>
-              <p style={{ fontSize: '14px', fontWeight: 400, lineHeight: '1.7', color: 'rgba(255,255,255,0.5)', margin: 0 }}>
+              <p className="text-white/50" style={{ fontSize: '14px', fontWeight: 400, lineHeight: '1.7' }}>
                 We sent you a confirmation link. Click it to secure your spot on the Barons Digital waitlist.
               </p>
             </div>
@@ -486,30 +445,23 @@ export default function ComingSoonPage() {
       {/* ── Contact info ────────────────────────────────────────────────────── */}
       <section className="px-6 pb-16 pt-4 sm:px-10 lg:px-14">
         <div className="mx-auto max-w-5xl">
-          <div
-            className="overflow-hidden rounded-2xl"
-            style={{ border: '1px solid #1a1a1a' }}
-          >
+          <div className="overflow-hidden rounded-2xl border border-bd-dark-hairline">
             {contactDetails.map(({ Icon, label, value, href, external }, i) => (
               <a
                 key={label}
                 href={href}
                 target={external ? '_blank' : undefined}
                 rel={external ? 'noopener noreferrer' : undefined}
-                className="group flex cursor-pointer flex-col gap-4 p-6 transition-colors duration-200 hover:bg-[#0d0d0d]"
-                style={{ borderTop: i > 0 ? '1px solid #1a1a1a' : 'none' }}
+                className={`group flex cursor-pointer flex-col gap-4 p-6 transition-colors duration-200 hover:bg-bd-dark-raised ${i > 0 ? 'border-t border-bd-dark-hairline' : ''}`}
               >
-                <span
-                  className="transition-colors duration-200 group-hover:text-white/70"
-                  style={{ color: 'rgba(255,255,255,0.35)' }}
-                >
+                <span className="text-white/35 transition-colors duration-200 group-hover:text-white/70">
                   <Icon />
                 </span>
                 <div>
-                  <p style={{ fontSize: '14px', fontWeight: 500, color: 'rgb(255,255,255)' }}>{label}</p>
+                  <p className="text-white" style={{ fontSize: '14px', fontWeight: 500 }}>{label}</p>
                   <p
-                    className="mt-0.5 transition-colors duration-200 group-hover:text-white/75"
-                    style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}
+                    className="mt-0.5 text-white/50 transition-colors duration-200 group-hover:text-white/75"
+                    style={{ fontSize: '14px', fontWeight: 400 }}
                   >
                     {value}
                   </p>
@@ -524,12 +476,12 @@ export default function ComingSoonPage() {
       <section className="px-6 pb-24 pt-16 sm:px-10 lg:px-14">
         <div className="mx-auto flex max-w-5xl flex-col items-center">
           <h2
+            className="text-white"
             style={{
               fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)',
               fontWeight: 500,
               lineHeight: '1.15',
               letterSpacing: '-0.02em',
-              color: 'rgb(250, 250, 250)',
               marginBottom: '48px',
               textAlign: 'center',
             }}
