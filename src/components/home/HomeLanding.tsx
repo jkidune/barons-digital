@@ -80,7 +80,7 @@ function EditorialLink({
   return (
     <Link
       className={[
-        'group inline-flex min-h-11 items-center gap-3 border-b pb-1 text-[0.875rem] font-medium',
+        'group inline-flex min-h-11 items-center gap-3 border-b pb-1 text-[0.875rem] font-normal',
         'transition-opacity duration-200 hover:opacity-55 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4',
         inverse ? 'border-white text-white' : 'border-black text-black',
       ].join(' ')}
@@ -96,7 +96,7 @@ function EditorialLink({
 
 function SectionLabel({ index, children, inverse = false }: { index: string; children: React.ReactNode; inverse?: boolean }) {
   return (
-    <p className={`text-[0.75rem] font-medium uppercase tracking-[0.1em] ${inverse ? 'text-white/60' : 'text-black/55'}`}>
+    <p className={`text-[0.75rem] font-medium tracking-[0.06em] ${inverse ? 'text-white/60' : 'text-black/55'}`}>
       ({index}) &nbsp; {children}
     </p>
   )
@@ -111,8 +111,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
           <div className="lg:col-span-3"><SectionLabel index="01">Why Barons</SectionLabel></div>
           <div className="lg:col-span-8 lg:col-start-6">
-            <h2 className="max-w-[13ch] text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">
-              Good work should not be underestimated.
+            <h2 className="max-w-[13ch] text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">
+              Good work should not be <em className="font-editorial">underestimated</em>.
             </h2>
             <p className="mt-12 max-w-[39rem] text-[1.125rem] leading-[1.65] text-black/70 md:text-[1.25rem]">
               Too many capable businesses are held back by unclear positioning, inconsistent communication or
@@ -129,7 +129,7 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
             <div className="lg:col-span-3"><SectionLabel index="02" inverse>Selected work</SectionLabel></div>
             <div className="flex flex-col gap-8 lg:col-span-8 lg:col-start-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Evidence, not decoration.</h2>
+                <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">Evidence, not <em className="font-editorial">decoration</em>.</h2>
                 <p className="mt-8 max-w-[36rem] text-[1.125rem] leading-[1.6] text-white/60">
                   Brands and platforms built around a real problem, a clear idea and careful execution.
                 </p>
@@ -187,7 +187,7 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
           <div className="grid gap-12 border-t border-white pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="03" inverse>What we do</SectionLabel></div>
             <div className="lg:col-span-7 lg:col-start-6">
-              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Different capabilities. One standard.</h2>
+              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">Different <em className="font-editorial">capabilities</em>. One standard.</h2>
               <p className="mt-8 max-w-[34rem] text-[1.125rem] leading-[1.6] text-white/65">
                 We bring strategy, creativity and disciplined delivery together around the result a client needs.
               </p>
@@ -198,9 +198,9 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
             {capabilities.map((capability, index) => (
               <li className="grid gap-5 border-b border-white/35 py-8 md:py-10 lg:grid-cols-12" key={capability.title}>
                 <p className="text-[0.75rem] font-medium tracking-[0.08em] text-white/50 lg:col-span-1">{String(index + 1).padStart(2, '0')}</p>
-                <h3 className="text-[clamp(1.75rem,3.3vw,3.25rem)] font-medium leading-none tracking-[-0.04em] lg:col-span-5">{capability.title}</h3>
+                <h3 className="text-[clamp(1.75rem,3.3vw,3.25rem)] font-light leading-none tracking-[-0.04em] lg:col-span-5">{capability.title}</h3>
                 <p className="max-w-[34rem] text-[1rem] leading-[1.55] text-white/65 lg:col-span-4">{capability.description}</p>
-                <p className="text-[0.7rem] font-medium uppercase leading-5 tracking-[0.08em] text-white/45 lg:col-span-2 lg:text-right">{capability.scope}</p>
+                <p className="text-[0.7rem] font-medium leading-5 tracking-[0.08em] text-white/45 lg:col-span-2 lg:text-right">{capability.scope}</p>
               </li>
             ))}
           </ol>
@@ -213,8 +213,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
           <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="04">The Barons Quality Gate</SectionLabel></div>
             <div className="lg:col-span-8 lg:col-start-5">
-              <h2 className="max-w-[14ch] text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">
-                Quality is not a final check. It is the process.
+              <h2 className="max-w-[14ch] text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">
+                Quality is not a final check. It is the <em className="font-editorial">process</em>.
               </h2>
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
             {qualityGates.map(([title, description], index) => (
               <li className="grid gap-5 border-t border-black py-7 md:grid-cols-[5rem_1fr_1.1fr] md:gap-8" key={title}>
                 <p className="text-[0.75rem] font-medium tracking-[0.08em] text-black/45">{String(index + 1).padStart(2, '0')}</p>
-                <h3 className="text-[clamp(1.6rem,2.4vw,2.5rem)] font-medium leading-none tracking-[-0.035em]">{title}</h3>
+                <h3 className="text-[clamp(1.6rem,2.4vw,2.5rem)] font-light leading-none tracking-[-0.035em]">{title}</h3>
                 <p className="max-w-[32rem] text-[1rem] leading-[1.6] text-black/65">{description}</p>
               </li>
             ))}
@@ -231,8 +231,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
       </section>
 
       <section className="overflow-hidden border-y border-black py-9">
-        <p className="whitespace-nowrap text-center text-[clamp(3.5rem,10vw,9rem)] font-medium leading-none tracking-[-0.06em]">
-          Strategy. <em className="font-editorial font-medium">Precision.</em> Craft.
+        <p className="whitespace-nowrap text-center text-[clamp(3.5rem,10vw,9rem)] font-light leading-none tracking-[-0.06em]">
+          Strategy. <em className="font-editorial">Precision.</em> Craft.
         </p>
       </section>
 
@@ -240,7 +240,7 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         <div className="grid gap-16 border-t border-black pt-5 lg:grid-cols-12">
           <div className="lg:col-span-3"><SectionLabel index="05">About Barons</SectionLabel></div>
           <div className="lg:col-span-7 lg:col-start-6">
-            <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Built in Tanzania. Exacting by standard.</h2>
+            <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">Built in <em className="font-editorial">Tanzania</em>. Exacting by standard.</h2>
             <p className="mt-10 max-w-[39rem] text-[1.125rem] leading-[1.65] text-black/70 md:text-[1.25rem]">
               Barons Digital is a creative and business solutions company for people who take their work seriously.
               We combine local understanding with disciplined strategy, modern craft and accountable delivery—so
@@ -262,7 +262,7 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
           <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="06">Journal / Sample</SectionLabel></div>
             <div className="lg:col-span-7 lg:col-start-6">
-              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Thinking behind the work.</h2>
+              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">Thinking behind the <em className="font-editorial">work</em>.</h2>
               <p className="mt-8 max-w-[37rem] text-[1.125rem] leading-[1.6] text-black/65">
                 Practical perspectives on brand, digital experience and the systems that make quality repeatable.
               </p>
@@ -271,12 +271,12 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
           <div className="mt-24 grid gap-12 md:grid-cols-3">
             {sampleArticles.map((article, index) => (
               <article className="border-t border-black pt-4" key={article.title}>
-                <div className="flex items-center justify-between text-[0.7rem] font-medium uppercase tracking-[0.08em] text-black/50">
+                <div className="flex items-center justify-between text-[0.7rem] font-medium tracking-[0.08em] text-black/50">
                   <span>{article.category}</span><span>Sample 0{index + 1}</span>
                 </div>
-                <h3 className="mt-14 text-[clamp(1.75rem,2.8vw,2.75rem)] font-medium leading-[1.02] tracking-[-0.04em]">{article.title}</h3>
+                <h3 className="mt-14 text-[clamp(1.75rem,2.8vw,2.75rem)] font-light leading-[1.02] tracking-[-0.04em]">{article.title}</h3>
                 <p className="mt-6 text-[1rem] leading-[1.6] text-black/65">{article.summary}</p>
-                <p className="mt-12 text-[0.75rem] font-medium uppercase tracking-[0.08em] text-black/50">{article.readTime}</p>
+                <p className="mt-12 text-[0.75rem] font-medium tracking-[0.08em] text-black/50">{article.readTime}</p>
               </article>
             ))}
           </div>
@@ -287,8 +287,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         <div className="border-t border-white pt-5">
           <SectionLabel index="07" inverse>Start a conversation</SectionLabel>
           <div className="mt-24 grid gap-16 lg:grid-cols-12">
-            <h2 className="text-[clamp(3.4rem,8vw,8rem)] font-medium leading-[0.88] tracking-[-0.06em] lg:col-span-10">
-              Your work deserves to be seen at its true value.
+            <h2 className="text-[clamp(3.4rem,8vw,8rem)] font-light leading-[0.88] tracking-[-0.06em] lg:col-span-10">
+              Your work deserves to be seen at its <em className="font-editorial">true value</em>.
             </h2>
             <div className="lg:col-span-5 lg:col-start-8">
               <p className="text-[1.125rem] leading-[1.6] text-white/65">

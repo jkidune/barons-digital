@@ -26,7 +26,7 @@ export default function HomeHero() {
       <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[36rem] w-[70rem] -translate-x-1/2 rounded-full bg-white/[0.055] blur-[140px]" />
       <div className="mx-auto max-w-[105.5rem]">
         <div className="grid gap-8 pb-8 lg:grid-cols-12 lg:items-end lg:pb-12">
-          <h1 className="max-w-[9ch] text-[clamp(4rem,7.2vw,6rem)] font-medium leading-[1.04] tracking-[-0.055em] lg:col-span-7" data-hero-reveal>Make quality visible.</h1>
+          <h1 className="max-w-[9ch] text-[clamp(4rem,7.2vw,6rem)] font-light leading-[1.04] tracking-[-0.055em] lg:col-span-7" data-hero-reveal>Make quality <em className="font-editorial">visible</em>.</h1>
           <p className="max-w-[28rem] text-[clamp(1.05rem,1.35vw,1.25rem)] font-medium leading-[1.25] tracking-[-0.04em] text-white/55 lg:col-span-4 lg:col-start-9" data-hero-reveal>
             We help serious Tanzanian businesses and organizations turn the quality of what they do into brands, digital experiences, memorable moments and practical solutions people can trust.
           </p>
