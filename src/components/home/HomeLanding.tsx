@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Project } from '@/data/project'
+import HomeHero from '@/components/home/HomeHero'
 
 const capabilities = [
   {
@@ -79,7 +80,7 @@ function EditorialLink({
   return (
     <Link
       className={[
-        'group inline-flex min-h-11 items-center gap-3 border-b pb-1 text-[0.875rem] font-medium',
+        'group inline-flex min-h-11 items-center gap-3 border-b pb-1 text-[0.875rem] font-normal',
         'transition-opacity duration-200 hover:opacity-55 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4',
         inverse ? 'border-white text-white' : 'border-black text-black',
       ].join(' ')}
@@ -95,7 +96,7 @@ function EditorialLink({
 
 function SectionLabel({ index, children, inverse = false }: { index: string; children: React.ReactNode; inverse?: boolean }) {
   return (
-    <p className={`text-[0.75rem] font-medium uppercase tracking-[0.1em] ${inverse ? 'text-white/60' : 'text-black/55'}`}>
+    <p className={`text-[0.75rem] font-medium tracking-[0.06em] ${inverse ? 'text-white/60' : 'text-black/55'}`}>
       ({index}) &nbsp; {children}
     </p>
   )
@@ -104,52 +105,14 @@ function SectionLabel({ index, children, inverse = false }: { index: string; chi
 export default function HomeLanding({ projects }: { projects: Project[] }) {
   return (
     <div className="bd-home bg-[var(--bd-color-surface-canvas)] text-[var(--bd-color-text-primary)]">
-      <section className="min-h-[100svh] px-5 pb-6 pt-28 md:px-8 md:pb-8 lg:px-16 lg:pt-32">
-        <div className="mx-auto flex min-h-[calc(100svh-9.5rem)] max-w-[1440px] flex-col justify-between">
-          <div className="flex items-center justify-between gap-6 border-t border-black pt-3">
-            <p className="text-[0.75rem] font-medium uppercase tracking-[0.1em]">Barons Digital / Dar es Salaam</p>
-            <p className="hidden text-[0.75rem] font-medium uppercase tracking-[0.1em] text-black/55 sm:block">
-              Strategy / Precision / Craft
-            </p>
-          </div>
+      <HomeHero />
 
-          <div className="grid gap-12 py-20 lg:grid-cols-12 lg:items-end lg:py-28">
-            <h1 className="col-span-12 max-w-[11ch] text-[clamp(4.2rem,10.5vw,10rem)] font-medium leading-[0.84] tracking-[-0.065em]">
-              Make quality visible.
-            </h1>
-            <div className="lg:col-span-5 lg:col-start-8">
-              <p className="max-w-[38rem] text-[clamp(1.125rem,1.6vw,1.375rem)] leading-[1.45] tracking-[-0.015em]">
-                We help serious Tanzanian businesses and organizations turn the quality of what they do into brands,
-                digital experiences, memorable moments and practical solutions people can trust.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
-                <EditorialLink href="/work">View selected work</EditorialLink>
-                <EditorialLink href="/contact">Start a project</EditorialLink>
-              </div>
-            </div>
-          </div>
-
-          <a className="flex min-h-11 items-center justify-between border-t border-black pt-3 text-[0.75rem] font-medium uppercase tracking-[0.1em]" href="#selected-work">
-            <span>Discover Barons</span>
-            <Arrow direction="down" />
-          </a>
-        </div>
-      </section>
-
-      <section aria-label="Barons showreel" className="px-2 sm:px-4">
-        <div className="mx-auto max-w-[1536px] overflow-hidden bg-black">
-          <video autoPlay className="aspect-[16/10] w-full object-cover grayscale md:aspect-[16/8]" loop muted playsInline poster="/images/services/identity-design.jpg" preload="metadata">
-            <source src="/videos/hero-showreel.mp4" type="video/mp4" />
-          </video>
-        </div>
-      </section>
-
-      <section className="px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-56">
-        <div className="mx-auto grid max-w-[1440px] gap-12 border-t border-black pt-5 lg:grid-cols-12">
+      <section className="px-3 py-28 sm:px-5 md:py-40 lg:py-56">
+        <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
           <div className="lg:col-span-3"><SectionLabel index="01">Why Barons</SectionLabel></div>
           <div className="lg:col-span-8 lg:col-start-6">
-            <h2 className="max-w-[13ch] text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">
-              Good work should not be underestimated.
+            <h2 className="max-w-[13ch] text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">
+              Good work should not be <em className="font-editorial">underestimated</em>.
             </h2>
             <p className="mt-12 max-w-[39rem] text-[1.125rem] leading-[1.65] text-black/70 md:text-[1.25rem]">
               Too many capable businesses are held back by unclear positioning, inconsistent communication or
@@ -160,62 +123,71 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </div>
       </section>
 
-      <section className="px-5 pb-28 md:px-8 md:pb-40 lg:px-16 lg:pb-56" id="selected-work">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-10 border-t border-black pt-5 lg:grid-cols-12">
-            <div className="lg:col-span-3"><SectionLabel index="02">Selected work</SectionLabel></div>
-            <div className="lg:col-span-7 lg:col-start-6">
-              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Evidence, not decoration.</h2>
-              <p className="mt-8 max-w-[36rem] text-[1.125rem] leading-[1.6] text-black/65">
-                Brands and platforms built around a real problem, a clear idea and careful execution.
-              </p>
+      <section className="bg-bd-dark-canvas px-3 py-28 text-white sm:px-5 md:py-40 lg:py-56" id="selected-work">
+        <div>
+          <div className="grid gap-10 border-t border-bd-dark-hairline pt-5 lg:grid-cols-12">
+            <div className="lg:col-span-3"><SectionLabel index="02" inverse>Selected work</SectionLabel></div>
+            <div className="flex flex-col gap-8 lg:col-span-8 lg:col-start-6 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">Evidence, not <em className="font-editorial">decoration</em>.</h2>
+                <p className="mt-8 max-w-[36rem] text-[1.125rem] leading-[1.6] text-white/60">
+                  Brands and platforms built around a real problem, a clear idea and careful execution.
+                </p>
+              </div>
+              <Link className="bd-glass-badge group shrink-0 text-white/70 transition-colors duration-200 hover:text-white" href="/work">
+                <span>Explore all</span>
+                <span className="transition-transform duration-300 group-hover:translate-x-1"><Arrow /></span>
+              </Link>
             </div>
           </div>
 
-          <div className="mt-20 grid gap-x-6 gap-y-20 lg:grid-cols-12">
-            {projects.map((project, index) => (
-              <article
-                className={[
-                  index === 0 ? 'lg:col-span-8' : '',
-                  index === 1 ? 'lg:col-span-4 lg:mt-48' : '',
-                  index === 2 ? 'lg:col-span-7 lg:col-start-6' : '',
-                ].join(' ')}
-                key={project.slug}
-              >
-                <Link className="group block" href={`/work/${project.slug}`}>
-                  <div className={['relative overflow-hidden bg-[var(--bd-color-surface-muted)]', index === 1 ? 'aspect-[4/5]' : 'aspect-[4/3]'].join(' ')}>
-                    <Image
-                      alt={project.title}
-                      className="object-cover grayscale transition duration-700 ease-out group-hover:scale-[1.025] group-hover:grayscale-0"
-                      fill
-                      sizes={index === 1 ? '(max-width: 1024px) 100vw, 33vw' : '(max-width: 1024px) 100vw, 66vw'}
-                      src={project.coverImage}
-                    />
+          <div className="mt-16 border-t border-bd-dark-hairline lg:mt-20">
+            {projects.map((project) => {
+              const images = project.media && project.media.length > 0 ? project.media.slice(0, 2) : [{ url: project.coverImage }]
+              return (
+                <Link
+                  className="group grid gap-6 border-b border-bd-dark-hairline py-10 transition-colors duration-300 hover:bg-bd-dark-raised lg:grid-cols-12 lg:items-center lg:gap-8 lg:py-12"
+                  href={`/work/${project.slug}`}
+                  key={project.slug}
+                >
+                  <div className="lg:col-span-4">
+                    <div className="flex items-center gap-3">
+                      <div className="relative size-11 shrink-0 overflow-hidden rounded-[0.4rem] bg-bd-dark-raised">
+                        <Image alt="" className="object-cover" fill sizes="44px" src={project.icon} />
+                      </div>
+                      <div>
+                        <p className="text-[0.95rem] font-medium text-white">{project.title}</p>
+                        <p className="text-[0.8rem] text-white/60">{project.category}</p>
+                      </div>
+                    </div>
+                    <p className="mt-4 line-clamp-3 max-w-[22rem] text-[0.85rem] leading-[1.5] text-white/45">{project.summary?.[0]}</p>
                   </div>
-                  <div className="grid grid-cols-[1fr_auto] gap-6 border-b border-black py-4">
-                    <div>
-                      <h3 className="text-[clamp(1.5rem,2.4vw,2.25rem)] font-medium leading-tight tracking-[-0.035em]">{project.title}</h3>
-                      <p className="mt-2 max-w-[34rem] text-[0.875rem] leading-5 text-black/60">{project.category}</p>
-                    </div>
-                    <div className="flex items-start gap-4 text-[0.75rem] font-medium uppercase tracking-[0.08em]">
-                      <span>{project.year}</span>
-                      <span className="transition-transform duration-300 group-hover:translate-x-1"><Arrow /></span>
-                    </div>
+                  <div className="flex h-56 gap-2 sm:h-64 lg:col-span-8 lg:h-72">
+                    {images.map((media, mediaIndex) => (
+                      <div className="bd-glass-card relative h-full flex-1 bg-white/[0.035]" key={media.url ?? mediaIndex}>
+                        <Image
+                          alt=""
+                          className="object-cover transition duration-700 ease-out group-hover:scale-[1.03]"
+                          fill
+                          sizes={images.length === 1 ? '(max-width: 1024px) 100vw, 66vw' : '(max-width: 1024px) 50vw, 33vw'}
+                          src={media.url}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </Link>
-              </article>
-            ))}
+              )
+            })}
           </div>
-          <div className="mt-16 flex justify-end"><EditorialLink href="/work">See all work</EditorialLink></div>
         </div>
       </section>
 
-      <section className="bg-[var(--bd-color-surface-inverse)] px-5 py-28 text-white md:px-8 md:py-40 lg:px-16 lg:py-52">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="bg-[var(--bd-color-surface-inverse)] px-3 py-28 text-white sm:px-5 md:py-40 lg:py-52">
+        <div>
           <div className="grid gap-12 border-t border-white pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="03" inverse>What we do</SectionLabel></div>
             <div className="lg:col-span-7 lg:col-start-6">
-              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Different capabilities. One standard.</h2>
+              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">Different <em className="font-editorial">capabilities</em>. One standard.</h2>
               <p className="mt-8 max-w-[34rem] text-[1.125rem] leading-[1.6] text-white/65">
                 We bring strategy, creativity and disciplined delivery together around the result a client needs.
               </p>
@@ -226,9 +198,9 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
             {capabilities.map((capability, index) => (
               <li className="grid gap-5 border-b border-white/35 py-8 md:py-10 lg:grid-cols-12" key={capability.title}>
                 <p className="text-[0.75rem] font-medium tracking-[0.08em] text-white/50 lg:col-span-1">{String(index + 1).padStart(2, '0')}</p>
-                <h3 className="text-[clamp(1.75rem,3.3vw,3.25rem)] font-medium leading-none tracking-[-0.04em] lg:col-span-5">{capability.title}</h3>
+                <h3 className="text-[clamp(1.75rem,3.3vw,3.25rem)] font-light leading-none tracking-[-0.04em] lg:col-span-5">{capability.title}</h3>
                 <p className="max-w-[34rem] text-[1rem] leading-[1.55] text-white/65 lg:col-span-4">{capability.description}</p>
-                <p className="text-[0.7rem] font-medium uppercase leading-5 tracking-[0.08em] text-white/45 lg:col-span-2 lg:text-right">{capability.scope}</p>
+                <p className="text-[0.7rem] font-medium leading-5 tracking-[0.08em] text-white/45 lg:col-span-2 lg:text-right">{capability.scope}</p>
               </li>
             ))}
           </ol>
@@ -236,13 +208,13 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </div>
       </section>
 
-      <section className="px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-56">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="px-3 py-28 sm:px-5 md:py-40 lg:py-56">
+        <div>
           <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="04">The Barons Quality Gate</SectionLabel></div>
             <div className="lg:col-span-8 lg:col-start-5">
-              <h2 className="max-w-[14ch] text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">
-                Quality is not a final check. It is the process.
+              <h2 className="max-w-[14ch] text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">
+                Quality is not a final check. It is the <em className="font-editorial">process</em>.
               </h2>
             </div>
           </div>
@@ -250,7 +222,7 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
             {qualityGates.map(([title, description], index) => (
               <li className="grid gap-5 border-t border-black py-7 md:grid-cols-[5rem_1fr_1.1fr] md:gap-8" key={title}>
                 <p className="text-[0.75rem] font-medium tracking-[0.08em] text-black/45">{String(index + 1).padStart(2, '0')}</p>
-                <h3 className="text-[clamp(1.6rem,2.4vw,2.5rem)] font-medium leading-none tracking-[-0.035em]">{title}</h3>
+                <h3 className="text-[clamp(1.6rem,2.4vw,2.5rem)] font-light leading-none tracking-[-0.035em]">{title}</h3>
                 <p className="max-w-[32rem] text-[1rem] leading-[1.6] text-black/65">{description}</p>
               </li>
             ))}
@@ -259,16 +231,16 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
       </section>
 
       <section className="overflow-hidden border-y border-black py-9">
-        <p className="whitespace-nowrap text-center text-[clamp(3.5rem,10vw,9rem)] font-medium leading-none tracking-[-0.06em]">
-          Strategy. <em className="font-editorial font-medium">Precision.</em> Craft.
+        <p className="whitespace-nowrap text-center text-[clamp(3.5rem,10vw,9rem)] font-light leading-none tracking-[-0.06em]">
+          Strategy. <em className="font-editorial">Precision.</em> Craft.
         </p>
       </section>
 
-      <section className="px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-56">
-        <div className="mx-auto grid max-w-[1440px] gap-16 border-t border-black pt-5 lg:grid-cols-12">
+      <section className="px-3 py-28 sm:px-5 md:py-40 lg:py-56">
+        <div className="grid gap-16 border-t border-black pt-5 lg:grid-cols-12">
           <div className="lg:col-span-3"><SectionLabel index="05">About Barons</SectionLabel></div>
           <div className="lg:col-span-7 lg:col-start-6">
-            <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Built in Tanzania. Exacting by standard.</h2>
+            <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">Built in <em className="font-editorial">Tanzania</em>. Exacting by standard.</h2>
             <p className="mt-10 max-w-[39rem] text-[1.125rem] leading-[1.65] text-black/70 md:text-[1.25rem]">
               Barons Digital is a creative and business solutions company for people who take their work seriously.
               We combine local understanding with disciplined strategy, modern craft and accountable delivery—so
@@ -285,12 +257,12 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </div>
       </section>
 
-      <section className="bg-[var(--bd-color-surface-subtle)] px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-52" id="journal">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="bg-[var(--bd-color-surface-subtle)] px-3 py-28 sm:px-5 md:py-40 lg:py-52" id="journal">
+        <div>
           <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="06">Journal / Sample</SectionLabel></div>
             <div className="lg:col-span-7 lg:col-start-6">
-              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Thinking behind the work.</h2>
+              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.045em]">Thinking behind the <em className="font-editorial">work</em>.</h2>
               <p className="mt-8 max-w-[37rem] text-[1.125rem] leading-[1.6] text-black/65">
                 Practical perspectives on brand, digital experience and the systems that make quality repeatable.
               </p>
@@ -299,24 +271,24 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
           <div className="mt-24 grid gap-12 md:grid-cols-3">
             {sampleArticles.map((article, index) => (
               <article className="border-t border-black pt-4" key={article.title}>
-                <div className="flex items-center justify-between text-[0.7rem] font-medium uppercase tracking-[0.08em] text-black/50">
+                <div className="flex items-center justify-between text-[0.7rem] font-medium tracking-[0.08em] text-black/50">
                   <span>{article.category}</span><span>Sample 0{index + 1}</span>
                 </div>
-                <h3 className="mt-14 text-[clamp(1.75rem,2.8vw,2.75rem)] font-medium leading-[1.02] tracking-[-0.04em]">{article.title}</h3>
+                <h3 className="mt-14 text-[clamp(1.75rem,2.8vw,2.75rem)] font-light leading-[1.02] tracking-[-0.04em]">{article.title}</h3>
                 <p className="mt-6 text-[1rem] leading-[1.6] text-black/65">{article.summary}</p>
-                <p className="mt-12 text-[0.75rem] font-medium uppercase tracking-[0.08em] text-black/50">{article.readTime}</p>
+                <p className="mt-12 text-[0.75rem] font-medium tracking-[0.08em] text-black/50">{article.readTime}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-black px-5 py-28 text-white md:px-8 md:py-40 lg:px-16 lg:py-56">
-        <div className="mx-auto max-w-[1440px] border-t border-white pt-5">
+      <section className="bg-black px-3 py-28 text-white sm:px-5 md:py-40 lg:py-56">
+        <div className="border-t border-white pt-5">
           <SectionLabel index="07" inverse>Start a conversation</SectionLabel>
           <div className="mt-24 grid gap-16 lg:grid-cols-12">
-            <h2 className="text-[clamp(3.4rem,8vw,8rem)] font-medium leading-[0.88] tracking-[-0.06em] lg:col-span-10">
-              Your work deserves to be seen at its true value.
+            <h2 className="text-[clamp(3.4rem,8vw,8rem)] font-light leading-[0.88] tracking-[-0.06em] lg:col-span-10">
+              Your work deserves to be seen at its <em className="font-editorial">true value</em>.
             </h2>
             <div className="lg:col-span-5 lg:col-start-8">
               <p className="text-[1.125rem] leading-[1.6] text-white/65">

@@ -39,6 +39,12 @@
   --radius-media-lg:10px;
   --radius-panel:   29px;
   --radius-pill:    360px;
+
+  /* Dark surfaces — restrained "coming soon" dark mode, see globals.css
+     Dark Glass System below and docs/barons-design-system-v1.md */
+  --color-bd-dark-canvas:   #000000;
+  --color-bd-dark-raised:   #0D0D0D;
+  --color-bd-dark-hairline: #1A1A1A;
 }
 
 :root {
@@ -85,6 +91,42 @@
 
   :focus-visible {
     outline-color: currentColor;
+  }
+}
+
+/* ─── Dark Glass System ──────────────────────────────────────────── */
+/*
+  Restrained dark-mode surfaces, extracted from the coming-soon page.
+  Text hierarchy is not tokenized here — use Tailwind's native
+  text-white/<alpha> utilities against the documented scale in
+  docs/barons-design-system-v1.md (100 / 80 / 60 / 50 / 45 / 35 / 30 / 25).
+  These classes cover the recurring *compound* surfaces only.
+*/
+@layer components {
+  .bd-glass {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+  }
+
+  .bd-glass-badge {
+    @apply inline-flex items-center gap-2 rounded-pill px-4 py-2 text-xs;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+  }
+
+  .bd-glass-card {
+    @apply overflow-hidden rounded-2xl;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(8px);
+  }
+
+  .bd-status-dot {
+    @apply h-1.5 w-1.5 rounded-full;
+    background-color: #4ADE80;
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);
   }
 }
 

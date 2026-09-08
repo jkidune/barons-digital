@@ -42,6 +42,12 @@ export const project = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'industry',
+      title: 'Industry',
+      type: 'string',
+      description: 'Groups this project in the case-study rail, e.g. "Non-Profit", "Development Programme".',
+    }),
+    defineField({
       name: 'year',
       title: 'Year',
       type: 'string',
@@ -139,6 +145,66 @@ export const project = defineType({
       of: [defineArrayMember({ type: 'string' })],
     }),
     textArray('outcome', 'Outcome'),
+    defineField({
+      name: 'outcomeStatement',
+      title: 'Outcome statement',
+      type: 'string',
+      description: 'One plain sentence stating the result, shown directly under the project header.',
+    }),
+    defineField({
+      name: 'scopeBlock',
+      title: 'Scope block',
+      type: 'array',
+      description: 'The 4-column plain-text scope list (e.g. Strategy / Design / Development / Delivery).',
+      of: [
+        defineArrayMember({
+          name: 'scopeCategory',
+          title: 'Scope category',
+          type: 'object',
+          fields: [
+            defineField({ name: 'category', title: 'Category', type: 'string' }),
+            defineField({
+              name: 'items',
+              title: 'Line items',
+              type: 'array',
+              of: [defineArrayMember({ type: 'string' })],
+            }),
+          ],
+          preview: {
+            select: { title: 'category', items: 'items' },
+            prepare({ title, items }) {
+              return { title, subtitle: items?.length ? `${items.length} items` : undefined }
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'narrative',
+      title: 'Narrative',
+      type: 'array',
+      description: 'Up to 3 short paragraphs telling the strategy story, shown on a plain dark panel.',
+      of: [defineArrayMember({ type: 'text', rows: 3 })],
+      validation: (Rule) => Rule.max(3),
+    }),
+    defineField({
+      name: 'brandColor',
+      title: 'Brand color',
+      type: 'string',
+      description: 'Hex value for the full-bleed color-break section, e.g. #2F7A3D.',
+    }),
+    defineField({
+      name: 'testimonial',
+      title: 'Testimonial',
+      type: 'object',
+      description: 'Only shown when a real, sourced client quote is available — leave empty to hide this section.',
+      fields: [
+        defineField({ name: 'quote', title: 'Quote', type: 'text', rows: 3 }),
+        defineField({ name: 'name', title: 'Name', type: 'string' }),
+        defineField({ name: 'title', title: 'Title / role', type: 'string' }),
+        defineField({ name: 'result', title: 'Headline result', type: 'string', description: 'A hard result stated plainly, e.g. "40% increase in programme sign-ups."' }),
+      ],
+    }),
     defineField({
       name: 'overview',
       title: 'Short Overview',
