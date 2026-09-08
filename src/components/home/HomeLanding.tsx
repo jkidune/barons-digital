@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Project } from '@/data/project'
+import HomeHero from '@/components/home/HomeHero'
 
 const capabilities = [
   {
@@ -104,45 +105,7 @@ function SectionLabel({ index, children, inverse = false }: { index: string; chi
 export default function HomeLanding({ projects }: { projects: Project[] }) {
   return (
     <div className="bd-home bg-[var(--bd-color-surface-canvas)] text-[var(--bd-color-text-primary)]">
-      <section className="min-h-[100svh] px-5 pb-6 pt-28 md:px-8 md:pb-8 lg:px-16 lg:pt-32">
-        <div className="mx-auto flex min-h-[calc(100svh-9.5rem)] max-w-[1440px] flex-col justify-between">
-          <div className="flex items-center justify-between gap-6 border-t border-black pt-3">
-            <p className="text-[0.75rem] font-medium uppercase tracking-[0.1em]">Barons Digital / Dar es Salaam</p>
-            <p className="hidden text-[0.75rem] font-medium uppercase tracking-[0.1em] text-black/55 sm:block">
-              Strategy / Precision / Craft
-            </p>
-          </div>
-
-          <div className="grid gap-12 py-20 lg:grid-cols-12 lg:items-end lg:py-28">
-            <h1 className="col-span-12 max-w-[11ch] text-[clamp(4.2rem,10.5vw,10rem)] font-medium leading-[0.84] tracking-[-0.065em]">
-              Make quality visible.
-            </h1>
-            <div className="lg:col-span-5 lg:col-start-8">
-              <p className="max-w-[38rem] text-[clamp(1.125rem,1.6vw,1.375rem)] leading-[1.45] tracking-[-0.015em]">
-                We help serious Tanzanian businesses and organizations turn the quality of what they do into brands,
-                digital experiences, memorable moments and practical solutions people can trust.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
-                <EditorialLink href="/work">View selected work</EditorialLink>
-                <EditorialLink href="/contact">Start a project</EditorialLink>
-              </div>
-            </div>
-          </div>
-
-          <a className="flex min-h-11 items-center justify-between border-t border-black pt-3 text-[0.75rem] font-medium uppercase tracking-[0.1em]" href="#selected-work">
-            <span>Discover Barons</span>
-            <Arrow direction="down" />
-          </a>
-        </div>
-      </section>
-
-      <section aria-label="Barons showreel" className="px-2 sm:px-4">
-        <div className="mx-auto max-w-[1536px] overflow-hidden bg-black">
-          <video autoPlay className="aspect-[16/10] w-full object-cover grayscale md:aspect-[16/8]" loop muted playsInline poster="/images/services/identity-design.jpg" preload="metadata">
-            <source src="/videos/hero-showreel.mp4" type="video/mp4" />
-          </video>
-        </div>
-      </section>
+      <HomeHero />
 
       <section className="px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-56">
         <div className="mx-auto grid max-w-[1440px] gap-12 border-t border-black pt-5 lg:grid-cols-12">
