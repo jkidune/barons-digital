@@ -107,8 +107,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
     <div className="bd-home bg-[var(--bd-color-surface-canvas)] text-[var(--bd-color-text-primary)]">
       <HomeHero />
 
-      <section className="px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-56">
-        <div className="mx-auto grid max-w-[1440px] gap-12 border-t border-black pt-5 lg:grid-cols-12">
+      <section className="px-3 py-28 sm:px-5 md:py-40 lg:py-56">
+        <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
           <div className="lg:col-span-3"><SectionLabel index="01">Why Barons</SectionLabel></div>
           <div className="lg:col-span-8 lg:col-start-6">
             <h2 className="max-w-[13ch] text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">
@@ -123,58 +123,67 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </div>
       </section>
 
-      <section className="px-5 pb-28 md:px-8 md:pb-40 lg:px-16 lg:pb-56" id="selected-work">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-10 border-t border-black pt-5 lg:grid-cols-12">
-            <div className="lg:col-span-3"><SectionLabel index="02">Selected work</SectionLabel></div>
-            <div className="lg:col-span-7 lg:col-start-6">
-              <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Evidence, not decoration.</h2>
-              <p className="mt-8 max-w-[36rem] text-[1.125rem] leading-[1.6] text-black/65">
-                Brands and platforms built around a real problem, a clear idea and careful execution.
-              </p>
+      <section className="bg-bd-dark-canvas px-3 py-28 text-white sm:px-5 md:py-40 lg:py-56" id="selected-work">
+        <div>
+          <div className="grid gap-10 border-t border-bd-dark-hairline pt-5 lg:grid-cols-12">
+            <div className="lg:col-span-3"><SectionLabel index="02" inverse>Selected work</SectionLabel></div>
+            <div className="flex flex-col gap-8 lg:col-span-8 lg:col-start-6 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Evidence, not decoration.</h2>
+                <p className="mt-8 max-w-[36rem] text-[1.125rem] leading-[1.6] text-white/60">
+                  Brands and platforms built around a real problem, a clear idea and careful execution.
+                </p>
+              </div>
+              <Link className="bd-glass-badge group shrink-0 text-white/70 transition-colors duration-200 hover:text-white" href="/work">
+                <span>Explore all</span>
+                <span className="transition-transform duration-300 group-hover:translate-x-1"><Arrow /></span>
+              </Link>
             </div>
           </div>
 
-          <div className="mt-20 grid gap-x-6 gap-y-20 lg:grid-cols-12">
-            {projects.map((project, index) => (
-              <article
-                className={[
-                  index === 0 ? 'lg:col-span-8' : '',
-                  index === 1 ? 'lg:col-span-4 lg:mt-48' : '',
-                  index === 2 ? 'lg:col-span-7 lg:col-start-6' : '',
-                ].join(' ')}
-                key={project.slug}
-              >
-                <Link className="group block" href={`/work/${project.slug}`}>
-                  <div className={['relative overflow-hidden bg-[var(--bd-color-surface-muted)]', index === 1 ? 'aspect-[4/5]' : 'aspect-[4/3]'].join(' ')}>
-                    <Image
-                      alt={project.title}
-                      className="object-cover grayscale transition duration-700 ease-out group-hover:scale-[1.025] group-hover:grayscale-0"
-                      fill
-                      sizes={index === 1 ? '(max-width: 1024px) 100vw, 33vw' : '(max-width: 1024px) 100vw, 66vw'}
-                      src={project.coverImage}
-                    />
+          <div className="mt-16 border-t border-bd-dark-hairline lg:mt-20">
+            {projects.map((project) => {
+              const images = project.media && project.media.length > 0 ? project.media.slice(0, 2) : [{ url: project.coverImage }]
+              return (
+                <Link
+                  className="group grid gap-6 border-b border-bd-dark-hairline py-10 transition-colors duration-300 hover:bg-bd-dark-raised lg:grid-cols-12 lg:items-center lg:gap-8 lg:py-12"
+                  href={`/work/${project.slug}`}
+                  key={project.slug}
+                >
+                  <div className="lg:col-span-4">
+                    <div className="flex items-center gap-3">
+                      <div className="relative size-11 shrink-0 overflow-hidden rounded-[0.4rem] bg-bd-dark-raised">
+                        <Image alt="" className="object-cover" fill sizes="44px" src={project.icon} />
+                      </div>
+                      <div>
+                        <p className="text-[0.95rem] font-medium text-white">{project.title}</p>
+                        <p className="text-[0.8rem] text-white/60">{project.category}</p>
+                      </div>
+                    </div>
+                    <p className="mt-4 line-clamp-3 max-w-[22rem] text-[0.85rem] leading-[1.5] text-white/45">{project.summary?.[0]}</p>
                   </div>
-                  <div className="grid grid-cols-[1fr_auto] gap-6 border-b border-black py-4">
-                    <div>
-                      <h3 className="text-[clamp(1.5rem,2.4vw,2.25rem)] font-medium leading-tight tracking-[-0.035em]">{project.title}</h3>
-                      <p className="mt-2 max-w-[34rem] text-[0.875rem] leading-5 text-black/60">{project.category}</p>
-                    </div>
-                    <div className="flex items-start gap-4 text-[0.75rem] font-medium uppercase tracking-[0.08em]">
-                      <span>{project.year}</span>
-                      <span className="transition-transform duration-300 group-hover:translate-x-1"><Arrow /></span>
-                    </div>
+                  <div className="flex h-56 gap-2 sm:h-64 lg:col-span-8 lg:h-72">
+                    {images.map((media, mediaIndex) => (
+                      <div className="bd-glass-card relative h-full flex-1 bg-white/[0.035]" key={media.url ?? mediaIndex}>
+                        <Image
+                          alt=""
+                          className="object-cover transition duration-700 ease-out group-hover:scale-[1.03]"
+                          fill
+                          sizes={images.length === 1 ? '(max-width: 1024px) 100vw, 66vw' : '(max-width: 1024px) 50vw, 33vw'}
+                          src={media.url}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </Link>
-              </article>
-            ))}
+              )
+            })}
           </div>
-          <div className="mt-16 flex justify-end"><EditorialLink href="/work">See all work</EditorialLink></div>
         </div>
       </section>
 
-      <section className="bg-[var(--bd-color-surface-inverse)] px-5 py-28 text-white md:px-8 md:py-40 lg:px-16 lg:py-52">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="bg-[var(--bd-color-surface-inverse)] px-3 py-28 text-white sm:px-5 md:py-40 lg:py-52">
+        <div>
           <div className="grid gap-12 border-t border-white pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="03" inverse>What we do</SectionLabel></div>
             <div className="lg:col-span-7 lg:col-start-6">
@@ -199,8 +208,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </div>
       </section>
 
-      <section className="px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-56">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="px-3 py-28 sm:px-5 md:py-40 lg:py-56">
+        <div>
           <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="04">The Barons Quality Gate</SectionLabel></div>
             <div className="lg:col-span-8 lg:col-start-5">
@@ -227,8 +236,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </p>
       </section>
 
-      <section className="px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-56">
-        <div className="mx-auto grid max-w-[1440px] gap-16 border-t border-black pt-5 lg:grid-cols-12">
+      <section className="px-3 py-28 sm:px-5 md:py-40 lg:py-56">
+        <div className="grid gap-16 border-t border-black pt-5 lg:grid-cols-12">
           <div className="lg:col-span-3"><SectionLabel index="05">About Barons</SectionLabel></div>
           <div className="lg:col-span-7 lg:col-start-6">
             <h2 className="text-[clamp(2.75rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.045em]">Built in Tanzania. Exacting by standard.</h2>
@@ -248,8 +257,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </div>
       </section>
 
-      <section className="bg-[var(--bd-color-surface-subtle)] px-5 py-28 md:px-8 md:py-40 lg:px-16 lg:py-52" id="journal">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="bg-[var(--bd-color-surface-subtle)] px-3 py-28 sm:px-5 md:py-40 lg:py-52" id="journal">
+        <div>
           <div className="grid gap-12 border-t border-black pt-5 lg:grid-cols-12">
             <div className="lg:col-span-3"><SectionLabel index="06">Journal / Sample</SectionLabel></div>
             <div className="lg:col-span-7 lg:col-start-6">
@@ -274,8 +283,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </div>
       </section>
 
-      <section className="bg-black px-5 py-28 text-white md:px-8 md:py-40 lg:px-16 lg:py-56">
-        <div className="mx-auto max-w-[1440px] border-t border-white pt-5">
+      <section className="bg-black px-3 py-28 text-white sm:px-5 md:py-40 lg:py-56">
+        <div className="border-t border-white pt-5">
           <SectionLabel index="07" inverse>Start a conversation</SectionLabel>
           <div className="mt-24 grid gap-16 lg:grid-cols-12">
             <h2 className="text-[clamp(3.4rem,8vw,8rem)] font-medium leading-[0.88] tracking-[-0.06em] lg:col-span-10">

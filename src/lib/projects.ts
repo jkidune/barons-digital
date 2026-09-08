@@ -18,6 +18,11 @@ type SanityProject = Omit<Project, 'slug' | 'coverImage' | 'icon' | 'media'> & {
   order?: number
 }
 
+function findFallback(slug: SanityProject['slug'], index: number) {
+  const targetSlug = normalizeSlug(slug, '')
+  return fallbackProjects.find((p) => p.slug === targetSlug) || fallbackProjects[index] || fallbackProjects[0]
+}
+
 const projectQuery = `
   *[_type == "project"] | order(coalesce(order, 999), year desc, title asc) {
     title,
@@ -44,6 +49,12 @@ const projectQuery = `
     approach,
     features,
     outcome,
+    industry,
+    outcomeStatement,
+    scopeBlock,
+    narrative,
+    brandColor,
+    testimonial,
     overview,
     problem,
     solution,
@@ -76,7 +87,7 @@ function normalizeSlug(slug: SanityProject['slug'], fallback: string) {
 }
 
 function normalizeProject(project: SanityProject, index: number): Project {
-  const fallback = fallbackProjects[index] || fallbackProjects[0]
+  const fallback = findFallback(project.slug, index)
   const slug = normalizeSlug(project.slug, fallback.slug)
   const title = project.title || fallback.title
 
@@ -99,6 +110,12 @@ function normalizeProject(project: SanityProject, index: number): Project {
     overview: project.overview || fallback.overview,
     problem: project.problem || fallback.problem,
     solution: project.solution || fallback.solution,
+    industry: project.industry || fallback.industry,
+    outcomeStatement: project.outcomeStatement || fallback.outcomeStatement,
+    scopeBlock: project.scopeBlock?.length ? project.scopeBlock : fallback.scopeBlock,
+    narrative: project.narrative?.length ? project.narrative : fallback.narrative,
+    brandColor: project.brandColor || fallback.brandColor,
+    testimonial: project.testimonial?.quote ? project.testimonial : fallback.testimonial,
     liveUrl: typeof project.liveUrl === 'undefined' ? fallback.liveUrl : project.liveUrl,
     media: project.media?.map((item) => ({
       type: item.type || (item.videoUrl || item.url?.endsWith('.mp4') ? 'video' : 'image'),
