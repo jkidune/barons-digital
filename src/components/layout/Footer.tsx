@@ -1,73 +1,47 @@
 import Link from 'next/link'
 
-const capabilities = [
-  'Digital marketing',
-  'Brand and creative',
-  'Wedding and event creative',
-  'Product sourcing',
-  'Business support',
-]
-
-const company = [
+const links = [
   { label: 'Work', href: '/work' },
   { label: 'Capabilities', href: '/services' },
   { label: 'About', href: '/about' },
-  { label: 'Journal', href: '/#journal' },
+  { label: 'Studio notes', href: '/#journal' },
   { label: 'Contact', href: '/contact' },
 ]
 
 export default function Footer() {
+  const year = new Date().getFullYear()
   return (
-    <footer className="border-t border-white/25 bg-black px-5 pb-8 pt-20 text-white md:px-8 lg:px-16">
-      <div className="mx-auto max-w-[1440px]">
-        <div className="grid gap-16 lg:grid-cols-12">
-          <div className="lg:col-span-5">
-            <Link className="text-[0.8rem] font-semibold uppercase tracking-[0.12em]" href="/">
-              Barons Digital
-            </Link>
-            <p className="mt-10 max-w-[28rem] text-[clamp(1.7rem,3vw,2.8rem)] font-medium leading-[1.05] tracking-[-0.04em]">
-              Making quality visible through strategy, creativity and disciplined delivery.
-            </p>
-            <a
-              className="mt-10 inline-flex min-h-11 items-center border-b border-white text-[0.9rem] transition-opacity hover:opacity-55 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-              href="mailto:hello@barons-digital.com"
-            >
-              hello@barons-digital.com
-            </a>
-          </div>
+    <footer className="overflow-hidden bg-black pb-8 pt-20 text-white">
+      <div className="bd-marquee border-y border-white/20 py-7">
+        <div className="bd-marquee-track flex w-max items-center">
+          {[0, 1].map((set) => (
+            <div className="flex shrink-0 items-center" key={set}>
+              {['Strategy', 'Identity', 'Digital', 'Content', 'Experience'].map((item) => (
+                <div className="flex shrink-0 items-center" key={item}>
+                  <span className="px-5 text-[clamp(2.5rem,7vw,7rem)] font-semibold uppercase leading-none tracking-[-0.06em] text-white/80 md:px-10">{item}</span>
+                  <span className="h-3 w-3 rounded-full bg-white/25 md:h-5 md:w-5" />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
-          <div className="grid gap-12 sm:grid-cols-2 lg:col-span-5 lg:col-start-8">
-            <div>
-              <p className="text-[0.7rem] font-medium uppercase tracking-[0.1em] text-white/45">Capabilities</p>
-              <ul className="mt-7 space-y-3">
-                {capabilities.map((capability) => (
-                  <li className="text-[0.875rem] leading-5 text-white/70" key={capability}>{capability}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-[0.7rem] font-medium uppercase tracking-[0.1em] text-white/45">Company</p>
-              <ul className="mt-7 space-y-3">
-                {company.map((item) => (
-                  <li key={item.label}>
-                    <Link className="text-[0.875rem] text-white/70 transition-colors hover:text-white" href={item.href}>
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <div className="mx-auto mt-20 max-w-[1440px] px-5 md:px-10 lg:px-16">
+        <div className="grid gap-16 border-t border-white/25 pt-6 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-white/45">Have something serious to build?</p>
+            <a className="mt-9 inline-block text-[clamp(2rem,4.2vw,4.5rem)] font-semibold uppercase leading-none tracking-[-0.05em] transition-opacity hover:opacity-55" href="mailto:hello@barons-digital.com">hello@barons-digital.com</a>
           </div>
+          <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-4 lg:col-span-4 lg:col-start-9">
+            {links.map((item, index) => <Link className="border-t border-white/20 py-3 text-sm text-white/65 transition-colors hover:text-white" href={item.href} key={item.label}><span className="mr-4 text-[0.65rem] text-white/30">0{index + 1}</span>{item.label}</Link>)}
+          </nav>
         </div>
 
-        <div className="mt-24 border-t border-white/25 pt-4 md:mt-36">
-          <p aria-label="Barons Digital" className="overflow-hidden text-[clamp(4rem,13.2vw,12.5rem)] font-medium leading-[0.76] tracking-[-0.075em]">
-            BARONS
-          </p>
-          <div className="mt-10 flex flex-col justify-between gap-3 text-[0.7rem] uppercase tracking-[0.08em] text-white/45 sm:flex-row">
-            <p>Dar es Salaam / Tanzania</p>
-            <p>© {new Date().getFullYear()} Barons Digital</p>
-          </div>
+        <p className="mt-28 overflow-hidden text-[clamp(4rem,14vw,13rem)] font-semibold uppercase leading-[0.72] tracking-[-0.08em]">Barons</p>
+        <div className="mt-10 flex flex-col justify-between gap-3 border-t border-white/20 pt-4 text-[0.65rem] uppercase tracking-[0.12em] text-white/40 sm:flex-row">
+          <p>Dar es Salaam · Tanzania</p>
+          <p>© {year} Barons Digital</p>
         </div>
       </div>
     </footer>

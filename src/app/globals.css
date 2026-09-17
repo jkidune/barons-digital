@@ -172,6 +172,42 @@ html.lenis {
   scroll-margin-top: 4rem;
 }
 
+.bd-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+.bd-text-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid currentColor;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: opacity 200ms ease;
+}
+
+.bd-text-link:hover {
+  opacity: 0.55;
+}
+
+.bd-marquee-track {
+  animation: bd-marquee 28s linear infinite;
+}
+
+@keyframes bd-marquee {
+  to { transform: translateX(-50%); }
+}
+
+.bd-hero-line {
+  perspective: 800px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto !important;

@@ -1,11 +1,35 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { NAV_LINKS } from '@/constants/navigation'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const header = useRef<HTMLElement>(null)
+
+  useGSAP(() => {
+    if (!header.current) return
+    gsap.from(header.current, { y: -36, opacity: 0, duration: 0.9, delay: 0.8, ease: 'power3.out' })
+    ScrollTrigger.create({
+      start: 0,
+      end: 'max',
+      onUpdate: (self) => {
+        if (menuOpen) return
+        gsap.to(header.current, {
+          yPercent: self.direction === 1 && self.scroll() > 240 ? -110 : 0,
+          duration: 0.45,
+          ease: self.direction === 1 ? 'power2.inOut' : 'power3.out',
+          overwrite: true,
+        })
+      },
+    })
+  }, { dependencies: [menuOpen] })
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -22,7 +46,7 @@ export default function Navbar() {
   }, [menuOpen])
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/15 bg-white/95 backdrop-blur-md">
+    <header ref={header} className="fixed inset-x-0 top-0 z-50 text-white mix-blend-difference">
       <div className="mx-auto flex h-16 max-w-[1568px] items-center justify-between px-5 md:px-8 lg:px-16">
         <Link
           className="text-[0.8rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
@@ -47,7 +71,7 @@ export default function Navbar() {
         </nav>
 
         <Link
-          className="hidden min-h-11 items-center border-b border-black text-[0.8rem] font-medium transition-opacity hover:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 md:inline-flex"
+          className="hidden min-h-11 items-center border-b border-white text-[0.8rem] font-medium transition-opacity hover:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 md:inline-flex"
           href="/contact"
         >
           Start a project
@@ -67,7 +91,7 @@ export default function Navbar() {
 
       <div
         aria-hidden={!menuOpen}
-        className={`fixed inset-x-0 top-16 h-[calc(100svh-4rem)] bg-black px-5 py-8 text-white transition duration-300 md:hidden ${
+        className={`fixed inset-x-0 top-16 h-[calc(100svh-4rem)] bg-black px-5 py-8 text-white mix-blend-normal transition duration-500 md:hidden ${
           menuOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-3 opacity-0'
         }`}
         id="mobile-navigation"
