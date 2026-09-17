@@ -47,7 +47,7 @@ export default function Navbar() {
 
   return (
     <header ref={header} className="fixed inset-x-0 top-0 z-50 text-white mix-blend-difference">
-      <div className="mx-auto flex h-16 max-w-[1568px] items-center justify-between px-5 md:px-8 lg:px-16">
+      <div className="mx-auto flex h-16 max-w-[1568px] items-center justify-between px-5 pt-[env(safe-area-inset-top)] md:px-8 lg:px-16">
         <Link
           className="text-[0.8rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
           href="/"
@@ -91,7 +91,7 @@ export default function Navbar() {
 
       <div
         aria-hidden={!menuOpen}
-        className={`fixed inset-x-0 top-16 h-[calc(100svh-4rem)] bg-black px-5 py-8 text-white mix-blend-normal transition duration-500 md:hidden ${
+        className={`fixed inset-x-0 top-16 h-[calc(100svh-4rem)] overflow-y-auto bg-black px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-8 text-white mix-blend-normal transition duration-500 md:hidden ${
           menuOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-3 opacity-0'
         }`}
         id="mobile-navigation"
