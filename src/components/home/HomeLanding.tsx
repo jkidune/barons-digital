@@ -39,18 +39,21 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
       .from('.bd-hero-line > span', { yPercent: 115, rotateX: 18, duration: 1.15, stagger: 0.12 }, 0.25)
       .from('.bd-hero-meta', { y: 24, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.8)
 
-    gsap.to('.bd-hero-media', {
-      yPercent: 18, scale: 1.04, ease: 'none',
-      scrollTrigger: { trigger: '.bd-hero', start: 'top top', end: 'bottom top', scrub: 0.8 },
-    })
-    gsap.to('.bd-hero-copy', {
-      yPercent: -16, opacity: 0, ease: 'none',
-      scrollTrigger: { trigger: '.bd-hero', start: 'top top', end: '75% top', scrub: 0.6 },
-    })
+    const mobile = window.matchMedia('(max-width: 767px)').matches
+    if (!mobile) {
+      gsap.to('.bd-hero-media', {
+        yPercent: 18, scale: 1.04, ease: 'none',
+        scrollTrigger: { trigger: '.bd-hero', start: 'top top', end: 'bottom top', scrub: 0.8 },
+      })
+      gsap.to('.bd-hero-copy', {
+        yPercent: -16, opacity: 0, ease: 'none',
+        scrollTrigger: { trigger: '.bd-hero', start: 'top top', end: '75% top', scrub: 0.6 },
+      })
+    }
 
     gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((element) => {
       gsap.from(element, {
-        y: 54, opacity: 0, duration: 1, ease: 'power3.out',
+        y: mobile ? 28 : 54, opacity: 0, duration: mobile ? 0.7 : 1, ease: 'power3.out',
         scrollTrigger: { trigger: element, start: 'top 86%', toggleActions: 'play none none reverse' },
       })
     })
@@ -89,7 +92,7 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
             <span className="bd-hero-meta">Independent creative company</span>
             <span className="bd-hero-meta hidden sm:block">Dar es Salaam · Tanzania</span>
           </div>
-          <h1 className="max-w-[12ch] text-[clamp(3.8rem,9.2vw,9rem)] font-semibold uppercase leading-[0.82] tracking-[-0.07em]">
+          <h1 className="max-w-[12ch] text-[clamp(3.15rem,9.2vw,9rem)] font-semibold uppercase leading-[0.84] tracking-[-0.07em] md:leading-[0.82]">
             <span className="bd-hero-line block overflow-hidden pb-[0.08em]"><span className="block">Make quality</span></span>
             <span className="bd-hero-line block overflow-hidden pb-[0.08em]"><span className="block md:ml-[9vw]">impossible</span></span>
             <span className="bd-hero-line block overflow-hidden pb-[0.08em]"><span className="block">to overlook.</span></span>
