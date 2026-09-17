@@ -1,11 +1,6 @@
-import AboutSection from '@/components/sections/AboutSection'
-import CTASection from '@/components/sections/CtaSection'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export default function AboutPage() {
-  return (
-    <>
-      <AboutSection />
-      <CTASection />
-    </>
-  )
+  return <main className="bg-white pt-32 text-black md:pt-40"><header className="px-5 md:px-10 lg:px-16"><div className="mx-auto max-w-[1440px] border-t border-black/20 pt-5"><p className="bd-label">( About Barons )</p><h1 className="mt-16 max-w-[12ch] text-[clamp(3.7rem,9vw,9rem)] font-semibold uppercase leading-[.82] tracking-[-.07em]">Built to make quality visible.</h1><p className="mb-20 ml-auto mt-12 max-w-2xl text-xl leading-8 text-black/60">Barons Digital is an independent creative and business solutions company in Dar es Salaam. We help serious organisations express the quality already present in their work.</p></div></header><div className="relative aspect-[16/8] min-h-[440px]"><video autoPlay muted loop playsInline className="h-full w-full object-cover grayscale"><source src="/videos/about-showreel.mp4" type="video/mp4" /></video></div><section className="px-5 py-28 md:px-10 md:py-40 lg:px-16"><div className="mx-auto grid max-w-[1440px] gap-14 border-t border-black/20 pt-6 lg:grid-cols-12"><p className="bd-label lg:col-span-3">( Our point of view )</p><div className="lg:col-span-8 lg:col-start-5"><h2 className="text-[clamp(2.8rem,6vw,6rem)] font-semibold uppercase leading-[.88] tracking-[-.06em]">Strategy gives the work direction. Craft gives it weight.</h2><p className="mt-10 max-w-xl text-lg leading-8 text-black/60">We work across brand, digital, content and experience, bringing these disciplines together when the problem demands it. Every engagement is built around clarity, relevance and accountable delivery.</p></div><div className="relative mt-10 aspect-[4/3] lg:col-span-7"><Image src="/images/services/content-production.jpg" alt="Barons creative process" fill className="object-cover grayscale" sizes="60vw" /></div><div className="relative aspect-[4/5] lg:col-span-4 lg:col-start-9 lg:mt-48"><Image src="/images/services/website-mockup.jpg" alt="Barons digital design" fill className="object-cover grayscale" sizes="35vw" /></div></div></section><section className="bg-black px-5 py-28 text-white md:px-10 lg:px-16"><div className="mx-auto max-w-[1440px]"><p className="bd-label">( Work with us )</p><h2 className="mt-16 max-w-[12ch] text-[clamp(3rem,7vw,7rem)] font-semibold uppercase leading-[.86] tracking-[-.06em]">Bring us the problem worth solving.</h2><Link className="bd-text-link mt-12" href="/contact">Start a conversation ↗</Link></div></section></main>
 }
