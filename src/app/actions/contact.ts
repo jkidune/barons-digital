@@ -14,10 +14,15 @@ export async function submitContact(
   const name    = (formData.get('name')    as string | null)?.trim()
   const email   = (formData.get('email')   as string | null)?.trim().toLowerCase()
   const phone   = (formData.get('phone')   as string | null)?.trim() || null
-  const message = (formData.get('message') as string | null)?.trim() || null
+  const message = (formData.get('message') as string | null)?.trim()
+  const company = (formData.get('company') as string | null)?.trim()
+  const service = (formData.get('service') as string | null)?.trim()
+  const budget = (formData.get('budget') as string | null)?.trim()
+  const timeline = (formData.get('timeline') as string | null)?.trim()
+  const source = (formData.get('source') as string | null)?.trim()
   const website = (formData.get('website') as string | null)?.trim() // honeypot
 
-  if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!name || !email || !message || !service || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { status: 'error', message: 'Please enter a valid name and email address.' }
   }
 
@@ -29,18 +34,19 @@ export async function submitContact(
   try {
     const supabase = createAdminClient()
 
+    const projectBrief = [company && `Company: ${company}`, `Service: ${service}`, budget && `Budget: ${budget}`, timeline && `Preferred start: ${timeline}`, source && `Source: ${source}`, `\nProject brief:\n${message}`].filter(Boolean).join('\n')
     const { error: dbError } = await supabase
       .from('contact_messages')
       .insert({
         name,
         email,
         phone,
-        message,
+        message: projectBrief,
       })
 
     if (dbError) {
       console.error('[contact:insert] code=%s message=%s', dbError.code, dbError.message)
-      return { status: 'error', message: `Database error: ${dbError.message}` }
+      return { status: 'error', message: 'We could not send your enquiry just now. Please try again or email us directly.' }
     }
 
     return {
