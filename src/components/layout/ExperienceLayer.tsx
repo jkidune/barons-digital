@@ -73,7 +73,7 @@ function Preloader() {
   if (!visible) return null
   return <div ref={root} className="fixed inset-0 z-[9998] overflow-hidden bg-black text-white" aria-hidden="true">
     <div className="absolute inset-0 flex items-center justify-center">
-      {loaderImages.map((src, index) => <div className="bd-loader-card absolute aspect-[4/3] w-[42vw] max-w-sm overflow-hidden" key={src} style={{ zIndex: index }}><Image src={src} alt="" fill sizes="42vw" className="object-cover" /></div>)}
+      {loaderImages.map((src, index) => <div className="bd-loader-card absolute aspect-[4/3] w-[76vw] max-w-sm overflow-hidden sm:w-[42vw]" key={src} style={{ zIndex: index }}><Image src={src} alt="" fill sizes="(max-width: 640px) 76vw, 42vw" className="object-cover" /></div>)}
     </div>
     <span className="bd-loader-word absolute bottom-8 left-6 text-[clamp(3.5rem,9vw,8rem)] font-semibold uppercase leading-none tracking-[-0.07em] md:bottom-12 md:left-12">Barons</span>
     <span ref={count} className="absolute right-6 top-6 font-mono text-3xl tabular-nums md:right-10 md:top-10 md:text-5xl">000</span>
