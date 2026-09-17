@@ -1,0 +1,7 @@
+import Image from 'next/image'
+import Link from 'next/link'
+import { articles } from '@/data/content'
+
+export default function JournalPage() {
+  return <main className="bg-white px-5 pb-32 pt-32 text-black md:px-10 md:pt-40 lg:px-16"><div className="mx-auto max-w-[1440px]"><header className="border-t border-black/20 pt-5"><p className="bd-label">( Journal )</p><h1 className="mt-16 text-[clamp(4rem,10vw,10rem)] font-semibold uppercase leading-[.8] tracking-[-.075em]">Thinking<br />behind the work.</h1></header><div className="mt-28 grid gap-16 md:grid-cols-2">{articles.map((article, i) => <article className={i % 2 ? 'md:mt-40' : ''} key={article.slug}><Link href={`/journal/${article.slug}`} data-cursor="read" className="group block"><div className="relative aspect-[4/3] overflow-hidden bg-neutral-100"><Image src={article.image} alt="" fill className="object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" sizes="(max-width:768px) 100vw, 50vw" /></div><div className="mt-5 border-t border-black/20 pt-5"><p className="text-xs uppercase tracking-[.12em] text-black/45">{article.category} · {article.date}</p><h2 className="mt-8 text-[clamp(2rem,4vw,4rem)] font-semibold uppercase leading-[.92] tracking-[-.055em]">{article.title}</h2><p className="mt-5 max-w-lg text-sm leading-6 text-black/60">{article.excerpt}</p></div></Link></article>)}</div></div></main>
+}
