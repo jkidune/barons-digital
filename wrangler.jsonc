@@ -24,7 +24,7 @@
   "vars": {
     "NEXT_PUBLIC_SITE_URL": "https://barons-digital.com",
     "NEXT_PUBLIC_SANITY_STUDIO_URL": "https://barons-digital-studio.kidunejoseph91.workers.dev",
-    "SITE_LAUNCHED": "false"
+    "SITE_LAUNCHED": "true"
   },
   "services": [
     {
