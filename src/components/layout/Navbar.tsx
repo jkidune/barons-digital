@@ -38,6 +38,7 @@ export default function Navbar() {
 
     document.addEventListener('keydown', closeOnEscape)
     document.body.style.overflow = menuOpen ? 'hidden' : ''
+    if (menuOpen && header.current) gsap.set(header.current, { yPercent: 0 })
 
     return () => {
       document.removeEventListener('keydown', closeOnEscape)
@@ -46,8 +47,8 @@ export default function Navbar() {
   }, [menuOpen])
 
   return (
-    <header ref={header} className="fixed inset-x-0 top-0 z-50 text-white mix-blend-difference">
-      <div className="mx-auto flex h-16 max-w-[1568px] items-center justify-between px-5 pt-[env(safe-area-inset-top)] md:px-8 lg:px-16">
+    <header ref={header} className="fixed inset-x-0 top-0 z-[100] bg-[#f7f4ee] text-black shadow-[0_1px_0_rgba(0,0,0,.08)]">
+      <div className="relative z-10 mx-auto flex h-[calc(4rem+env(safe-area-inset-top))] max-w-[1568px] items-center justify-between px-5 pt-[env(safe-area-inset-top)] md:px-8 lg:px-16">
         <Link
           className="text-[0.8rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
           href="/"
@@ -71,7 +72,7 @@ export default function Navbar() {
         </nav>
 
         <Link
-          className="hidden min-h-11 items-center border-b border-white text-[0.8rem] font-medium transition-opacity hover:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 md:inline-flex"
+          className="hidden min-h-11 items-center border-b border-black text-[0.8rem] font-medium transition-opacity hover:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 md:inline-flex"
           href="/contact"
         >
           Start a project
@@ -91,28 +92,28 @@ export default function Navbar() {
 
       <div
         aria-hidden={!menuOpen}
-        className={`fixed inset-x-0 top-16 h-[calc(100svh-4rem)] overflow-y-auto bg-black px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-8 text-white mix-blend-normal transition duration-500 md:hidden ${
-          menuOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-3 opacity-0'
+        className={`fixed inset-0 h-[100dvh] overflow-y-auto overscroll-contain bg-[#f7f4ee] px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[calc(5.5rem+env(safe-area-inset-top))] text-black transition duration-300 md:hidden ${
+          menuOpen ? 'visible pointer-events-auto translate-y-0 opacity-100' : 'invisible pointer-events-none -translate-y-2 opacity-0'
         }`}
         id="mobile-navigation"
       >
         <nav aria-label="Mobile navigation" className="flex h-full flex-col justify-between">
           <ul>
             {NAV_LINKS.map((link, index) => (
-              <li className="border-t border-white/35" key={link.label}>
+              <li className="border-t border-black/15" key={link.label}>
                 <Link
-                  className="flex min-h-16 items-center justify-between py-4 text-[clamp(2rem,10vw,3.75rem)] font-medium leading-none tracking-[-0.04em]"
+                  className="flex min-h-16 items-center justify-between py-4 text-[clamp(1.9rem,9vw,3.25rem)] font-medium leading-none tracking-[-0.04em]"
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
                   tabIndex={menuOpen ? 0 : -1}
                 >
                   <span>{link.label}</span>
-                  <span className="text-[0.7rem] tracking-[0.08em] text-white/45">0{index + 1}</span>
+                  <span className="text-[0.7rem] tracking-[0.08em] text-black/40">0{index + 1}</span>
                 </Link>
               </li>
             ))}
           </ul>
-          <p className="border-t border-white/35 pt-4 text-[0.75rem] uppercase tracking-[0.1em] text-white/50">
+          <p className="border-t border-black/15 pt-4 text-[0.75rem] uppercase tracking-[0.1em] text-black/50">
             Dar es Salaam / Tanzania
           </p>
         </nav>

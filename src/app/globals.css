@@ -222,6 +222,8 @@ html.lenis {
   scroll-margin-top: 4rem;
 }
 
+.bd-rule { border-top-color: transparent !important; }
+
 .bd-label {
   font-size: 0.7rem;
   font-weight: 600;
