@@ -72,10 +72,11 @@
     overflow-x: hidden;
   }
 
-  body {
+body {
     font-family: var(--font-sans);
     background-color: var(--bd-color-surface-canvas);
     color: var(--bd-color-text-primary);
+    isolation: isolate;
   }
 
   a,
@@ -85,6 +86,55 @@
 
   :focus-visible {
     outline-color: currentColor;
+  }
+}
+
+.bd-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  display: flex;
+  width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  transition: width 220ms cubic-bezier(.22,1,.36,1), height 220ms cubic-bezier(.22,1,.36,1), opacity 180ms ease;
+}
+.bd-cursor span { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; opacity: 0; }
+.bd-cursor[data-state="grow"] { width: 54px; height: 54px; }
+.bd-cursor[data-state="view"], .bd-cursor[data-state="read"] { width: 86px; height: 86px; }
+.bd-cursor[data-state="view"] span, .bd-cursor[data-state="read"] span { opacity: 1; }
+.bd-cursor[data-state="hidden"] { opacity: 0 !important; }
+
+@media (hover: none), (pointer: coarse) { .bd-cursor { display: none; } }
+
+img,
+video {
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  main h1,
+  .bd-home h1 {
+    font-size: clamp(3rem, 14vw, 4rem) !important;
+    line-height: 0.86 !important;
+    overflow-wrap: anywhere;
+  }
+
+  main h2,
+  .bd-home h2 {
+    overflow-wrap: anywhere;
+  }
+
+  .bd-marquee-track {
+    animation-duration: 38s;
   }
 }
 
