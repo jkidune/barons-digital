@@ -115,6 +115,29 @@ body {
 
 @media (hover: none), (pointer: coarse) { .bd-cursor { display: none; } }
 
+img,
+video {
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  main h1,
+  .bd-home h1 {
+    font-size: clamp(3rem, 14vw, 4rem) !important;
+    line-height: 0.86 !important;
+    overflow-wrap: anywhere;
+  }
+
+  main h2,
+  .bd-home h2 {
+    overflow-wrap: anywhere;
+  }
+
+  .bd-marquee-track {
+    animation-duration: 38s;
+  }
+}
+
 /* ─── Custom Fonts ───────────────────────────────────────────────── */
 /* 
   If you bring in a custom display font later (from Figma), add it here.
