@@ -4,7 +4,7 @@ const links = [
   { label: 'Work', href: '/work' },
   { label: 'Capabilities', href: '/services' },
   { label: 'About', href: '/about' },
-  { label: 'Studio notes', href: '/#journal' },
+  { label: 'Journal', href: '/journal' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -24,6 +24,12 @@ export default function Footer() {
               ))}
             </div>
           ))}
+        </div>
+
+        <div className="mt-20 grid gap-3 border-t border-white/20 pt-5 text-sm text-white/60 sm:grid-cols-3">
+          <a href="https://www.linkedin.com/company/barons-digital/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">LinkedIn ↗</a>
+          <a href="https://www.facebook.com/baronsdigital" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">Facebook ↗</a>
+          <a href="https://www.instagram.com/baronsdigital/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">Instagram ↗</a>
         </div>
       </div>
 
