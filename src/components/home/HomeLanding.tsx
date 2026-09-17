@@ -104,12 +104,12 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
         </div>
       </section>
 
-      <section className="bg-black px-5 py-28 text-white md:px-10 md:py-40 lg:px-16">
+      <section className="bg-[#e8e3db] px-5 py-28 text-black md:px-10 md:py-40 lg:px-16">
         <div className="mx-auto max-w-[1440px]">
-          <div className="bd-rule border-t border-white/25 pt-5"><Label>( 01 — Point of view )</Label></div>
+          <div className="bd-rule pt-5"><Label>( 01 — Point of view )</Label></div>
           <div className="mt-20 grid gap-16 lg:grid-cols-12 lg:items-end">
             <h2 data-reveal className="text-[clamp(3.2rem,7.4vw,7.2rem)] font-semibold uppercase leading-[0.86] tracking-[-0.065em] lg:col-span-9">Good work deserves a presence that feels just as considered.</h2>
-            <p data-reveal className="max-w-md text-base leading-7 text-white/60 lg:col-span-3">We combine local understanding, strategic clarity and exacting craft to turn real capability into brands and experiences people trust.</p>
+            <p data-reveal className="max-w-md text-base leading-7 text-black/60 lg:col-span-3">We combine local understanding, strategic clarity and exacting craft to turn real capability into brands and experiences people trust.</p>
           </div>
         </div>
       </section>
@@ -210,8 +210,8 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
 
       <section className="px-5 py-24 md:px-10 lg:px-16"><div className="mx-auto grid max-w-[1440px] gap-12 border-t border-black/20 pt-5 lg:grid-cols-12"><div className="lg:col-span-3"><Label>( Follow the work )</Label></div><div className="grid gap-4 sm:grid-cols-3 lg:col-span-8 lg:col-start-5">{[['LinkedIn','https://www.linkedin.com/company/barons-digital/'],['Instagram','https://www.instagram.com/baronsdigital/'],['Facebook','https://www.facebook.com/baronsdigital']].map(([label, href]) => <a className="flex items-center justify-between border-t border-black/20 py-5 text-lg font-semibold uppercase" href={href} target="_blank" rel="noopener noreferrer" key={label}>{label}<span>↗</span></a>)}</div></div></section>
 
-      <section className="bg-black px-5 py-28 text-white md:px-10 md:py-40 lg:px-16 lg:py-52">
-        <div className="mx-auto max-w-[1440px]"><div className="bd-rule border-t border-white/30 pt-5"><Label>( 08 — Start something )</Label></div><h2 data-reveal className="mt-24 max-w-[12ch] text-[clamp(3.5rem,8vw,8rem)] font-semibold uppercase leading-[0.84] tracking-[-0.07em]">Your work deserves to be seen at its true value.</h2><div className="mt-14 flex justify-end"><Link className="bd-text-link border-white" href="/contact">Start a project <Arrow /></Link></div></div>
+      <section className="bg-[#dfe8eb] px-5 py-28 text-black md:px-10 md:py-40 lg:px-16 lg:py-52">
+        <div className="mx-auto max-w-[1440px]"><div className="bd-rule pt-5"><Label>( 08 — Start something )</Label></div><h2 data-reveal className="mt-24 max-w-[12ch] text-[clamp(3.5rem,8vw,8rem)] font-semibold uppercase leading-[0.84] tracking-[-0.07em]">Your work deserves to be seen at its true value.</h2><div className="mt-14 flex justify-end"><Link className="bd-text-link" href="/contact">Start a project <Arrow /></Link></div></div>
       </section>
     </div>
   )
