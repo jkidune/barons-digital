@@ -32,46 +32,69 @@ export default function HomeLanding({ projects }: { projects: Project[] }) {
   const root = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const mm = gsap.matchMedia()
 
-    gsap.timeline({ defaults: { ease: 'power4.out' } })
-      .from('.bd-hero-media', { scale: 1.14, duration: 2.2 })
-      .from('.bd-hero-line > span', { yPercent: 115, rotateX: 18, duration: 1.15, stagger: 0.12 }, 0.25)
-      .from('.bd-hero-meta', { y: 24, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.8)
+    mm.add(
+      { motion: '(prefers-reduced-motion: no-preference)', mobile: '(max-width: 767px)' },
+      (context) => {
+        const { mobile } = context.conditions as { mobile: boolean }
+        // Gate the CSS rule-line treatment on JS so content never depends on it
+        root.current?.setAttribute('data-motion', 'on')
 
-    const mobile = window.matchMedia('(max-width: 767px)').matches
-    if (!mobile) {
-      gsap.to('.bd-hero-media', {
-        yPercent: 18, scale: 1.04, ease: 'none',
-        scrollTrigger: { trigger: '.bd-hero', start: 'top top', end: 'bottom top', scrub: 0.8 },
-      })
-      gsap.to('.bd-hero-copy', {
-        yPercent: -16, opacity: 0, ease: 'none',
-        scrollTrigger: { trigger: '.bd-hero', start: 'top top', end: '75% top', scrub: 0.6 },
-      })
-    }
+        gsap.timeline({ defaults: { ease: 'power4.out' } })
+          .from('.bd-hero-media', { scale: 1.14, duration: 2.2 })
+          .from('.bd-hero-line > span', { yPercent: 115, rotateX: 18, duration: 1.15, stagger: 0.12 }, 0.25)
+          .from('.bd-hero-meta', { y: 24, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.8)
 
-    gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((element) => {
-      gsap.from(element, {
-        y: mobile ? 28 : 54, opacity: 0, duration: mobile ? 0.7 : 1, ease: 'power3.out',
-        scrollTrigger: { trigger: element, start: 'top 86%', toggleActions: 'play none none reverse' },
-      })
-    })
+        if (!mobile) {
+          gsap.to('.bd-hero-media', {
+            yPercent: 10, scale: 1.04, ease: 'none',
+            scrollTrigger: { trigger: '.bd-hero', start: 'top top', end: 'bottom top', scrub: 0.8 },
+          })
+          gsap.to('.bd-hero-copy', {
+            yPercent: -16, opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '.bd-hero', start: 'top top', end: '75% top', scrub: 0.6 },
+          })
+        }
 
-    gsap.utils.toArray<HTMLElement>('.bd-project').forEach((card, index) => {
-      const media = card.querySelector('.bd-project-media')
-      if (!media) return
-      gsap.from(media, {
-        clipPath: index % 2 ? 'inset(0 100% 0 0)' : 'inset(100% 0 0 0)',
-        duration: 1.25, ease: 'power4.inOut',
-        scrollTrigger: { trigger: card, start: 'top 84%', toggleActions: 'play none none reverse' },
-      })
-    })
+        // One batched trigger for every reveal; plays once, never re-hides on scroll-up
+        gsap.set('[data-reveal]', { y: mobile ? 28 : 54, opacity: 0 })
+        ScrollTrigger.batch('[data-reveal]', {
+          start: 'top 86%',
+          once: true,
+          onEnter: (batch) => gsap.to(batch, {
+            y: 0, opacity: 1, duration: mobile ? 0.7 : 1, ease: 'power3.out', stagger: 0.08, overwrite: true,
+          }),
+        })
 
-    gsap.utils.toArray<HTMLElement>('.bd-rule').forEach((rule) => {
-      gsap.from(rule, {
-        scaleX: 0, transformOrigin: 'left', duration: 1.25, ease: 'power3.inOut',
-        scrollTrigger: { trigger: rule, start: 'top 92%' },
+        // Masked image reveal: transform + opacity only (no clip-path)
+        gsap.utils.toArray<HTMLElement>('.bd-project').forEach((card) => {
+          const image = card.querySelector('.bd-project-media img')
+          if (!image) return
+          gsap.from(image, {
+            scale: 1.25, opacity: 0, duration: 1.25, ease: 'power4.out', clearProps: 'transform,opacity',
+            scrollTrigger: { trigger: card, start: 'top 84%', once: true },
+          })
+        })
+
+        gsap.utils.toArray<HTMLElement>('.bd-rule.border-t').forEach((rule) => {
+          gsap.from(rule, {
+            '--rule': 0, duration: 1.25, ease: 'power3.inOut',
+            scrollTrigger: { trigger: rule, start: 'top 92%', once: true },
+          })
+        })
+
+        return () => root.current?.removeAttribute('data-motion')
+      },
+    )
+
+    // Reduced motion: no movement, just a quick fade on entry
+    mm.add('(prefers-reduced-motion: reduce)', () => {
+      gsap.set('[data-reveal]', { opacity: 0 })
+      ScrollTrigger.batch('[data-reveal]', {
+        start: 'top 92%',
+        once: true,
+        onEnter: (batch) => gsap.to(batch, { opacity: 1, duration: 0.25, overwrite: true }),
       })
     })
   }, { scope: root })

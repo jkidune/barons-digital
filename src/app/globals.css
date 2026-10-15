@@ -222,7 +222,20 @@ html.lenis {
   scroll-margin-top: 4rem;
 }
 
-.bd-rule { border-top-color: transparent !important; }
+.bd-home[data-motion] .bd-rule.border-t {
+  --rule: 1;
+  position: relative;
+  border-top-color: transparent !important;
+}
+
+.bd-home[data-motion] .bd-rule.border-t::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  transform: scaleX(var(--rule));
+  transform-origin: left;
+}
 
 .bd-label {
   font-size: 0.7rem;

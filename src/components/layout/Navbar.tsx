@@ -16,15 +16,20 @@ export default function Navbar() {
   useGSAP(() => {
     if (!header.current) return
     gsap.from(header.current, { y: -36, opacity: 0, duration: 0.9, delay: 0.8, ease: 'power3.out' })
+    let hidden = false
     ScrollTrigger.create({
       start: 0,
       end: 'max',
       onUpdate: (self) => {
         if (menuOpen) return
+        // Only tween when the state flips, not on every scroll tick
+        const shouldHide = self.direction === 1 && self.scroll() > 240
+        if (shouldHide === hidden) return
+        hidden = shouldHide
         gsap.to(header.current, {
-          yPercent: self.direction === 1 && self.scroll() > 240 ? -110 : 0,
+          yPercent: shouldHide ? -110 : 0,
           duration: 0.45,
-          ease: self.direction === 1 ? 'power2.inOut' : 'power3.out',
+          ease: shouldHide ? 'power2.inOut' : 'power3.out',
           overwrite: true,
         })
       },
