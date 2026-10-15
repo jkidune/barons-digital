@@ -31,13 +31,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <div aria-hidden="true" data-progress className="fixed inset-x-0 top-0 z-[110] h-[2px] origin-left scale-x-0 bg-black" />
 
       <header className="px-5 md:px-10 lg:px-16">
-        <div className="mx-auto max-w-[1440px] border-t border-black/20 pt-5">
+        <div className="mx-auto max-w-[1440px] pt-5">
           <p className="bd-label">{article.category} · Journal</p>
           <h1 className="mt-16 max-w-[13ch] text-[clamp(3.5rem,8vw,8rem)] font-semibold uppercase leading-[.84] tracking-[-.07em]">{article.title}</h1>
           <div className="mb-16 mt-12 grid gap-8 lg:grid-cols-12">
             <p className="max-w-2xl text-xl leading-8 text-black/60 md:text-2xl md:leading-9 lg:col-span-7 lg:col-start-6">{article.excerpt}</p>
           </div>
-          <p className="border-t border-black/20 py-4 text-xs font-medium uppercase tracking-[.12em] text-black/50">
+          <p className=" py-4 text-xs font-medium uppercase tracking-[.12em] text-black/50">
             Barons Digital &nbsp;·&nbsp; {article.date} &nbsp;·&nbsp; {minutes} min read
           </p>
         </div>
@@ -76,7 +76,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div>
       </div>
 
-      <section className="border-t border-black/20 px-5 py-24 md:px-10 md:py-32 lg:px-16">
+      <section className=" px-5 py-24 md:px-10 md:py-32 lg:px-16">
         <div className="mx-auto max-w-[1440px]">
           <p className="bd-label">( Read next )</p>
           <Link href={`/journal/${next.slug}`} data-cursor="read" className="group mt-10 grid gap-8 md:grid-cols-2 md:items-end">

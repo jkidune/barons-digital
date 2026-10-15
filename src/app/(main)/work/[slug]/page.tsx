@@ -50,9 +50,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             </div>
             <p className="max-w-md text-lg leading-8 text-black/60 lg:col-span-3">{project.summary[0]}</p>
           </div>
-          <dl className="mt-16 grid border-t border-black/15 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="mt-16 grid sm:grid-cols-2 lg:grid-cols-4">
             {facts.map(([label, value]) => (
-              <div className="border-b border-black/15 py-5 sm:pr-6" key={label}>
+              <div className=" py-5 sm:pr-6" key={label}>
                 <dt className="text-[.65rem] font-semibold uppercase tracking-[.14em] text-black/40">{label}</dt>
                 <dd className="mt-3 text-sm leading-6">{value}</dd>
               </div>
@@ -125,9 +125,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               <p className={kicker} data-reveal>What we delivered</p>
               <h2 className="mt-5 text-4xl font-semibold tracking-[-.05em]" data-reveal>Built around the real work.</h2>
             </div>
-            <ol className="border-t border-black/15 lg:col-span-2">
+            <ol className=" lg:col-span-2">
               {project.features.map((f, i) => (
-                <li className="flex gap-6 border-b border-black/15 py-5" data-reveal key={f}>
+                <li className="flex gap-6 py-5" data-reveal key={f}>
                   <span className="w-8 shrink-0 pt-1 text-xs tabular-nums text-black/35">{String(i + 1).padStart(2, '0')}</span>
                   <span className="text-lg leading-6">{f}</span>
                 </li>

@@ -10,12 +10,12 @@ export default async function JournalPage() {
     <main className="bg-white px-5 pb-32 pt-32 text-black md:px-10 md:pt-40 lg:px-16">
       <PageMotion />
       <div className="mx-auto max-w-[1440px]">
-        <header className="border-t border-black/20 pt-5">
+        <header className=" pt-5">
           <p className="bd-label">( Journal )</p>
           <h1 className="mt-16 text-[clamp(4rem,10vw,10rem)] font-semibold uppercase leading-[.8] tracking-[-.075em]">Thinking<br />behind the work.</h1>
         </header>
 
-        <Link href={`/journal/${featured.slug}`} data-cursor="read" className="group mt-28 grid gap-8 border-t border-black/20 pt-5 lg:grid-cols-12">
+        <Link href={`/journal/${featured.slug}`} data-cursor="read" className="group mt-28 grid gap-8 pt-5 lg:grid-cols-12">
           <p className="bd-label lg:col-span-3">( Latest — {featured.category} )</p>
           <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100 lg:col-span-9" data-mask>
             <Image src={featured.image} alt="" fill priority className="object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" sizes="(max-width:1024px) 100vw, 70vw" />
@@ -34,7 +34,7 @@ export default async function JournalPage() {
                 <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100" data-mask>
                   <Image src={article.image} alt="" fill className="object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" sizes="(max-width:768px) 100vw, 50vw" />
                 </div>
-                <div className="mt-5 border-t border-black/20 pt-5" data-reveal>
+                <div className="mt-5 pt-5" data-reveal>
                   <p className="text-xs uppercase tracking-[.12em] text-black/45">{article.category} · {article.date}</p>
                   <h2 className="mt-8 text-[clamp(2rem,4vw,4rem)] font-semibold uppercase leading-[.92] tracking-[-.055em]">{article.title}</h2>
                   <p className="mt-5 max-w-lg text-sm leading-6 text-black/60">{article.excerpt}</p>
