@@ -22,8 +22,15 @@ function Cursor() {
     const node = cursor.current
     if (!node) return
     let mx = 0, my = 0, x = 0, y = 0, frame = 0
+    const tick = () => {
+      x += (mx - x) * 0.17; y += (my - y) * 0.17
+      node.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-50%)`
+      // Stop the loop once the cursor has settled; mousemove restarts it
+      frame = Math.abs(mx - x) < 0.1 && Math.abs(my - y) < 0.1 ? 0 : requestAnimationFrame(tick)
+    }
     const move = (event: MouseEvent) => {
       mx = event.clientX; my = event.clientY; node.style.opacity = '1'
+      if (!frame) frame = requestAnimationFrame(tick)
       const target = event.target as HTMLElement
       const intent = target.closest<HTMLElement>('[data-cursor]')?.dataset.cursor
       const state = target.matches('input, textarea, select') ? 'hidden' : intent || (target.closest('a, button, summary') ? 'grow' : 'default')
@@ -31,14 +38,8 @@ function Cursor() {
       if (label.current) label.current.textContent = state === 'view' ? 'View' : state === 'read' ? 'Read' : ''
     }
     const leave = () => { node.style.opacity = '0' }
-    const tick = () => {
-      x += (mx - x) * 0.17; y += (my - y) * 0.17
-      node.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-50%)`
-      frame = requestAnimationFrame(tick)
-    }
     window.addEventListener('mousemove', move, { passive: true })
     document.addEventListener('mouseleave', leave)
-    frame = requestAnimationFrame(tick)
     return () => { window.removeEventListener('mousemove', move); document.removeEventListener('mouseleave', leave); cancelAnimationFrame(frame) }
   }, [])
 
