@@ -1,10 +1,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { articles } from '@/data/content'
+import { getArticles, getArticleBySlug } from '@/lib/articles'
 import PageMotion from '@/components/ui/PageMotion'
 
-export function generateStaticParams() { return articles.map(({ slug }) => ({ slug })) }
+export async function generateStaticParams() {
+  const articles = await getArticles()
+  return articles.map(({ slug }) => ({ slug }))
+}
 
 // The sentence worth pulling: last sentence of the second paragraph
 function pullQuote(body: string[]) {
@@ -15,10 +18,9 @@ function pullQuote(body: string[]) {
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const index = articles.findIndex((item) => item.slug === slug)
-  if (index < 0) notFound()
-  const article = articles[index]
-  const next = articles[(index + 1) % articles.length]
+  const articleData = await getArticleBySlug(slug)
+  if (!articleData) notFound()
+  const { article, nextArticle: next } = articleData
   const words = article.body.join(' ').split(/\s+/).length
   const minutes = Math.max(1, Math.round(words / 200))
   const quote = pullQuote(article.body)
