@@ -50,7 +50,15 @@ Animation uses GSAP + ScrollTrigger with Lenis smooth scrolling, following these
 | `data-mask` | Image or video settles from a slight zoom inside its frame |
 | `data-progress` | Fixed bar scrubbed to reading progress (journal articles) |
 
-It is used on work, journal, services, about and contact pages.
+**Page transitions:** [`src/components/layout/PageTransition.tsx`](src/components/layout/PageTransition.tsx) intercepts internal link clicks (capture phase), raises a black curtain labelled with the destination, lets the route swap underneath, then lifts the curtain. Skipped under `prefers-reduced-motion`.
+
+**Smooth scrolling:** Lenis, wired to ScrollTrigger in [`SmoothScrollProvider.tsx`](src/components/layout/SmoothScrollProvider.tsx).
+
+**Interactions:** shared `.bd-btn`, `.bd-link` and `.bd-field` classes in `globals.css` (150ms press/hover feedback, underline sweep, focus line), plus the custom cursor.
+
+## Visual language
+
+Pages follow the Foster agency layout: Inter, oversized sentence-case headings, grey `#6b6b6b` body, black square buttons, `#f4f4f4` cards, and a 12-column grid where intros sit on column 5. Shared opener: [`PageHeader.tsx`](src/components/ui/PageHeader.tsx).
 
 ## Page design notes
 

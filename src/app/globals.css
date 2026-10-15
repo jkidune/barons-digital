@@ -287,3 +287,56 @@ html.lenis {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Interaction feedback (one personality: crisp, 150ms, ease-out) ─ */
+.bd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #000;
+  color: #fff;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  transition: transform 150ms cubic-bezier(.2,.7,.3,1), background-color 150ms;
+}
+.bd-btn:hover { background: #2a2a2a; }
+.bd-btn:active { transform: scale(0.97); }
+.bd-btn--ghost { background: #f4f4f4; color: #000; }
+.bd-btn--ghost:hover { background: #000; color: #fff; }
+
+.bd-link {
+  position: relative;
+  display: inline-block;
+}
+.bd-link::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -2px 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 250ms cubic-bezier(.2,.7,.3,1);
+}
+.bd-link:hover::after, .bd-link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+
+.bd-field {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgb(0 0 0 / .3);
+  background: transparent;
+  padding-bottom: 0.75rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.bd-field::placeholder { color: rgb(0 0 0 / .35); }
+.bd-field:focus { border-bottom-color: #000; box-shadow: 0 1px 0 #000; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-btn:active { transform: none; }
+  .bd-link::after { transition: none; }
+}
