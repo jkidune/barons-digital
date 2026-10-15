@@ -10,7 +10,10 @@
     "preview": "COPYFILE_DISABLE=1 opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "COPYFILE_DISABLE=1 opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "COPYFILE_DISABLE=1 opennextjs-cloudflare build && opennextjs-cloudflare upload",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "studio:dev": "sanity dev",
+    "studio:build": "sanity build dist --yes",
+    "studio:deploy": "sanity build dist --yes && wrangler deploy --config wrangler.studio.jsonc"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

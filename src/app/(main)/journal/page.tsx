@@ -1,9 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { articles } from '@/data/content'
+import { getArticles } from '@/lib/articles'
 import PageMotion from '@/components/ui/PageMotion'
 
-export default function JournalPage() {
+export default async function JournalPage() {
+  const articles = await getArticles()
   const [featured, ...rest] = articles
   return (
     <main className="bg-white px-5 pb-32 pt-32 text-black md:px-10 md:pt-40 lg:px-16">

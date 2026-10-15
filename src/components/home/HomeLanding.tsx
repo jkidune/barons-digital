@@ -7,7 +7,8 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { Project } from '@/data/project'
-import { articles, servicePages } from '@/data/content'
+import { articles as fallbackArticles, servicePages } from '@/data/content'
+import type { Article } from '@/lib/articles'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -28,7 +29,13 @@ const faqs = [
 const Arrow = () => <span aria-hidden="true">↗</span>
 const Label = ({ children }: { children: React.ReactNode }) => <p className="bd-label">{children}</p>
 
-export default function HomeLanding({ projects }: { projects: Project[] }) {
+export default function HomeLanding({
+  projects,
+  articles = fallbackArticles,
+}: {
+  projects: Project[]
+  articles?: Article[]
+}) {
   const root = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
