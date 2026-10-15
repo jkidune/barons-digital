@@ -10,7 +10,7 @@ export default async function HomePage() {
 
   return (
     <HomeLanding
-      projects={projects.slice(0, 3)}
+      projects={projects}
       articles={articles.slice(0, 3)}
     />
   )

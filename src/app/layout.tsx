@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, Source_Serif_4 } from 'next/font/google'
+import { Geist, Inter, Source_Serif_4 } from 'next/font/google'
 import './globals.css'
 import { InitialLoadProvider } from '@/context/InitialLoadContext'
 import ExperienceLayer from '@/components/layout/ExperienceLayer'
@@ -7,6 +7,11 @@ import ExperienceLayer from '@/components/layout/ExperienceLayer'
 const geist = Geist({
   subsets: ['latin'],
   variable: '--font-geist',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
 })
 
 const sourceSerif4 = Source_Serif_4({
@@ -36,7 +41,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${sourceSerif4.variable}`}>
+    <html lang="en" className={`${geist.variable} ${inter.variable} ${sourceSerif4.variable}`}>
       <body>
         <ExperienceLayer />
         <InitialLoadProvider>
