@@ -60,11 +60,24 @@ export default function Navbar() {
     : onHome && !solid
       ? 'bg-transparent text-white'
       : 'bg-white/95 text-black backdrop-blur-md'
+  const darkSurface = menuOpen || (onHome && !solid)
+  // Critical styles are explicit as a fallback across transient Next.js route
+  // stylesheet changes: a fixed header must NEVER participate in page scroll.
+  const headerStyle = {
+    position: 'fixed' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    color: darkSurface ? '#ffffff' : '#000000',
+    backgroundColor: menuOpen ? '#000000' : onHome && !solid ? 'transparent' : 'rgba(255,255,255,0.95)',
+  }
 
   return (
     <header
       className={`fixed inset-x-0 top-0 z-[100] font-[family-name:var(--font-inter)] ${headerColors}`}
       data-site-header
+      style={headerStyle}
     >
       <div className="relative z-10 flex h-[calc(4.2rem+env(safe-area-inset-top))] items-center justify-between px-5 pt-[env(safe-area-inset-top)] md:px-[4vw]">
         <Link className={`text-[1.5rem] font-extrabold uppercase leading-none tracking-[-0.08em] ${focus}`} href="/">
