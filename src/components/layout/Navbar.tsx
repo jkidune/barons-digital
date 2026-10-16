@@ -63,7 +63,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-[100] font-[family-name:var(--font-inter)] transition-colors duration-300 ${headerColors}`}
+      className={`fixed inset-x-0 top-0 z-[100] font-[family-name:var(--font-inter)] ${headerColors}`}
       data-site-header
     >
       <div className="relative z-10 flex h-[calc(4.2rem+env(safe-area-inset-top))] items-center justify-between px-5 pt-[env(safe-area-inset-top)] md:px-[4vw]">
