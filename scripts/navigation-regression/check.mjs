@@ -100,7 +100,7 @@ async function runMobile() {
     const b = h?.querySelector('button[aria-controls="site-menu"]')
     if (!b) return false
     const color = getComputedStyle(b).color
-    const match = color.match(/rgba?\\(\\s*(\\d+)[,\\s]+(\\d+)[,\\s]+(\\d+)/)
+    const match = color.match(/rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/)
     if (!match) return false
     const [r, g, blue] = match.slice(1, 4).map(Number)
     return r >= 230 && g >= 230 && blue >= 230
