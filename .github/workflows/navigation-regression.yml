@@ -1,0 +1,44 @@
+name: Navigation route regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/components/layout/Navbar.tsx'
+      - 'scripts/navigation-regression/**'
+      - '.github/workflows/navigation-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    name: Check persistent navigation on desktop and mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install website
+        run: npm ci --ignore-scripts
+      - name: Install isolated browser runner
+        run: npm install --prefix scripts/navigation-regression --no-audit --no-fund
+      - name: Install headless Chromium
+        run: scripts/navigation-regression/node_modules/.bin/playwright install --with-deps chromium
+      - name: Check TypeScript
+        run: npx tsc --noEmit
+      - name: Start Next.js with the real shared site layout
+        run: |
+          NEXT_TELEMETRY_DISABLED=1 npm run dev -- --hostname 127.0.0.1 --port 3000 >/tmp/barons-nav-next.log 2>&1 &
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:3000/about >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/barons-nav-next.log
+          exit 1
+      - name: Test scrolling and route changes at desktop and mobile sizes
+        run: node scripts/navigation-regression/check.mjs
