@@ -75,12 +75,12 @@ jobs:
           curl --silent --show-error --fail --retry 2 \
             -H "Authorization: Bearer ${BIASHARA_GITHUB_READ_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
-            'https://api.github.com/repos/jkidune/biashara-os/actions/workflows/capture-portfolio.yml/runs?status=success&per_page=5' \
+            'https://api.github.com/repos/jkidune/biashara-os/actions/runs?event=pull_request&per_page=60' \
             > /tmp/biashara-runs.json
           python3 - <<'PY'
           import json, sys
           data=json.load(open('/tmp/biashara-runs.json'))
-          runs=data.get('workflow_runs',[])
+          runs=[r for r in data.get('workflow_runs',[]) if r.get('name')=='Capture Biashara OS portfolio' and r.get('conclusion')=='success']
           if not runs: sys.exit('No successful Biashara OS capture found. Run its capture-portfolio workflow first.')
           print(runs[0]['id'],file=open('/tmp/biashara-run-id','w'))
           PY
