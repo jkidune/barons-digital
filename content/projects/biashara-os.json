@@ -1,0 +1,97 @@
+{
+  "title": "Biashara OS",
+  "slug": "biashara-os",
+  "order": 0,
+  "category": "SaaS Product Design & Development",
+  "year": "2026",
+  "projectType": "Business Operations & Finance SaaS",
+  "client": "Barons Digital — Product Studio",
+  "clientType": "Digital Product",
+  "scope": "Product Strategy, UX/UI Design, Frontend & Backend Development, Brand Presentation",
+  "timeline": "2026 — ongoing",
+  "duration": "Ongoing product development",
+  "role": "Developing an integrated, compliance-aware business management platform for Tanzanian small and medium enterprises.",
+  "liveUrl": "https://biasharaos.cc.cd",
+  "summary": [
+    "An integrated business operating system designed to help Tanzanian SMEs manage sales, invoices, inventory and compliance-related tasks from one workspace.",
+    "A product-led case study featuring real Biashara OS application screens rendered with fictional demonstration records."
+  ],
+  "keywords": [
+    "Product Design",
+    "SaaS",
+    "Business Management",
+    "Finance",
+    "Tanzania",
+    "UI/UX"
+  ],
+  "services": [
+    "Digital Product Strategy",
+    "UX/UI Design",
+    "Software Development",
+    "Business Process Design",
+    "Brand & Presentation Design"
+  ],
+  "coverImagePath": "assets/biashara-os/01-hero-cover.jpg",
+  "iconPath": "assets/biashara-os/03-brand-direction.jpg",
+  "introductionTitle": "One connected workspace for everyday business operations.",
+  "introduction": [
+    "Biashara OS brings together financial and operational tasks often managed across disconnected tools, including invoicing, sales, customer records, inventory and compliance schedules.",
+    "Designed around Tanzanian SME workflows, the product aims to reduce the need to switch systems to understand day-to-day business activity.",
+    "The screens in this presentation were captured from the real application using a fictional sample business, Kijani Traders; displayed amounts are illustrative, not measured customer outcomes."
+  ],
+  "challenge": [
+    "Small and medium businesses often coordinate invoices, stock, sales records and tax deadlines across separate documents, messages and tools. That fragmentation makes it harder to maintain one consistent view of day-to-day operations.",
+    "The design challenge was to make multiple connected workflows feel accessible to business owners without requiring specialist accounting or technical expertise."
+  ],
+  "approach": [
+    "We organised the interface around a practical dashboard and the core tasks owners return to most: sales, invoice preparation, client records, inventory and compliance reminders.",
+    "The system uses a consistent navigational structure, compact data-rich tables, approachable forms and responsive layouts, with multi-business and multi-shop separation built into the product architecture.",
+    "For this case-study presentation, we curated authentic UI captures into a restrained editorial visual language; the product screens remain distinct from conceptual presentation branding."
+  ],
+  "features": [
+    "Business overview with operational metrics and recent invoices",
+    "Invoices, proposals and payment tracking",
+    "Point of sale and sales summaries",
+    "Customer, supplier and inventory management",
+    "Tax obligation tracking and preparation checklists",
+    "Multiple businesses, shops and role-based access",
+    "Responsive web application for desktop and mobile"
+  ],
+  "outcome": [
+    "A working product foundation combining business operations, invoicing, sales, stock, customer information and compliance-related workflows in a unified interface.",
+    "The platform continues to evolve; this portfolio records its current product design and development rather than claiming third-party adoption or financial improvements."
+  ],
+  "overview": "A Tanzanian SME operations platform bringing sales, invoicing, inventory, customers and tax-related tasks into one application.",
+  "problem": "Businesses must coordinate disconnected sales, finance, stock and compliance processes without a clear shared operational overview.",
+  "solution": "Biashara OS uses a connected dashboard and task-focused modules to help manage records and activities within one responsive workspace.",
+  "media": [
+    {
+      "type": "image",
+      "imagePath": "assets/biashara-os/02-overview.jpg",
+      "caption": "Product overview — combining financial and operational activities in one workspace.",
+      "gridClass": "col-span-2"
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/biashara-os/03-brand-direction.jpg",
+      "caption": "Presentation identity — an editorial brand concept created for the portfolio."
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/biashara-os/04-dashboard-showcase.jpg",
+      "caption": "Business overview — real product interface with fictional business metrics.",
+      "gridClass": "col-span-2"
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/biashara-os/05-invoicing-workflows.jpg",
+      "caption": "Sales documents — proposals, invoices and the live composition interface."
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/biashara-os/06-operations-mobile.jpg",
+      "caption": "Operations and mobile — inventory, compliance and responsive product screens.",
+      "gridClass": "col-span-2"
+    }
+  ]
+}
