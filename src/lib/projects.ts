@@ -75,37 +75,41 @@ function normalizeSlug(slug: SanityProject['slug'], fallback: string) {
   return slug.current || fallback
 }
 
-function normalizeProject(project: SanityProject, index: number): Project {
-  const fallback = fallbackProjects[index] || fallbackProjects[0]
-  const slug = normalizeSlug(project.slug, fallback.slug)
-  const title = project.title || fallback.title
+function normalizeProject(project: SanityProject): Project {
+  const slug = normalizeSlug(project.slug, '')
+  const coverImage = imageToUrl(project.coverImage, '')
 
+  // Sanity documents must never borrow another client's case-study content.
+  // The static projects are used only when Sanity is unavailable or empty.
   return {
-    ...fallback,
     ...project,
-    title,
+    title: project.title || '',
     slug,
-    icon: imageToUrl(project.icon, fallback.icon),
-    coverImage: imageToUrl(project.coverImage, fallback.coverImage),
-    previewVideo: project.previewVideo || fallback.previewVideo,
-    summary: project.summary?.length ? project.summary : fallback.summary,
-    keywords: project.keywords?.length ? project.keywords : fallback.keywords,
-    services: project.services?.length ? project.services : fallback.services,
-    introduction: project.introduction?.length ? project.introduction : fallback.introduction,
-    challenge: project.challenge?.length ? project.challenge : fallback.challenge,
-    approach: project.approach?.length ? project.approach : fallback.approach,
-    features: project.features?.length ? project.features : fallback.features,
-    outcome: project.outcome?.length ? project.outcome : fallback.outcome,
-    overview: project.overview || fallback.overview,
-    problem: project.problem || fallback.problem,
-    solution: project.solution || fallback.solution,
-    liveUrl: typeof project.liveUrl === 'undefined' ? fallback.liveUrl : project.liveUrl,
+    category: project.category || '',
+    year: project.year || '',
+    scope: project.scope || '',
+    timeline: project.timeline || '',
+    liveUrl: project.liveUrl ?? null,
+    icon: imageToUrl(project.icon, coverImage),
+    coverImage,
+    previewVideo: project.previewVideo || '',
+    summary: project.summary || [],
+    keywords: project.keywords || [],
+    services: project.services || [],
+    introduction: project.introduction || [],
+    challenge: project.challenge || [],
+    approach: project.approach || [],
+    features: project.features || [],
+    outcome: project.outcome || [],
+    overview: project.overview || '',
+    problem: project.problem || '',
+    solution: project.solution || '',
     media: project.media?.map((item) => ({
       type: item.type || (item.videoUrl || item.url?.endsWith('.mp4') ? 'video' : 'image'),
-      url: item.videoUrl || imageToUrl(item.image, item.url || fallback.coverImage),
+      url: item.videoUrl || imageToUrl(item.image, item.url || coverImage),
       caption: item.caption,
       gridClass: item.gridClass,
-    })) || fallback.media,
+    })) || [],
   }
 }
 
