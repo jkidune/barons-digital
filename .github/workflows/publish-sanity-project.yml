@@ -107,17 +107,60 @@ jobs:
           unzip -j -o -q /tmp/biashara-screens.zip '*.png' -d tmp/biashara-screens
           python3 -m pip install --disable-pip-version-check Pillow==11.3.0
           python3 scripts/build-biashara-portfolio.py
+      - name: Render approved Checkpoint product boards from public source
+        if: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! grep -qx 'content/projects/checkpoint.json' /tmp/sanity-project-files; then
+            exit 0
+          fi
+          # This public source commit has passed Checkpoint's isolated Playwright
+          # capture tests. Pin it to prevent unexpected asset changes.
+          source_sha="c2ebed1c1d2b5193cab5919aac88af0514794370"
+          git clone --quiet https://github.com/jkidune/checkpoint-dashboard.git tmp/checkpoint-source
+          git -C tmp/checkpoint-source checkout --quiet "${source_sha}"
+          npm ci --prefix tmp/checkpoint-source/marketing --no-audit --no-fund
+          npm install --prefix tmp/checkpoint-source/frontend --no-save --package-lock=false --no-audit --no-fund
+          npm install --prefix tmp/checkpoint-source/scripts/portfolio --no-audit --no-fund
+          tmp/checkpoint-source/scripts/portfolio/node_modules/.bin/playwright install --with-deps chromium
+          (
+            cd tmp/checkpoint-source
+            (cd marketing && npm run dev -- --host 127.0.0.1 --port 4321) >/tmp/checkpoint-marketing.log 2>&1 &
+            (cd frontend && VITE_API_BASE_URL=/api npm run dev -- --host 127.0.0.1 --port 5173) >/tmp/checkpoint-frontend.log 2>&1 &
+            for port in 4321 5173; do
+              ready=0
+              for i in $(seq 1 55); do
+                if curl --silent --fail "http://127.0.0.1:${port}/" >/dev/null; then
+                  ready=1
+                  break
+                fi
+                sleep 1
+              done
+              if [[ ${ready} -ne 1 ]]; then
+                cat /tmp/checkpoint-marketing.log /tmp/checkpoint-frontend.log
+                exit 1
+              fi
+            done
+            node scripts/portfolio/capture.mjs
+            python3 -m pip install --disable-pip-version-check Pillow==11.3.0 CairoSVG==2.8.2
+            python3 scripts/portfolio/build_boards.py
+          )
+          mkdir -p content/projects/assets/checkpoint
+          cp tmp/checkpoint-source/portfolio-captures/boards/*.jpg content/projects/assets/checkpoint/
+          test "$(find content/projects/assets/checkpoint -name '*.jpg' | wc -l)" -eq 7
+          echo "Seven Checkpoint portfolio images generated with fictional demo records."
       - name: Validate project content and image sources
         shell: bash
         run: |
           set -euo pipefail
           while IFS= read -r file; do
             [[ -z "$file" ]] && continue
-            if [[ "${GITHUB_EVENT_NAME}" == "pull_request" && "$file" == "content/projects/biashara-os.json" ]]; then
+            if [[ "${GITHUB_EVENT_NAME}" == "pull_request" && ( "$file" == "content/projects/biashara-os.json" || "$file" == "content/projects/checkpoint.json" ) ]]; then
               node --check scripts/publish-sanity-project.mjs
               python3 -m py_compile scripts/build-biashara-portfolio.py
               python3 -m json.tool "$file" >/dev/null
-              echo "Biashara project JSON and generator syntax checked. Screenshots are imported only on approved main runs."
+              echo "Generated-asset project JSON and publisher syntax checked; images render on approved main runs."
             else
               node scripts/publish-sanity-project.mjs --file "$file" --check --check-sources
             fi

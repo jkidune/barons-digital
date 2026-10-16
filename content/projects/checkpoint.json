@@ -1,0 +1,104 @@
+{
+  "title": "Checkpoint",
+  "slug": "checkpoint",
+  "order": 1,
+  "category": "SaaS Product Design & Development",
+  "year": "2026",
+  "projectType": "Community Finance & Investment Club Management",
+  "client": "Barons Digital — Product Studio",
+  "clientType": "Digital Product",
+  "scope": "Product Strategy, Brand Identity, UX/UI Design, Web Application Development, Dashboard Design",
+  "timeline": "2026 — ongoing",
+  "duration": "Ongoing product development",
+  "role": "Design and development of a connected financial management experience for VICOBA groups and community investment clubs.",
+  "summary": [
+    "Checkpoint brings contributions, member records, lending, investments and group finances into one organised digital workspace.",
+    "A product-design case study presenting authentic Checkpoint interfaces, illustrated using fictional financial and member records."
+  ],
+  "keywords": [
+    "Product Design",
+    "Fintech",
+    "VICOBA",
+    "Investment Clubs",
+    "Member Contributions",
+    "SaaS",
+    "Tanzania"
+  ],
+  "services": [
+    "Product Strategy",
+    "UX/UI Design",
+    "Web Application Development",
+    "Financial Dashboard Design",
+    "Digital Identity"
+  ],
+  "coverImagePath": "assets/checkpoint/00-checkpoint-cover-gradient.jpg",
+  "introductionTitle": "Financial clarity for groups growing together.",
+  "introduction": [
+    "Community investment groups depend on regular contributions, transparent financial records and reliable oversight of savings and loans. Checkpoint brings these activities together in an approachable digital platform.",
+    "Designed for group administrators and individual members, Checkpoint makes it easier to follow contributions, review lending activity and understand the financial position of the club.",
+    "The portfolio presentation uses real product interfaces rendered with fictional member and financial data. It does not represent actual customer finances or independently measured outcomes."
+  ],
+  "challenge": [
+    "Group treasurers and administrators may need to reconcile payments, loans, interest, expenses and member balances across separate records. That can make reporting and accountability more difficult as a club grows.",
+    "Members also need an understandable view of their contributions and borrowing position, while administrators require a broader operational picture without compromising clarity."
+  ],
+  "approach": [
+    "We built Checkpoint around a central financial overview that surfaces group cash, equity, contributions, loans and other key records, supported by focused modules for everyday administration.",
+    "The experience separates administrator and member responsibilities while using a consistent product language across dashboard tables, financial charts, contribution tracking and mobile views.",
+    "Checkpoint's existing blue-and-mint brand identity anchors the case-study presentation, combining screenshots captured from its real React and Astro interfaces with composed editorial boards."
+  ],
+  "features": [
+    "Group financial dashboard and reporting",
+    "Member contribution tracking and records",
+    "Loan register, balances and repayment oversight",
+    "Investment and expense management",
+    "Member management and personal finance views",
+    "Automated fines and contribution follow-up workflows",
+    "Responsive web experience for administrators and members"
+  ],
+  "outcome": [
+    "A functioning product experience for organising investment club finance around a shared, clearer set of records and workflows.",
+    "An extensible financial-management foundation; the case study illustrates the product design without asserting user adoption, return on investment or financial improvements."
+  ],
+  "overview": "A connected financial management platform for VICOBA groups and community investment clubs.",
+  "problem": "Group contributions, loans, investments and member reporting can become difficult to coordinate using disconnected financial records.",
+  "solution": "Checkpoint provides a unified dashboard and role-specific interfaces to track club finances, contributions and loans with greater everyday visibility.",
+  "media": [
+    {
+      "type": "image",
+      "imagePath": "assets/checkpoint/01-checkpoint-cover.jpg",
+      "caption": "Checkpoint — one workspace for contributions, savings, loans and member accountability.",
+      "gridClass": "col-span-2"
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/checkpoint/02-checkpoint-brand.jpg",
+      "caption": "Brand identity and colour palette grounded in Checkpoint's existing blue-and-mint design system.",
+      "gridClass": "col-span-2"
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/checkpoint/03-overview-showcase.jpg",
+      "caption": "Group overview — real application dashboard with fictional demonstration data.",
+      "gridClass": "col-span-2"
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/checkpoint/04-contributions-and-loans.jpg",
+      "caption": "Group financial workflows — contribution records and the loan register.",
+      "gridClass": "col-span-2"
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/checkpoint/05-member-experience.jpg",
+      "caption": "Member experience — product sign-in and responsive member interface.",
+      "gridClass": "col-span-2"
+    },
+    {
+      "type": "image",
+      "imagePath": "assets/checkpoint/06-checkpoint-closing.jpg",
+      "caption": "Checkpoint — designed for transparent, connected community finance.",
+      "gridClass": "col-span-2"
+    }
+  ]
+}
