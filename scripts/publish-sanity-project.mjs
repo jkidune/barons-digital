@@ -188,14 +188,19 @@ async function uploadImage(source, sourceField) {
 }
 
 async function publishProject(data, document, media) {
+  const slug = document.slug.current
+  // IMPORTANT: Sanity treats any document ID containing a dot as a private path.
+  // Use a root-level ID so published projects are accessible to the public website.
+  const publicId = `project-${slug}`
+  const legacyPrivateId = `project.${slug}`
   const params = new URLSearchParams({
-    query: '*[_type == "project" && slug.current == $slug]{_id,_rev}',
-    // GROQ URL parameters must be JSON-encoded (including string quotation marks).
-    '$slug': JSON.stringify(document.slug.current),
+    query: '*[_type == "project" && slug.current == $slug && !(_id in path("drafts.**")) && !(_id in path("versions.**"))]{_id,_rev}',
+    '$slug': JSON.stringify(slug),
+    perspective: 'raw',
   })
   const existing = (await sanity(`/data/query/${DATASET}?${params}`)).result
   if (!Array.isArray(existing)) fail('Unexpected Sanity query result')
-  if (existing.length > 1) fail('Multiple Sanity documents have this slug; resolve duplicates in Studio first')
+  if (existing.length > 1) fail('Multiple published Sanity documents have this slug; resolve duplicates in Studio first')
 
   document.coverImage = data.coverImageDriveId
     ? await uploadImage(data.coverImageDriveId, 'drive')
@@ -225,21 +230,53 @@ async function publishProject(data, document, media) {
     }
   }
 
-  let mutation
+  let mutations
   if (existing.length === 1) {
-    // Preserve unmentioned fields (e.g., an icon) while avoiding a lost update.
-    const { _type, ...fieldsToSet } = document
-    mutation = { patch: { id: existing[0]._id, ifRevisionID: existing[0]._rev, set: fieldsToSet } }
+    if (existing[0]._id === legacyPrivateId) {
+      // Atomic migration: create the public root document and delete the
+      // private dotted-ID record. The document slug and image gallery remain.
+      mutations = [
+        { create: { _id: publicId, ...document } },
+        { delete: { id: legacyPrivateId } },
+      ]
+      console.log('Migrating private dotted Sanity document ID to public root ID.')
+    } else if (existing[0]._id.includes('.')) {
+      fail(`Unexpected private Sanity ID ${existing[0]._id}; review before migration`)
+    } else {
+      // Preserve unmentioned fields (e.g., an icon) while avoiding a lost update.
+      const { _type, ...fieldsToSet } = document
+      mutations = [{ patch: { id: existing[0]._id, ifRevisionID: existing[0]._rev, set: fieldsToSet } }]
+    }
   } else {
-    mutation = { create: { _id: `project.${document.slug.current}`, ...document } }
+    mutations = [{ create: { _id: publicId, ...document } }]
   }
   const result = await sanity(`/data/mutate/${DATASET}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mutations: [mutation] }),
+    body: JSON.stringify({ mutations }),
   })
   console.log(`Published project "${document.title}" (${document.slug.current}) to Sanity production.`)
   console.log(`Sanity transaction: ${result.transactionId || 'completed'}`)
+
+  // Verify that the anonymous web client (not merely Studio or an API token)
+  // can discover the published document. This guards against another private ID.
+  const url = new URL(`${BASE_URL}/data/query/${DATASET}`)
+  url.searchParams.set('query', '*[_id == $id][0]{"slug":slug.current,_id}')
+  url.searchParams.set('$id', JSON.stringify(publicId))
+  let visible = false
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const response = await fetch(url, { cache: 'no-store' })
+    if (response.ok) {
+      const data = await response.json()
+      if (data.result?._id === publicId && data.result?.slug === slug) {
+        visible = true
+        break
+      }
+    }
+    await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)))
+  }
+  if (!visible) fail(`Project ${publicId} was written but is not publicly readable from Sanity`)
+  console.log(`Verified public Sanity visibility for ${publicId}.`)
 }
 
 async function main() {
