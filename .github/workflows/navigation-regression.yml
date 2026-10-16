@@ -34,11 +34,24 @@ jobs:
       - name: Start Next.js with the real shared site layout
         run: |
           NEXT_TELEMETRY_DISABLED=1 npm run dev -- --hostname 127.0.0.1 --port 3000 >/tmp/barons-nav-next.log 2>&1 &
+          server_pid=$!
+          ready=0
           for i in $(seq 1 90); do
-            if curl -fsS http://127.0.0.1:3000/about >/dev/null; then exit 0; fi
+            if curl -fsS --max-time 5 http://127.0.0.1:3000/about >/dev/null 2>&1; then
+              ready=1
+              echo "Next.js is ready after probe $i"
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              echo "Next.js exited before becoming ready"
+              break
+            fi
             sleep 2
           done
-          cat /tmp/barons-nav-next.log
-          exit 1
+          if [ "$ready" -ne 1 ]; then
+            echo "Server failed to start, showing logs:"
+            cat /tmp/barons-nav-next.log
+            exit 1
+          fi
       - name: Test scrolling and route changes at desktop and mobile sizes
         run: node scripts/navigation-regression/check.mjs
