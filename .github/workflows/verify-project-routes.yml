@@ -37,7 +37,13 @@ jobs:
           }
           const data = await response.json()
           if (data.result?.slug !== slug) {
-            console.error('Sanity did not return the published project:', JSON.stringify(data.result))
+            console.error('Sanity returned no matching public project for requested slug.')
+            const listUrl = new URL('https://93o5rcrm.api.sanity.io/v2024-01-01/data/query/production')
+            listUrl.searchParams.set('query', '*[_type == "project"]{_id,title,"slug":slug.current}')
+            const listResponse = await fetch(listUrl, { signal: AbortSignal.timeout(30000) })
+            const list = await listResponse.json()
+            console.log('Public project query HTTP status:', listResponse.status)
+            console.log('Publicly readable project records:', JSON.stringify(list.result ?? list.error ?? null).slice(0, 4000))
             process.exit(1)
           }
           console.log('Published Sanity project is publicly readable:', data.result.title)
