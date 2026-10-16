@@ -172,7 +172,8 @@ async function publishProject(data, document, media) {
   let mutation
   if (existing.length === 1) {
     // Preserve unmentioned fields (e.g., an icon) while avoiding a lost update.
-    mutation = { patch: { id: existing[0]._id, ifRevisionID: existing[0]._rev, set: document } }
+    const { _type, ...fieldsToSet } = document
+    mutation = { patch: { id: existing[0]._id, ifRevisionID: existing[0]._rev, set: fieldsToSet } }
   } else {
     mutation = { create: { _id: `project.${document.slug.current}`, ...document } }
   }
