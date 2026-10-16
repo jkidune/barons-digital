@@ -102,6 +102,7 @@ export default function Navbar() {
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           className={`min-h-11 text-[1.5rem] font-bold uppercase leading-none tracking-[-0.06em] transition-opacity hover:opacity-60 md:text-[1.9rem] ${focus}`}
           onClick={() => setMenuOpen((open) => !open)}
+          style={{ color: darkSurface ? '#ffffff' : '#000000' }}
           type="button"
         >
           {menuOpen ? 'Close' : 'Menu'}
