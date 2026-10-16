@@ -118,14 +118,16 @@ jobs:
           # This public source commit has passed Checkpoint's isolated Playwright
           # capture tests. Pin it to prevent unexpected asset changes.
           source_sha="c2ebed1c1d2b5193cab5919aac88af0514794370"
-          git clone --quiet https://github.com/jkidune/checkpoint-dashboard.git tmp/checkpoint-source
-          git -C tmp/checkpoint-source checkout --quiet "${source_sha}"
-          npm ci --prefix tmp/checkpoint-source/marketing --no-audit --no-fund
-          npm install --prefix tmp/checkpoint-source/frontend --no-save --package-lock=false --no-audit --no-fund
-          npm install --prefix tmp/checkpoint-source/scripts/portfolio --no-audit --no-fund
-          tmp/checkpoint-source/scripts/portfolio/node_modules/.bin/playwright install --with-deps chromium
+          # Keep the Vite project outside the Barons Next.js tree so its build
+          # cannot inherit Barons' unrelated root PostCSS configuration.
+          git clone --quiet https://github.com/jkidune/checkpoint-dashboard.git /tmp/checkpoint-source
+          git -C /tmp/checkpoint-source checkout --quiet "${source_sha}"
+          npm ci --prefix /tmp/checkpoint-source/marketing --no-audit --no-fund
+          npm install --prefix /tmp/checkpoint-source/frontend --no-save --package-lock=false --no-audit --no-fund
+          npm install --prefix /tmp/checkpoint-source/scripts/portfolio --no-audit --no-fund
+          /tmp/checkpoint-source/scripts/portfolio/node_modules/.bin/playwright install --with-deps chromium
           (
-            cd tmp/checkpoint-source
+            cd /tmp/checkpoint-source
             (cd marketing && npm run dev -- --host 127.0.0.1 --port 4321) >/tmp/checkpoint-marketing.log 2>&1 &
             (cd frontend && VITE_API_BASE_URL=/api npm run dev -- --host 127.0.0.1 --port 5173) >/tmp/checkpoint-frontend.log 2>&1 &
             for port in 4321 5173; do
@@ -147,7 +149,7 @@ jobs:
             python3 scripts/portfolio/build_boards.py
           )
           mkdir -p content/projects/assets/checkpoint
-          cp tmp/checkpoint-source/portfolio-captures/boards/*.jpg content/projects/assets/checkpoint/
+          cp /tmp/checkpoint-source/portfolio-captures/boards/*.jpg content/projects/assets/checkpoint/
           test "$(find content/projects/assets/checkpoint -name '*.jpg' | wc -l)" -eq 7
           echo "Seven Checkpoint portfolio images generated with fictional demo records."
       - name: Validate project content and image sources
