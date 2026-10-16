@@ -62,6 +62,20 @@ async function imageFile(reference, field) {
   return { file, mime }
 }
 
+function validateDriveId(id, field) {
+  requireString(id, field)
+  if (!/^[a-zA-Z0-9_-]{20,100}$/.test(id)) fail(`Invalid Google Drive image ID: ${field}`)
+  return id
+}
+
+async function imageSource(data, localField, driveField, field) {
+  const hasLocal = Boolean(data[localField])
+  const hasDrive = Boolean(data[driveField])
+  if (hasLocal === hasDrive) fail(`${field} requires exactly one of ${localField} or ${driveField}`)
+  if (hasLocal) await imageFile(data[localField], localField)
+  if (hasDrive) validateDriveId(data[driveField], driveField)
+}
+
 async function validateProject(filename) {
   const relativeFile = filename.startsWith('content/projects/') ? filename.slice('content/projects/'.length) : filename
   const absolute = await safeLocalPath(relativeFile, 'project file')
@@ -94,17 +108,15 @@ async function validateProject(filename) {
   if (document.liveUrl) validateUrl(document.liveUrl, 'liveUrl')
   if (document.previewVideo) validateUrl(document.previewVideo, 'previewVideo', true)
 
-  if (!data.coverImagePath) fail('coverImagePath is required to avoid a placeholder image on the website')
-  await imageFile(data.coverImagePath, 'coverImagePath')
-  if (data.iconPath) await imageFile(data.iconPath, 'iconPath')
+  await imageSource(data, 'coverImagePath', 'coverImageDriveId', 'cover image')
+  if (data.iconPath || data.iconDriveId) await imageSource(data, 'iconPath', 'iconDriveId', 'icon image')
 
   const media = data.media ?? []
   if (!Array.isArray(media)) fail('media must be an array')
   for (const [index, item] of media.entries()) {
     if (!item || !['image', 'video'].includes(item.type)) fail(`media[${index}].type must be image or video`)
     if (item.type === 'image') {
-      if (!item.imagePath) fail(`media[${index}] requires imagePath`)
-      await imageFile(item.imagePath, `media[${index}].imagePath`)
+      await imageSource(item, 'imagePath', 'imageDriveId', `media[${index}]`)
     } else {
       validateUrl(requireString(item.videoUrl, `media[${index}].videoUrl`), `media[${index}].videoUrl`)
     }
@@ -129,16 +141,49 @@ async function sanity(endpoint, options = {}) {
   return response.json()
 }
 
-async function uploadImage(reference) {
-  const { file, mime } = await imageFile(reference, 'image path')
-  const fileData = await readFile(file)
-  const filename = encodeURIComponent(path.basename(file))
-  const result = await sanity(`/assets/images/${DATASET}?filename=${filename}`, {
+async function fetchDriveImage(id) {
+  validateDriveId(id, 'imageDriveId')
+  // The image IDs belong to an approved, link-accessible Drive event folder.
+  // Fetch each item directly without storing raw event media in the public Git repository.
+  const urls = [
+    `https://drive.usercontent.google.com/download?id=${encodeURIComponent(id)}&export=download&confirm=t`,
+    `https://drive.google.com/uc?export=download&id=${encodeURIComponent(id)}`,
+  ]
+  for (const url of urls) {
+    let response
+    try { response = await fetch(url, { signal: AbortSignal.timeout(60000) }) } catch { continue }
+    if (!response.ok) continue
+    const bytes = Buffer.from(await response.arrayBuffer())
+    if (bytes.length < 100 || bytes.length > 25 * 1024 * 1024) continue
+    const jpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+    const png = bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+    const webp = bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP'
+    if (jpeg || png || webp) {
+      return { bytes, mime: jpeg ? 'image/jpeg' : png ? 'image/png' : 'image/webp', name: `drive-${id}.${jpeg ? 'jpg' : png ? 'png' : 'webp'}` }
+    }
+  }
+  fail(`Could not download image ${id} from its link-accessible Google Drive source`)
+}
+
+async function uploadImage(source, sourceField) {
+  let fileData, mime, name
+  if (sourceField === 'drive') {
+    const download = await fetchDriveImage(source)
+    fileData = download.bytes
+    mime = download.mime
+    name = download.name
+  } else {
+    const found = await imageFile(source, 'image path')
+    fileData = await readFile(found.file)
+    mime = found.mime
+    name = path.basename(found.file)
+  }
+  const result = await sanity(`/assets/images/${DATASET}?filename=${encodeURIComponent(name)}`, {
     method: 'POST',
     headers: { 'Content-Type': mime },
     body: fileData,
   })
-  if (!result.document?._id) fail(`Sanity did not return an asset ID for ${reference}`)
+  if (!result.document?._id) fail(`Sanity did not return an asset ID for ${name}`)
   return { _type: 'image', asset: { _type: 'reference', _ref: result.document._id } }
 }
 
@@ -151,9 +196,14 @@ async function publishProject(data, document, media) {
   if (!Array.isArray(existing)) fail('Unexpected Sanity query result')
   if (existing.length > 1) fail('Multiple Sanity documents have this slug; resolve duplicates in Studio first')
 
-  document.coverImage = await uploadImage(data.coverImagePath)
-  if (data.iconPath) document.icon = await uploadImage(data.iconPath)
-  else if (existing.length === 0) document.icon = document.coverImage
+  document.coverImage = data.coverImageDriveId
+    ? await uploadImage(data.coverImageDriveId, 'drive')
+    : await uploadImage(data.coverImagePath, 'local')
+  if (data.iconDriveId || data.iconPath) {
+    document.icon = data.iconDriveId
+      ? await uploadImage(data.iconDriveId, 'drive')
+      : await uploadImage(data.iconPath, 'local')
+  } else if (existing.length === 0) document.icon = document.coverImage
 
   // Omitting media in an update preserves the gallery already in Sanity.
   if (data.media !== undefined) {
@@ -166,7 +216,9 @@ async function publishProject(data, document, media) {
       }
       if (item.caption) entry.caption = item.caption
       if (item.gridClass) entry.gridClass = item.gridClass
-      if (item.type === 'image') entry.image = await uploadImage(item.imagePath)
+      if (item.type === 'image') entry.image = item.imageDriveId
+        ? await uploadImage(item.imageDriveId, 'drive')
+        : await uploadImage(item.imagePath, 'local')
       else entry.videoUrl = item.videoUrl
       document.media.push(entry)
     }
