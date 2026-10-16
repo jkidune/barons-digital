@@ -1,12 +1,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getProjectBySlug, getProjects } from '@/lib/projects'
+import { getProjectBySlug } from '@/lib/projects'
 import PageMotion from '@/components/ui/PageMotion'
 
-export async function generateStaticParams() {
-  return (await getProjects()).map(({ slug }) => ({ slug }))
-}
+// Case studies are published through Sanity after website deployment.
+// Resolve new slugs at request time instead of relying on build-time routes.
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 const kicker = 'text-sm font-medium uppercase text-black/60'
 
@@ -32,7 +33,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     ['Client', project.client],
     ['Our role', project.role || project.scope],
     ['Duration', project.duration || project.timeline],
-    ['Status', project.liveUrl ? 'Live project' : 'Private release'],
+    ['Status', project.category.toLowerCase().includes('photography') ? 'Completed' : project.liveUrl ? 'Live project' : 'Private release'],
   ].filter(([, value]) => value)
   const gallery = (project.media ?? []).filter((item) => item.url && item.url !== project.coverImage)
 
