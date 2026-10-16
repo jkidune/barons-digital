@@ -155,18 +155,21 @@ async function publishProject(data, document, media) {
   if (data.iconPath) document.icon = await uploadImage(data.iconPath)
   else if (existing.length === 0) document.icon = document.coverImage
 
-  document.media = []
-  for (const [index, item] of media.entries()) {
-    const entry = {
-      _type: 'mediaItem',
-      _key: `media${index}`,
-      type: item.type,
+  // Omitting media in an update preserves the gallery already in Sanity.
+  if (data.media !== undefined) {
+    document.media = []
+    for (const [index, item] of media.entries()) {
+      const entry = {
+        _type: 'mediaItem',
+        _key: `media${index}`,
+        type: item.type,
+      }
+      if (item.caption) entry.caption = item.caption
+      if (item.gridClass) entry.gridClass = item.gridClass
+      if (item.type === 'image') entry.image = await uploadImage(item.imagePath)
+      else entry.videoUrl = item.videoUrl
+      document.media.push(entry)
     }
-    if (item.caption) entry.caption = item.caption
-    if (item.gridClass) entry.gridClass = item.gridClass
-    if (item.type === 'image') entry.image = await uploadImage(item.imagePath)
-    else entry.videoUrl = item.videoUrl
-    document.media.push(entry)
   }
 
   let mutation
