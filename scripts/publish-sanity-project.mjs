@@ -250,6 +250,17 @@ async function main() {
   const { data, document, media } = await validateProject(file)
   console.log(`Validated "${document.title}" (${document.slug.current}); ${media.length} media item(s).`)
   if (mode === 'check') {
+    if (args.includes('--check-sources')) {
+      const ids = [...new Set([
+        data.coverImageDriveId,
+        data.iconDriveId,
+        ...media.map(item => item.imageDriveId),
+      ].filter(Boolean))]
+      for (const id of ids) {
+        const image = await fetchDriveImage(id)
+        console.log(`Verified Google Drive image ${id}: ${image.bytes.length} bytes (${image.mime})`)
+      }
+    }
     console.log('Validation only: no Sanity API requests or changes were made.')
     return
   }
