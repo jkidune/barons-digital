@@ -59,3 +59,10 @@ node scripts/publish-sanity-project.mjs --file content/projects/my-project.json 
 The publishing script matches project slugs, updates existing projects, and avoids overwriting fields omitted from the JSON. Image uploads performed before a failed publication may need cleanup in Sanity Studio.
 
 **Rights & privacy:** Only import photographs with the required portfolio rights, notices, and participant consent. The original event files in Google Drive may have link-accessible permissions: do not expose unauthorized photos in public Git history or Sanity.
+
+## Public Sanity document IDs
+
+Sanity restricts anonymous read access for document IDs containing a period (`.`).
+Always publish project documents with a root-level ID such as `project-<slug>` (hyphen, not `project.<slug>`). The publisher automatically migrates its legacy dotted IDs to publicly readable root IDs and removes the private duplicate in the same transaction.
+
+After publication, the script checks that the new document is accessible **without any token**, because Studio can display authenticated documents that the public website cannot. If public visibility verification fails, review the GitHub Actions log and Sanity project permissions; do not repeatedly republish without investigating.
