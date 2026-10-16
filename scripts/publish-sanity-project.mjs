@@ -63,7 +63,8 @@ async function imageFile(reference, field) {
 }
 
 async function validateProject(filename) {
-  const absolute = await safeLocalPath(filename, 'project file')
+  const relativeFile = filename.startsWith('content/projects/') ? filename.slice('content/projects/'.length) : filename
+  const absolute = await safeLocalPath(relativeFile, 'project file')
   if (!absolute.endsWith('.json')) fail('Project file must be JSON')
   const data = JSON.parse(await readFile(absolute, 'utf8'))
   if (!data || typeof data !== 'object' || Array.isArray(data)) fail('Project must be a JSON object')
