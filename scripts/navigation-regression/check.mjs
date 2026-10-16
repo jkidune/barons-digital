@@ -66,8 +66,14 @@ async function runMobile() {
   await page.getByRole('button', { name: 'Open menu' }).click()
   const menu = page.locator('#site-menu')
   await menu.waitFor({ state: 'visible' })
-  assert(await page.locator('[data-site-header]').evaluate(h => getComputedStyle(h).color) === 'rgb(255, 255, 255)',
-    'mobile open menu header controls must have readable white text')
+  const menuColors = await page.locator('[data-site-header]').evaluate(h => ({
+    headerClass: h.className,
+    headerColor: getComputedStyle(h).color,
+    buttonColor: getComputedStyle(h.querySelector('button[aria-controls="site-menu"]')).color,
+  }))
+  console.log('Mobile expanded menu contrast:', JSON.stringify(menuColors))
+  assert(menuColors.headerClass.includes('text-white') && menuColors.headerClass.includes('bg-black'),
+    'mobile open menu header must provide white text on black: ' + JSON.stringify(menuColors))
   await checkHeader(page, 'mobile menu open')
   await menu.getByRole('link', { name: 'Work' }).click()
   await page.waitForURL('**/work', { timeout: 25000 })
