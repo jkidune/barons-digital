@@ -1,6 +1,16 @@
 name: Publish Sanity project
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'content/projects/*.json'
+      - 'scripts/publish-sanity-project.mjs'
+      - '.github/workflows/publish-sanity-project.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'content/projects/*.json'
   workflow_dispatch:
     inputs:
       project_file:
@@ -8,7 +18,7 @@ on:
         type: string
         required: true
       publish:
-        description: 'Publish to the LIVE Sanity production dataset (leave unchecked to validate only)'
+        description: 'Publish to LIVE Sanity production (leave unchecked to validate only)'
         type: boolean
         required: true
         default: false
@@ -22,20 +32,52 @@ concurrency:
 
 jobs:
   project:
-    name: Validate and optionally publish project
+    name: Validate and publish approved projects
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate project content and images
+      - name: Determine changed project files
+        shell: bash
         env:
           PROJECT_FILE: ${{ inputs.project_file }}
-        run: node scripts/publish-sanity-project.mjs --file "$PROJECT_FILE" --check
-      - name: Publish to Sanity production
-        if: ${{ inputs.publish }}
+          BEFORE_SHA: ${{ github.event.before }}
+          BASE_BRANCH: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            git diff --name-only --diff-filter=ACMR "${BEFORE_SHA}" HEAD -- 'content/projects/*.json' > /tmp/sanity-project-files
+          elif [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            git diff --name-only --diff-filter=ACMR "origin/${BASE_BRANCH}...HEAD" -- 'content/projects/*.json' > /tmp/sanity-project-files
+          else
+            printf '%s\n' "${PROJECT_FILE}" > /tmp/sanity-project-files
+          fi
+          echo "Project files:"
+          cat /tmp/sanity-project-files
+      - name: Validate project content and image sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r file; do
+            [[ -z "$file" ]] && continue
+            node scripts/publish-sanity-project.mjs --file "$file" --check
+          done < /tmp/sanity-project-files
+      - name: Publish reviewed projects to Sanity production
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
+        shell: bash
         env:
-          PROJECT_FILE: ${{ inputs.project_file }}
           SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
-        run: node scripts/publish-sanity-project.mjs --file "$PROJECT_FILE" --publish
+        run: |
+          set -euo pipefail
+          if [[ -z "${SANITY_API_WRITE_TOKEN}" ]]; then
+            echo "::error::SANITY_API_WRITE_TOKEN is not configured."
+            exit 1
+          fi
+          while IFS= read -r file; do
+            [[ -z "$file" ]] && continue
+            node scripts/publish-sanity-project.mjs --file "$file" --publish
+          done < /tmp/sanity-project-files
