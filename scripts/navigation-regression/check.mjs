@@ -38,9 +38,15 @@ async function checkHeader(page, context) {
     })
     throw new Error(context + ': navbar stayed offscreen after settling: ' + JSON.stringify(diagnostic))
   }
-  const rect = await header.boundingBox()
-  assert(rect, context + ': navbar has no bounding box')
-  assert(rect.y >= -2 && rect.y <= 2, context + ': navbar is displaced offscreen: y=' + rect.y)
+  // Use DOMRect in the page's own coordinate space: Playwright's locator
+  // boundingBox() is offset by the document scroll position under isMobile
+  // emulation even when a fixed header's getBoundingClientRect().top is 0.
+  const rect = await header.evaluate(node => {
+    const r = node.getBoundingClientRect()
+    return { top: r.top, bottom: r.bottom, width: r.width }
+  })
+  assert(rect.width > 200 && rect.bottom > 40, context + ': header has no visible geometry: ' + JSON.stringify(rect))
+  assert(Math.abs(rect.top) <= 2, context + ': navbar is displaced from viewport: top=' + rect.top)
   const styles = await header.evaluate(node => {
     const s = getComputedStyle(node)
     return { opacity: s.opacity, visibility: s.visibility, transform: s.transform, position: s.position }
