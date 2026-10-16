@@ -1,0 +1,42 @@
+name: Check Biashara OS live publication
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/check-biashara-live.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check Sanity public document and live website
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          const slug='biashara-os';
+          const endpoint=new URL('https://93o5rcrm.api.sanity.io/v2024-01-01/data/query/production');
+          endpoint.searchParams.set('query', '*[_type == "project" && slug.current == $slug][0]{title,"slug":slug.current,"images":count(media[type=="image"])}');
+          endpoint.searchParams.set('$slug', JSON.stringify(slug));
+          const sanity=await fetch(endpoint,{signal:AbortSignal.timeout(20000)});
+          if(!sanity.ok)throw new Error('Sanity public query HTTP '+sanity.status);
+          const content=(await sanity.json()).result;
+          if(content?.slug!==slug || content.images!==5)throw new Error('Sanity project or gallery mismatch: '+JSON.stringify(content));
+          console.log('Sanity project public:',content.title,'gallery images:',content.images);
+          const urls=['https://barons-digital.com/work/biashara-os','https://www.barons-digital.com/work/biashara-os','https://barons-digital.com/'];
+          let passed=false;
+          for(const address of urls){
+            try {
+              const response=await fetch(address,{signal:AbortSignal.timeout(20000),redirect:'follow',
+                headers:{'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}});
+              const body=await response.text();
+              const title=body.includes('Biashara OS');
+              const gallery=body.includes('cdn.sanity.io/images/') || body.includes('cdn.sanity.io%2Fimages%2F');
+              console.log(response.status,response.url,'Biashara title?',title,'Sanity image url?',gallery,'bytes',body.length);
+              if(response.status===200 && title && response.url.includes('/work/biashara-os'))passed=true;
+            }catch(error){console.log('URL probe error:',address,String(error).slice(0,200));}
+          }
+          if(!passed)throw new Error('Live Biashara OS project page is not yet visibly responding with HTTP 200 and expected title');
+          NODE
