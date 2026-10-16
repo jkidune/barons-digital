@@ -190,7 +190,8 @@ async function uploadImage(source, sourceField) {
 async function publishProject(data, document, media) {
   const params = new URLSearchParams({
     query: '*[_type == "project" && slug.current == $slug]{_id,_rev}',
-    '$slug': document.slug.current,
+    // GROQ URL parameters must be JSON-encoded (including string quotation marks).
+    '$slug': JSON.stringify(document.slug.current),
   })
   const existing = (await sanity(`/data/query/${DATASET}?${params}`)).result
   if (!Array.isArray(existing)) fail('Unexpected Sanity query result')
