@@ -4,6 +4,10 @@ import { getProjects } from '@/lib/projects'
 import PageHeader from '@/components/ui/PageHeader'
 import PageMotion from '@/components/ui/PageMotion'
 
+// Keep the project index current as new case studies are published in Sanity.
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const chip = 'bg-white px-[10px] py-[8px] text-[0.8rem] font-medium uppercase leading-none text-black md:text-base'
 
 export default async function WorkPage() {
