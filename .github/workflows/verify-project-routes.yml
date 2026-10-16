@@ -1,0 +1,53 @@
+name: Verify dynamic Sanity project routes
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/app/(main)/work/**'
+      - 'src/lib/projects.ts'
+      - 'src/lib/sanity.ts'
+      - '.github/workflows/verify-project-routes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Check that published project is readable without credentials
+        run: |
+          node --input-type=module <<'NODE'
+          const slug = 'tanzania-school-leadership-engagement-week'
+          const url = new URL('https://93o5rcrm.api.sanity.io/v2024-01-01/data/query/production')
+          url.searchParams.set('query', '*[_type == "project" && slug.current == $slug][0]{"slug":slug.current,title}')
+          url.searchParams.set('$slug', JSON.stringify(slug))
+          const response = await fetch(url, { signal: AbortSignal.timeout(30000) })
+          if (!response.ok) {
+            console.error('Sanity public read failed:', response.status, (await response.text()).slice(0, 600))
+            process.exit(1)
+          }
+          const data = await response.json()
+          if (data.result?.slug !== slug) {
+            console.error('Sanity did not return the published project:', JSON.stringify(data.result))
+            process.exit(1)
+          }
+          console.log('Published Sanity project is publicly readable:', data.result.title)
+          NODE
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Check TypeScript
+        run: npx tsc --noEmit
+      - name: Build Next.js site
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: 93o5rcrm
+          NEXT_PUBLIC_SANITY_DATASET: production
+        run: npm run build
