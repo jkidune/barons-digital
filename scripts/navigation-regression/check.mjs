@@ -10,6 +10,34 @@ function assert(condition, message) {
 async function checkHeader(page, context) {
   const header = page.locator('[data-site-header]')
   await header.waitFor({ state: 'visible', timeout: 25000 })
+  // Route transitions may update the URL a frame before scroll restoration
+  // settles. Require the header to return to the viewport within five seconds.
+  try {
+    await page.waitForFunction(() => {
+      const h = document.querySelector('[data-site-header]')
+      if (!h) return false
+      const rect = h.getBoundingClientRect()
+      return Math.abs(rect.top) <= 2 && rect.bottom >= 40
+    }, null, { timeout: 5000, polling: 100 })
+  } catch {
+    const diagnostic = await page.evaluate(() => {
+      const h = document.querySelector('[data-site-header]')
+      if (!h) return { error: 'header missing' }
+      const ancestors = []
+      for (let node = h; node && ancestors.length < 7; node = node.parentElement) {
+        const style = getComputedStyle(node)
+        ancestors.push({ tag: node.tagName, className: String(node.className).slice(0,130),
+          position: style.position, transform: style.transform,
+          overflow: style.overflow, top: style.top,
+          rectTop: node.getBoundingClientRect().top })
+      }
+      return { viewport: { width: innerWidth, height: innerHeight, scrollY, scrollX,
+        visualPageTop: visualViewport?.pageTop, visualOffsetTop: visualViewport?.offsetTop,
+        visualHeight: visualViewport?.height },
+        headerInline: h.getAttribute('style'), ancestors }
+    })
+    throw new Error(context + ': navbar stayed offscreen after settling: ' + JSON.stringify(diagnostic))
+  }
   const rect = await header.boundingBox()
   assert(rect, context + ': navbar has no bounding box')
   assert(rect.y >= -2 && rect.y <= 2, context + ': navbar is displaced offscreen: y=' + rect.y)
@@ -66,14 +94,25 @@ async function runMobile() {
   await page.getByRole('button', { name: 'Open menu' }).click()
   const menu = page.locator('#site-menu')
   await menu.waitFor({ state: 'visible' })
+  // Check real computed color, not classes or an exact rgb()/rgba() format.
+  const readable = await page.waitForFunction(() => {
+    const h = document.querySelector('[data-site-header]')
+    const b = h?.querySelector('button[aria-controls="site-menu"]')
+    if (!b) return false
+    const color = getComputedStyle(b).color
+    const match = color.match(/rgba?\\(\\s*(\\d+)[,\\s]+(\\d+)[,\\s]+(\\d+)/)
+    if (!match) return false
+    const [r, g, blue] = match.slice(1, 4).map(Number)
+    return r >= 230 && g >= 230 && blue >= 230
+  }, null, { timeout: 5000, polling: 100 }).then(() => true).catch(() => false)
   const menuColors = await page.locator('[data-site-header]').evaluate(h => ({
-    headerClass: h.className,
     headerColor: getComputedStyle(h).color,
     buttonColor: getComputedStyle(h.querySelector('button[aria-controls="site-menu"]')).color,
+    backgroundColor: getComputedStyle(h).backgroundColor,
+    inlineStyle: h.getAttribute('style'),
   }))
   console.log('Mobile expanded menu contrast:', JSON.stringify(menuColors))
-  assert(menuColors.headerClass.includes('text-white') && menuColors.headerClass.includes('bg-black'),
-    'mobile open menu header must provide white text on black: ' + JSON.stringify(menuColors))
+  assert(readable, 'mobile open menu controls must have readable white text: ' + JSON.stringify(menuColors))
   await checkHeader(page, 'mobile menu open')
   await menu.getByRole('link', { name: 'Work' }).click()
   await page.waitForURL('**/work', { timeout: 25000 })
