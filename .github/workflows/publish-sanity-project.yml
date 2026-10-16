@@ -1,0 +1,41 @@
+name: Publish Sanity project
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_file:
+        description: 'Path under content/projects/, e.g. content/projects/my-project.json'
+        type: string
+        required: true
+      publish:
+        description: 'Publish to the LIVE Sanity production dataset (leave unchecked to validate only)'
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sanity-project-publishing
+  cancel-in-progress: false
+
+jobs:
+  project:
+    name: Validate and optionally publish project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate project content and images
+        env:
+          PROJECT_FILE: ${{ inputs.project_file }}
+        run: node scripts/publish-sanity-project.mjs --file "$PROJECT_FILE" --check
+      - name: Publish to Sanity production
+        if: ${{ inputs.publish }}
+        env:
+          PROJECT_FILE: ${{ inputs.project_file }}
+          SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
+        run: node scripts/publish-sanity-project.mjs --file "$PROJECT_FILE" --publish
