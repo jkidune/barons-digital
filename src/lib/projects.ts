@@ -18,8 +18,7 @@ type SanityProject = Omit<Project, 'slug' | 'coverImage' | 'icon' | 'media'> & {
   order?: number
 }
 
-const projectQuery = `
-  *[_type == "project"] | order(coalesce(order, 999), year desc, title asc) {
+const projectFields = `
     title,
     icon,
     "slug": slug.current,
@@ -55,8 +54,15 @@ const projectQuery = `
       caption,
       gridClass
     }
-  }
 `
+
+const projectQuery = `*[_type == "project"] | order(coalesce(order, 999), year desc, title asc) {
+  ${projectFields}
+}`
+
+const projectBySlugQuery = `*[_type == "project" && slug.current == $slug][0] {
+  ${projectFields}
+}`
 
 function imageToUrl(source: unknown, fallback: string) {
   if (!source) return fallback
@@ -129,9 +135,32 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 export async function getProjectBySlug(slug: string) {
+  // Fetch the exact published document without using the CDN or the cached
+  // project index; newly published slugs can otherwise incorrectly return 404.
+  if (hasSanityConfig && client) {
+    try {
+      const sanityProject = await client.withConfig({ useCdn: false }).fetch<SanityProject | null>(
+        projectBySlugQuery,
+        { slug },
+        { next: { revalidate: 0 } },
+      )
+      if (sanityProject) {
+        const project = normalizeProject(sanityProject)
+        const projects = await getProjects()
+        const projectIndex = projects.findIndex((item) => item.slug === slug)
+        const nextProject = projectIndex < 0
+          ? (projects.find((item) => item.slug !== slug) ?? project)
+          : projects[(projectIndex + 1) % projects.length]
+        return { project, nextProject }
+      }
+    } catch (error) {
+      console.error('Unable to fetch published Sanity project by slug:', error)
+    }
+  }
+
+  // Retain the existing static case studies as a resilient fallback.
   const projects = await getProjects()
   const projectIndex = projects.findIndex((project) => project.slug === slug)
-
   if (projectIndex === -1) return null
 
   return {
