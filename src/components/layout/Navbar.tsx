@@ -1,16 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { NAV_LINKS } from '@/constants/navigation'
 
-gsap.registerPlugin(ScrollTrigger)
-
-// The three links shown inline in the bar; everything else lives behind MENU
+// The three links shown inline in the bar; everything else lives behind MENU.
 const BAR_LINKS = [
   { label: 'About', href: '/about' },
   { label: 'Projects', href: '/work' },
@@ -22,60 +17,67 @@ export default function Navbar() {
   const onHome = pathname === '/'
   const [menuOpen, setMenuOpen] = useState(false)
   const [solid, setSolid] = useState(false)
-  const header = useRef<HTMLElement>(null)
 
-  // Light text only while the transparent bar sits over the dark homepage hero
-  const light = onHome && !solid && !menuOpen
-
-  useGSAP(() => {
-    if (!header.current) return
-    gsap.from(header.current, { y: -36, opacity: 0, duration: 0.9, delay: 0.8, ease: 'power3.out' })
-    let hidden = false
-    ScrollTrigger.create({
-      start: 0,
-      end: 'max',
-      onUpdate: (self) => {
-        setSolid(self.scroll() > 80)
-        if (menuOpen) return
-        const shouldHide = self.direction === 1 && self.scroll() > 240
-        if (shouldHide === hidden) return
-        hidden = shouldHide
-        gsap.to(header.current, {
-          yPercent: shouldHide ? -110 : 0,
-          duration: 0.45,
-          ease: shouldHide ? 'power2.inOut' : 'power3.out',
-          overwrite: true,
-        })
-      },
-    })
-  }, { dependencies: [menuOpen] })
+  // Always keep the site navigation on screen. Previously a GSAP
+  // ScrollTrigger translated the persistent header above the viewport on
+  // downward scrolling; its animation state survived Next.js route changes
+  // and sometimes left the menu unreachable. Only change its background
+  // here, never its position, transform or opacity.
+  useEffect(() => {
+    const updateBackground = () => setSolid(window.scrollY > 80)
+    updateBackground()
+    window.addEventListener('scroll', updateBackground, { passive: true })
+    return () => window.removeEventListener('scroll', updateBackground)
+  }, [pathname])
 
   useEffect(() => {
+    // Support Escape and prevent scrolling behind the full-screen menu.
+    if (!menuOpen) return
+    const previousOverflow = document.body.style.overflow
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setMenuOpen(false)
     }
     document.addEventListener('keydown', closeOnEscape)
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
-    if (menuOpen && header.current) gsap.set(header.current, { yPercent: 0 })
+    document.body.style.overflow = 'hidden'
     return () => {
       document.removeEventListener('keydown', closeOnEscape)
-      document.body.style.overflow = ''
+      document.body.style.overflow = previousOverflow
     }
   }, [menuOpen])
 
   useEffect(() => {
+    // Navbar persists in the shared layout, so dismiss the overlay even
+    // after routes change through non-menu links or browser navigation.
     const frame = requestAnimationFrame(() => setMenuOpen(false))
     return () => cancelAnimationFrame(frame)
   }, [pathname])
 
   const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4'
+  // Non-home pages always get a readable white background. On the homepage
+  // the bar can be transparent only while over the dark hero at the top.
+  const headerColors = menuOpen
+    ? 'bg-black text-white'
+    : onHome && !solid
+      ? 'bg-transparent text-white'
+      : 'bg-white/95 text-black backdrop-blur-md'
+  const darkSurface = menuOpen || (onHome && !solid)
+  // Critical styles are explicit as a fallback across transient Next.js route
+  // stylesheet changes: a fixed header must NEVER participate in page scroll.
+  const headerStyle = {
+    position: 'fixed' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    color: darkSurface ? '#ffffff' : '#000000',
+    backgroundColor: menuOpen ? '#000000' : onHome && !solid ? 'transparent' : 'rgba(255,255,255,0.95)',
+  }
 
   return (
     <header
-      ref={header}
-      className={`fixed inset-x-0 top-0 z-[100] font-[family-name:var(--font-inter)] transition-colors duration-300 ${
-        light ? 'text-white' : 'text-black'
-      } ${solid && !menuOpen ? 'bg-white/90 backdrop-blur-md' : 'bg-transparent'}`}
+      className={`fixed inset-x-0 top-0 z-[100] font-[family-name:var(--font-inter)] ${headerColors}`}
+      data-site-header
+      style={headerStyle}
     >
       <div className="relative z-10 flex h-[calc(4.2rem+env(safe-area-inset-top))] items-center justify-between px-5 pt-[env(safe-area-inset-top)] md:px-[4vw]">
         <Link className={`text-[1.5rem] font-extrabold uppercase leading-none tracking-[-0.08em] ${focus}`} href="/">
@@ -100,6 +102,7 @@ export default function Navbar() {
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           className={`min-h-11 text-[1.5rem] font-bold uppercase leading-none tracking-[-0.06em] transition-opacity hover:opacity-60 md:text-[1.9rem] ${focus}`}
           onClick={() => setMenuOpen((open) => !open)}
+          style={{ color: darkSurface ? '#ffffff' : '#000000' }}
           type="button"
         >
           {menuOpen ? 'Close' : 'Menu'}
