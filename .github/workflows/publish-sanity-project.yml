@@ -64,7 +64,7 @@ jobs:
           set -euo pipefail
           while IFS= read -r file; do
             [[ -z "$file" ]] && continue
-            node scripts/publish-sanity-project.mjs --file "$file" --check
+            node scripts/publish-sanity-project.mjs --file "$file" --check --check-sources
           done < /tmp/sanity-project-files
       - name: Publish reviewed projects to Sanity production
         if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
