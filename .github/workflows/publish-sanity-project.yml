@@ -58,13 +58,69 @@ jobs:
           fi
           echo "Project files:"
           cat /tmp/sanity-project-files
+      - name: Prepare Biashara OS portfolio images
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          BIASHARA_GITHUB_READ_TOKEN: ${{ secrets.BIASHARA_GITHUB_READ_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! grep -qx 'content/projects/biashara-os.json' /tmp/sanity-project-files; then
+            exit 0
+          fi
+          if [[ -z "${BIASHARA_GITHUB_READ_TOKEN}" ]]; then
+            echo "::error::Set BIASHARA_GITHUB_READ_TOKEN as an Actions secret with Actions:read permission to private jkidune/biashara-os."
+            exit 1
+          fi
+          # Resolve the latest successful private capture instead of using an expiring artifact ID.
+          curl --silent --show-error --fail --retry 2 \
+            -H "Authorization: Bearer ${BIASHARA_GITHUB_READ_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            'https://api.github.com/repos/jkidune/biashara-os/actions/runs?event=pull_request&per_page=60' \
+            > /tmp/biashara-runs.json
+          python3 - <<'PY'
+          import json, sys
+          data=json.load(open('/tmp/biashara-runs.json'))
+          runs=[r for r in data.get('workflow_runs',[]) if r.get('name')=='Capture Biashara OS portfolio' and r.get('conclusion')=='success']
+          if not runs: sys.exit('No successful Biashara OS capture found. Run its capture-portfolio workflow first.')
+          print(runs[0]['id'],file=open('/tmp/biashara-run-id','w'))
+          PY
+          run_id="$(cat /tmp/biashara-run-id)"
+          curl --silent --show-error --fail --retry 2 \
+            -H "Authorization: Bearer ${BIASHARA_GITHUB_READ_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/jkidune/biashara-os/actions/runs/${run_id}/artifacts" \
+            > /tmp/biashara-artifacts.json
+          python3 - <<'PY'
+          import json,sys
+          items=json.load(open('/tmp/biashara-artifacts.json')).get('artifacts',[])
+          artifact=next((a for a in items if a['name']=='biashara-portfolio-screens' and not a.get('expired')),None)
+          if not artifact:sys.exit('Screenshot artifact expired or missing; rerun private screenshot workflow.')
+          print(artifact['id'],file=open('/tmp/biashara-artifact-id','w'))
+          PY
+          artifact_id="$(cat /tmp/biashara-artifact-id)"
+          curl --location --silent --show-error --fail --retry 2 \
+            -H "Authorization: Bearer ${BIASHARA_GITHUB_READ_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/jkidune/biashara-os/actions/artifacts/${artifact_id}/zip" \
+            -o /tmp/biashara-screens.zip
+          mkdir -p tmp/biashara-screens
+          unzip -j -o -q /tmp/biashara-screens.zip '*.png' -d tmp/biashara-screens
+          python3 -m pip install --disable-pip-version-check Pillow==11.3.0
+          python3 scripts/build-biashara-portfolio.py
       - name: Validate project content and image sources
         shell: bash
         run: |
           set -euo pipefail
           while IFS= read -r file; do
             [[ -z "$file" ]] && continue
-            node scripts/publish-sanity-project.mjs --file "$file" --check --check-sources
+            if [[ "${GITHUB_EVENT_NAME}" == "pull_request" && "$file" == "content/projects/biashara-os.json" ]]; then
+              node --check scripts/publish-sanity-project.mjs
+              python3 -m py_compile scripts/build-biashara-portfolio.py
+              python3 -m json.tool "$file" >/dev/null
+              echo "Biashara project JSON and generator syntax checked. Screenshots are imported only on approved main runs."
+            else
+              node scripts/publish-sanity-project.mjs --file "$file" --check --check-sources
+            fi
           done < /tmp/sanity-project-files
       - name: Publish reviewed projects to Sanity production
         if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish) }}

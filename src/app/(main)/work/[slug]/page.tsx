@@ -35,6 +35,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     ['Status', project.liveUrl ? 'Live project' : 'Private release'],
   ].filter(([, value]) => value)
   const gallery = (project.media ?? []).filter((item) => item.url && item.url !== project.coverImage)
+  const editorialBoards = project.slug === 'biashara-os'
 
   return (
     <article className="bg-white text-black">
@@ -99,16 +100,16 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
       {gallery.length > 0 && (
         <section className="px-5 py-24 md:px-[3.6vw] md:py-36">
-          <div className="grid gap-4 md:grid-cols-2 md:gap-[1.6vw]">
+          <div className={editorialBoards ? "grid gap-8 md:gap-14" : "grid gap-4 md:grid-cols-2 md:gap-[1.6vw]"}>
             {gallery.map((item, i) => {
               // Editorial rhythm: every third frame bleeds across both columns
-              const wide = i % 3 === 0
+              const wide = editorialBoards || i % 3 === 0
               return (
                 <figure className={wide ? 'md:col-span-2' : ''} key={item.url}>
-                  <div className={`relative overflow-hidden bg-neutral-200 ${wide ? 'aspect-[16/9]' : 'aspect-[4/3]'}`} data-mask>
+                  <div className={`relative overflow-hidden bg-neutral-200 ${editorialBoards ? 'aspect-[8/5]' : wide ? 'aspect-[16/9]' : 'aspect-[4/3]'}`} data-mask>
                     {item.type === 'video'
                       ? <video autoPlay className="h-full w-full object-cover" loop muted playsInline src={item.url} />
-                      : <Image alt={item.caption || project.title} className="object-cover" fill sizes={wide ? '100vw' : '50vw'} src={item.url} />}
+                      : <Image alt={item.caption || project.title} className={editorialBoards ? "object-contain" : "object-cover"} fill sizes={wide ? '100vw' : '50vw'} src={item.url} />}
                   </div>
                   {item.caption && <figcaption className="mt-3 text-xs text-[#6b6b6b]">{item.caption}</figcaption>}
                 </figure>
