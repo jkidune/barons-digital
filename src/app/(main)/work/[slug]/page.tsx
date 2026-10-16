@@ -35,7 +35,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     ['Status', project.liveUrl ? 'Live project' : 'Private release'],
   ].filter(([, value]) => value)
   const gallery = (project.media ?? []).filter((item) => item.url && item.url !== project.coverImage)
-  const editorialBoards = project.slug === 'biashara-os'
+  const editorialBoards = ['biashara-os', 'checkpoint'].includes(project.slug)
 
   return (
     <article className="bg-white text-black">
